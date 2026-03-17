@@ -16,13 +16,13 @@
   </el-container>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
   import { mapState } from 'vuex'
 
   import { APP_THEME } from '@shared/constants'
-  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
-  import Browser from '@/components/Browser'
+  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher.vue'
+  import Browser from '@/components/Browser/index.vue'
   import '@/components/Icons/info-square'
 
   export default {
@@ -32,19 +32,19 @@
       [Browser.name]: Browser
     },
     data () {
-      const { locale } = this.$store.state.preference.config
+      const { locale } = (this.$store as any).state.preference.config
       return {
         locale
       }
     },
     computed: {
       isRenderer: () => is.renderer(),
-      ...mapState('app', {
-        systemTheme: state => state.systemTheme
+      ...(mapState as any)('app', {
+        systemTheme: (state: any) => state.systemTheme
       }),
-      ...mapState('preference', {
-        config: state => state.config,
-        theme: state => state.config.theme
+      ...(mapState as any)('preference', {
+        config: (state: any) => state.config,
+        theme: (state: any) => state.config.theme
       }),
       currentTheme () {
         if (this.theme === APP_THEME.AUTO) {

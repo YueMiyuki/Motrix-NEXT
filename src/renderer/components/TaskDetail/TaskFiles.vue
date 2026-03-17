@@ -18,32 +18,32 @@
           :label="$t('task.file-name')"
           min-width="200"
           show-overflow-tooltip>
-          <template slot-scope="scope">{{ scope.row.name }}</template>
+          <template #default="{ row }">{{ row.name }}</template>
         </el-table-column>
         <el-table-column
           :label="$t('task.file-extension')"
           width="80">
-          <template slot-scope="scope">{{ scope.row.extension | removeExtensionDot }}</template>
+          <template #default="{ row }">{{ formatExtension(row.extension) }}</template>
         </el-table-column>
         <el-table-column
           v-if="mode === 'DETAIL'"
           :label="`%`"
           align="right"
           width="50">
-          <template slot-scope="scope">{{ calcProgress(scope.row.length, scope.row.completedLength, 1) }}</template>
+          <template #default="{ row }">{{ calcProgress(row.length, row.completedLength, 1) }}</template>
         </el-table-column>
         <el-table-column
           v-if="mode === 'DETAIL'"
           :label="`✓`"
           align="right"
           width="85">
-          <template slot-scope="scope">{{ scope.row.completedLength | bytesToSize }}</template>
+          <template #default="{ row }">{{ formatBytes(row.completedLength) }}</template>
         </el-table-column>
         <el-table-column
           :label="$t('task.file-size')"
           align="right"
           width="85">
-          <template slot-scope="scope">{{ scope.row.length | bytesToSize }}</template>
+          <template #default="{ row }">{{ formatBytes(row.length) }}</template>
         </el-table-column>
       </el-table>
     </div>
@@ -83,7 +83,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { isEmpty } from 'lodash'
   import '@/components/Icons/video'
   import '@/components/Icons/audio'
@@ -105,15 +105,11 @@
 
   export default {
     name: 'mo-task-files',
-    filters: {
-      bytesToSize,
-      removeExtensionDot
-    },
     props: {
       mode: {
         type: String,
         default: 'ADD',
-        validator: function (value) {
+        validator: function (value: string) {
           return ['ADD', 'DETAIL'].indexOf(value) !== -1
         }
       },
@@ -163,6 +159,12 @@
     },
     methods: {
       calcProgress,
+      formatBytes (value) {
+        return bytesToSize(value)
+      },
+      formatExtension (value) {
+        return removeExtensionDot(value)
+      },
       toggleAllSelection () {
         if (!this.$refs.torrentTable) {
           return

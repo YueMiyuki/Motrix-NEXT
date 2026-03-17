@@ -19,23 +19,33 @@
       @tab-click="handleTabClick"
     >
       <el-tab-pane name="general">
-        <span class="task-detail-tab-label" slot="label"><i class="el-icon-info"></i></span>
+        <template #label>
+          <span class="task-detail-tab-label"><i class="el-icon-info"></i></span>
+        </template>
         <mo-task-general :task="task" />
       </el-tab-pane>
       <el-tab-pane name="activity" lazy>
-        <span class="task-detail-tab-label" slot="label"><i class="el-icon-s-grid"></i></span>
+        <template #label>
+          <span class="task-detail-tab-label"><i class="el-icon-s-grid"></i></span>
+        </template>
         <mo-task-activity ref="taskGraphic" :task="task" />
       </el-tab-pane>
       <el-tab-pane name="trackers" lazy v-if="isBT">
-        <span class="task-detail-tab-label" slot="label"><i class="el-icon-discover"></i></span>
+        <template #label>
+          <span class="task-detail-tab-label"><i class="el-icon-discover"></i></span>
+        </template>
         <mo-task-trackers :task="task" />
       </el-tab-pane>
       <el-tab-pane name="peers" lazy v-if="isBT">
-        <span class="task-detail-tab-label" slot="label"><i class="el-icon-s-custom"></i></span>
+        <template #label>
+          <span class="task-detail-tab-label"><i class="el-icon-s-custom"></i></span>
+        </template>
         <mo-task-peers :peers="peers" />
       </el-tab-pane>
       <el-tab-pane name="files" lazy>
-        <span class="task-detail-tab-label" slot="label"><i class="el-icon-files"></i></span>
+        <template #label>
+          <span class="task-detail-tab-label"><i class="el-icon-files"></i></span>
+        </template>
         <mo-task-files
           ref="detailFileList"
           mode="DETAIL"
@@ -62,9 +72,9 @@
   </el-drawer>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
-  import { debounce, merge } from 'lodash'
+  import { debounce } from 'lodash'
   import {
     calcFormLabelWidth,
     checkTaskIsBT,
@@ -78,12 +88,12 @@
     SELECTED_ALL_FILES,
     TASK_STATUS
   } from '@shared/constants'
-  import TaskItemActions from '@/components/Task/TaskItemActions'
-  import TaskGeneral from './TaskGeneral'
-  import TaskActivity from './TaskActivity'
-  import TaskTrackers from './TaskTrackers'
-  import TaskPeers from './TaskPeers'
-  import TaskFiles from './TaskFiles'
+  import TaskItemActions from '@/components/Task/TaskItemActions.vue'
+  import TaskGeneral from './TaskGeneral.vue'
+  import TaskActivity from './TaskActivity.vue'
+  import TaskTrackers from './TaskTrackers.vue'
+  import TaskPeers from './TaskPeers.vue'
+  import TaskFiles from './TaskFiles.vue'
 
   const cached = {
     files: []
@@ -124,7 +134,7 @@
       }
     },
     data () {
-      const { locale } = this.$store.state.preference.config
+      const { locale } = (this.$store as any).state.preference.config
       return {
         form: {},
         formLabelWidth: calcFormLabelWidth(locale),
@@ -133,7 +143,8 @@
         graphicWidth: 0,
         optionsChanged: false,
         filesSelection: EMPTY_STRING,
-        selectionChangedCount: 0
+        selectionChangedCount: 0,
+        updateGraphicWidthDebounced: null
       }
     },
     computed: {
@@ -167,7 +178,7 @@
             completedLength: item.completedLength
           }
         })
-        merge(cached.files, result)
+        cached.files = result
         return cached.files
       },
       selectedFileList () {
@@ -178,10 +189,18 @@
       }
     },
     mounted () {
+      this.updateGraphicWidthDebounced = debounce(() => {
+        if (this.activeTab === 'activity' && this.$refs.taskGraphic) {
+          this.$refs.taskGraphic.updateGraphicWidth()
+        }
+      }, 250)
       window.addEventListener('resize', this.handleAppResize)
     },
-    destroyed () {
+    beforeUnmount () {
       window.removeEventListener('resize', this.handleAppResize)
+      if (this.updateGraphicWidthDebounced && this.updateGraphicWidthDebounced.cancel) {
+        this.updateGraphicWidthDebounced.cancel()
+      }
       cached.files = []
     },
     watch: {
@@ -245,12 +264,9 @@
         this.optionsChanged = false
       },
       handleAppResize () {
-        debounce(() => {
-          console.log('resize===>', this.activeTab, this.$refs.taskGraphic)
-          if (this.activeTab === 'activity' && this.$refs.taskGraphic) {
-            this.$refs.taskGraphic.updateGraphicWidth()
-          }
-        }, 250)
+        if (this.updateGraphicWidthDebounced) {
+          this.updateGraphicWidthDebounced()
+        }
       },
       updateFilesListSelection () {
         if (!this.$refs.detailFileList) {

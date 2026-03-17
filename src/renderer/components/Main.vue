@@ -16,14 +16,14 @@
   </el-container>
 </template>
 
-<script>
+<script lang="ts">
   import { mapState } from 'vuex'
-  import AboutPanel from '@/components/About/AboutPanel'
-  import Aside from '@/components/Aside/Index'
-  import Speedometer from '@/components/Speedometer/Speedometer'
-  import AddTask from '@/components/Task/AddTask'
-  import TaskDetail from '@/components/TaskDetail/Index'
-  import Dragger from '@/components/Dragger/Index'
+  import AboutPanel from '@/components/About/AboutPanel.vue'
+  import Aside from '@/components/Aside/Index.vue'
+  import Speedometer from '@/components/Speedometer/Speedometer.vue'
+  import AddTask from '@/components/Task/AddTask.vue'
+  import TaskDetail from '@/components/TaskDetail/Index.vue'
+  import Dragger from '@/components/Dragger/Index.vue'
 
   export default {
     name: 'mo-main',
@@ -36,17 +36,17 @@
       [Dragger.name]: Dragger
     },
     computed: {
-      ...mapState('app', {
-        aboutPanelVisible: state => state.aboutPanelVisible,
-        addTaskVisible: state => state.addTaskVisible,
-        addTaskType: state => state.addTaskType
+      ...(mapState as any)('app', {
+        aboutPanelVisible: (state: any) => state.aboutPanelVisible,
+        addTaskVisible: (state: any) => state.addTaskVisible,
+        addTaskType: (state: any) => state.addTaskType
       }),
-      ...mapState('task', {
-        taskDetailVisible: state => state.taskDetailVisible,
-        currentTaskGid: state => state.currentTaskGid,
-        currentTaskItem: state => state.currentTaskItem,
-        currentTaskFiles: state => state.currentTaskFiles,
-        currentTaskPeers: state => state.currentTaskPeers
+      ...(mapState as any)('task', {
+        taskDetailVisible: (state: any) => state.taskDetailVisible,
+        currentTaskGid: (state: any) => state.currentTaskGid,
+        currentTaskItem: (state: any) => state.currentTaskItem,
+        currentTaskFiles: (state: any) => state.currentTaskFiles,
+        currentTaskPeers: (state: any) => state.currentTaskPeers
       })
     },
     methods: {

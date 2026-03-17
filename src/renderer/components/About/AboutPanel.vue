@@ -7,14 +7,16 @@
     :before-close="handleClose"
     @closed="handleClosed">
     <mo-app-info :version="version" :engine="engineInfo" />
-    <mo-copyright slot="footer" />
+    <template #footer>
+      <mo-copyright />
+    </template>
   </el-dialog>
 </template>
 
-<script>
+<script lang="ts">
   import { mapState } from 'vuex'
-  import AppInfo from '@/components/About/AppInfo'
-  import Copyright from '@/components/About/Copyright'
+  import AppInfo from '@/components/About/AppInfo.vue'
+  import Copyright from '@/components/About/Copyright.vue'
   import { app } from '@electron/remote'
 
   export default {
@@ -36,8 +38,8 @@
       }
     },
     computed: {
-      ...mapState('app', {
-        engineInfo: state => state.engineInfo
+      ...(mapState as any)('app', {
+        engineInfo: (state: any) => state.engineInfo
       })
     },
     methods: {

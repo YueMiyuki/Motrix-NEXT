@@ -2,7 +2,7 @@
   <div v-if="false"></div>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
   import { mapState } from 'vuex'
   import api from '@/api'
@@ -14,26 +14,34 @@
 
   export default {
     name: 'mo-engine-client',
+    data () {
+      return {
+        timer: null,
+        initTimer: null,
+        isPolling: false,
+        isDestroyed: false
+      }
+    },
     computed: {
       isRenderer: () => is.renderer(),
-      ...mapState('app', {
-        uploadSpeed: state => state.stat.uploadSpeed,
-        downloadSpeed: state => state.stat.downloadSpeed,
-        speed: state => state.stat.uploadSpeed + state.stat.downloadSpeed,
-        interval: state => state.interval,
-        downloading: state => state.stat.numActive > 0,
-        progress: state => state.progress
+      ...(mapState as any)('app', {
+        uploadSpeed: (state: any) => state.stat.uploadSpeed,
+        downloadSpeed: (state: any) => state.stat.downloadSpeed,
+        speed: (state: any) => state.stat.uploadSpeed + state.stat.downloadSpeed,
+        interval: (state: any) => state.interval,
+        downloading: (state: any) => state.stat.numActive > 0,
+        progress: (state: any) => state.progress
       }),
-      ...mapState('task', {
-        messages: state => state.messages,
-        seedingList: state => state.seedingList,
-        taskDetailVisible: state => state.taskDetailVisible,
-        enabledFetchPeers: state => state.enabledFetchPeers,
-        currentTaskGid: state => state.currentTaskGid,
-        currentTaskItem: state => state.currentTaskItem
+      ...(mapState as any)('task', {
+        messages: (state: any) => state.messages,
+        seedingList: (state: any) => state.seedingList,
+        taskDetailVisible: (state: any) => state.taskDetailVisible,
+        enabledFetchPeers: (state: any) => state.enabledFetchPeers,
+        currentTaskGid: (state: any) => state.currentTaskGid,
+        currentTaskItem: (state: any) => state.currentTaskItem
       }),
-      ...mapState('preference', {
-        taskNotification: state => state.config.taskNotification
+      ...(mapState as any)('preference', {
+        taskNotification: (state: any) => state.config.taskNotification
       }),
       currentTaskIsBT () {
         return checkTaskIsBT(this.currentTaskItem)
@@ -54,6 +62,11 @@
       },
       progress (val) {
         this.$electron.ipcRenderer.send('event', 'progress-change', val)
+      },
+      interval () {
+        if (this.timer) {
+          this.startPolling()
+        }
       }
     },
     methods: {
@@ -75,6 +88,9 @@
 
         this.fetchTaskItem({ gid })
           .then((task) => {
+            if (!task) {
+              return
+            }
             const { dir } = task
             this.$store.dispatch('preference/recordHistoryDirectory', dir)
             const taskName = getTaskName(task)
@@ -91,6 +107,9 @@
 
         this.fetchTaskItem({ gid })
           .then((task) => {
+            if (!task) {
+              return
+            }
             const taskName = getTaskName(task)
             const message = this.$t('task.download-pause-message', { taskName })
             this.$msg.info(message)
@@ -100,6 +119,9 @@
         const [{ gid }] = event
         this.fetchTaskItem({ gid })
           .then((task) => {
+            if (!task) {
+              return
+            }
             const taskName = getTaskName(task)
             const message = this.$t('task.download-stop-message', { taskName })
             this.$msg.info(message)
@@ -109,6 +131,9 @@
         const [{ gid }] = event
         this.fetchTaskItem({ gid })
           .then((task) => {
+            if (!task) {
+              return
+            }
             const taskName = getTaskName(task)
             const { errorCode, errorMessage } = task
             console.error(`[Motrix] download error gid: ${gid}, #${errorCode}, ${errorMessage}`)
@@ -130,6 +155,9 @@
 
         this.fetchTaskItem({ gid })
           .then((task) => {
+            if (!task) {
+              return
+            }
             this.handleDownloadComplete(task, false)
           })
       },
@@ -145,6 +173,9 @@
 
         this.fetchTaskItem({ gid })
           .then((task) => {
+            if (!task) {
+              return
+            }
             this.handleDownloadComplete(task, true)
           })
       },
@@ -174,7 +205,6 @@
           ? this.$t('task.bt-download-complete-notify')
           : this.$t('task.download-complete-notify')
 
-        /* eslint-disable no-new */
         const notify = new Notification(notifyMessage, {
           body: `${taskName}${tips}`
         })
@@ -216,22 +246,44 @@
         api.client.removeListener('onBtDownloadComplete', this.onBtDownloadComplete)
       },
       startPolling () {
-        this.timer = setTimeout(() => {
-          this.polling()
-          this.startPolling()
-        }, this.interval)
-      },
-      polling () {
-        this.$store.dispatch('app/fetchGlobalStat')
-        this.$store.dispatch('app/fetchProgress')
-        this.$store.dispatch('task/fetchList')
+        this.stopPolling()
 
-        if (this.taskDetailVisible && this.currentTaskGid) {
-          if (this.currentTaskIsBT && this.enabledFetchPeers) {
-            this.$store.dispatch('task/fetchItemWithPeers', this.currentTaskGid)
-          } else {
-            this.$store.dispatch('task/fetchItem', this.currentTaskGid)
+        const loop = async () => {
+          await this.polling()
+          if (!this.isDestroyed) {
+            this.timer = setTimeout(loop, this.interval)
           }
+        }
+
+        this.timer = setTimeout(loop, this.interval)
+      },
+      async polling () {
+        if (this.isPolling) {
+          return
+        }
+        this.isPolling = true
+
+        try {
+          const jobs = [
+            this.$store.dispatch('app/fetchGlobalStat'),
+            this.$store.dispatch('app/fetchProgress')
+          ]
+
+          if (!document.hidden || this.taskDetailVisible) {
+            jobs.push(this.$store.dispatch('task/fetchList'))
+          }
+
+          if (this.taskDetailVisible && this.currentTaskGid) {
+            if (this.currentTaskIsBT && this.enabledFetchPeers) {
+              jobs.push(this.$store.dispatch('task/fetchItemWithPeers', this.currentTaskGid))
+            } else {
+              jobs.push(this.$store.dispatch('task/fetchItem', this.currentTaskGid))
+            }
+          }
+
+          await Promise.allSettled(jobs)
+        } finally {
+          this.isPolling = false
         }
       },
       stopPolling () {
@@ -243,15 +295,18 @@
       this.bindEngineEvents()
     },
     mounted () {
-      setTimeout(() => {
+      this.initTimer = setTimeout(() => {
         this.$store.dispatch('app/fetchEngineInfo')
         this.$store.dispatch('app/fetchEngineOptions')
 
         this.startPolling()
       }, 100)
     },
-    destroyed () {
+    beforeUnmount () {
+      this.isDestroyed = true
       this.$store.dispatch('task/saveSession')
+      clearTimeout(this.initTimer)
+      this.initTimer = null
 
       this.unbindEngineEvents()
 

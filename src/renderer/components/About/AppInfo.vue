@@ -18,9 +18,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
-  import Logo from '@/components/Logo/Logo'
+  import Logo from '@/components/Logo/Logo.vue'
 
   export default {
     name: 'mo-app-info',
@@ -64,7 +64,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    background: transparent url('~@/assets/app-icon.png') center center no-repeat;
+    background: transparent url('@/assets/app-icon.png') center center no-repeat;
     background-size: 128px 128px;
     width: 128px;
     height: 128px;

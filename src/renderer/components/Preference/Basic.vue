@@ -111,15 +111,17 @@
           :label-width="formLabelWidth"
         >
           <el-input placeholder="" v-model="form.dir" :readonly="isMas">
-            <mo-history-directory
-              slot="prepend"
-              @selected="handleHistoryDirectorySelected"
-            />
-            <mo-select-directory
-              v-if="isRenderer"
-              slot="append"
-              @selected="handleNativeDirectorySelected"
-            />
+            <template #prepend>
+              <mo-history-directory
+                @selected="handleHistoryDirectorySelected"
+              />
+            </template>
+            <template #append>
+              <mo-select-directory
+                v-if="isRenderer"
+                @selected="handleNativeDirectorySelected"
+              />
+            </template>
           </el-input>
           <div class="el-form-item__info" v-if="isMas" style="margin-top: 8px;">
             {{ $t('preferences.mas-default-dir-tips') }}
@@ -275,6 +277,21 @@
             </el-checkbox>
           </el-col>
         </el-form-item>
+        <el-form-item
+          label="Version: "
+          :label-width="formLabelWidth"
+        >
+          <el-col class="form-item-sub basic-version-indicator" :span="24">
+            <div class="basic-version-row">
+              <span class="basic-version-name">Motrix</span>
+              <span class="basic-version-value">{{ appVersion || '--' }}</span>
+            </div>
+            <div class="basic-version-row">
+              <span class="basic-version-name">aria2c</span>
+              <span class="basic-version-value">{{ aria2Version }}</span>
+            </div>
+          </el-col>
+        </el-form-item>
       </el-form>
       <div class="form-actions">
         <el-button
@@ -293,15 +310,15 @@
   </el-container>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
   import { dialog } from '@electron/remote'
   import { mapState } from 'vuex'
   import { cloneDeep, extend, isEmpty } from 'lodash'
-  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
-  import HistoryDirectory from '@/components/Preference/HistoryDirectory'
-  import SelectDirectory from '@/components/Native/SelectDirectory'
-  import ThemeSwitcher from '@/components/Preference/ThemeSwitcher'
+  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher.vue'
+  import HistoryDirectory from '@/components/Preference/HistoryDirectory.vue'
+  import SelectDirectory from '@/components/Native/SelectDirectory.vue'
+  import ThemeSwitcher from '@/components/Preference/ThemeSwitcher.vue'
   import { availableLanguages, getLanguage } from '@shared/locales'
   import { getLocaleManager } from '@/components/Locale'
   import {
@@ -319,6 +336,7 @@
     ENGINE_RPC_PORT
   } from '@shared/constants'
   import { reduceTrackerString } from '@shared/utils/tracker'
+  import { getMotrixVersion } from '@/utils/version'
 
   const initForm = (config) => {
     const {
@@ -398,17 +416,26 @@
       [ThemeSwitcher.name]: ThemeSwitcher
     },
     data () {
-      const { locale } = this.$store.state.preference.config
-      const formOriginal = initForm(this.$store.state.preference.config)
+      const { locale } = (this.$store as any).state.preference.config
+      const formOriginal = initForm((this.$store as any).state.preference.config)
       let form = {}
       form = initForm(extend(form, formOriginal, changedConfig.basic))
 
       return {
+        appVersion: '',
         form,
         formLabelWidth: calcFormLabelWidth(locale),
         formOriginal,
         locales: availableLanguages,
         rules: {}
+      }
+    },
+    created () {
+      this.appVersion = getMotrixVersion()
+
+      const currentEngineVersion = this.engineInfo && this.engineInfo.version
+      if (!currentEngineVersion) {
+        this.$store.dispatch('app/fetchEngineInfo')
       }
     },
     computed: {
@@ -519,8 +546,15 @@
       rpcDefaultPort () {
         return ENGINE_RPC_PORT
       },
-      ...mapState('preference', {
-        config: state => state.config
+      aria2Version () {
+        const engineVersion = this.engineInfo && this.engineInfo.version
+        return engineVersion ? `v${engineVersion}` : '--'
+      },
+      ...(mapState as any)('app', {
+        engineInfo: (state: any) => state.engineInfo
+      }),
+      ...(mapState as any)('preference', {
+        config: (state: any) => state.config
       })
     },
     methods: {
@@ -654,3 +688,29 @@
     }
   }
 </script>
+
+<style lang="scss">
+.basic-version-indicator {
+  max-width: 300px;
+}
+
+.basic-version-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.basic-version-name {
+  color: $--color-text-secondary;
+}
+
+.basic-version-value {
+  font-family: Menlo, Monaco, Consolas, monospace;
+  color: $--color-text-regular;
+}
+</style>

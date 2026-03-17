@@ -32,7 +32,7 @@
   </ul>
 </template>
 
-<script>
+<script lang="ts">
   import { mapState } from 'vuex'
   import is from 'electron-is'
 
@@ -69,7 +69,7 @@
       mode: {
         type: String,
         default: 'LIST',
-        validator: function (value) {
+        validator: function (value: string) {
           return ['LIST', 'DETAIL'].indexOf(value) !== -1
         }
       },
@@ -79,8 +79,8 @@
       }
     },
     computed: {
-      ...mapState('preference', {
-        noConfirmBeforeDelete: state => state.config.noConfirmBeforeDeleteTask
+      ...(mapState as any)('preference', {
+        noConfirmBeforeDelete: (state: any) => state.config.noConfirmBeforeDeleteTask
       }),
       taskName () {
         return getTaskName(this.task)

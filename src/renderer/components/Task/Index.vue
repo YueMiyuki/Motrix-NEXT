@@ -32,16 +32,16 @@
   </el-container>
 </template>
 
-<script>
+<script lang="ts">
   import { dialog } from '@electron/remote'
   import { mapState } from 'vuex'
 
   import { commands } from '@/components/CommandManager/instance'
   import { ADD_TASK_TYPE } from '@shared/constants'
-  import TaskSubnav from '@/components/Subnav/TaskSubnav'
-  import TaskActions from '@/components/Task/TaskActions'
-  import TaskList from '@/components/Task/TaskList'
-  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
+  import TaskSubnav from '@/components/Subnav/TaskSubnav.vue'
+  import TaskActions from '@/components/Task/TaskActions.vue'
+  import TaskList from '@/components/Task/TaskList.vue'
+  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher.vue'
   import {
     getTaskUri,
     parseHeader
@@ -67,13 +67,13 @@
       }
     },
     computed: {
-      ...mapState('task', {
-        taskList: state => state.taskList,
-        selectedGidList: state => state.selectedGidList,
-        selectedGidListCount: state => state.selectedGidList.length
+      ...(mapState as any)('task', {
+        taskList: (state: any) => state.taskList,
+        selectedGidList: (state: any) => state.selectedGidList,
+        selectedGidListCount: (state: any) => state.selectedGidList.length
       }),
-      ...mapState('preference', {
-        noConfirmBeforeDelete: state => state.config.noConfirmBeforeDeleteTask
+      ...(mapState as any)('preference', {
+        noConfirmBeforeDelete: (state: any) => state.config.noConfirmBeforeDeleteTask
       }),
       subnavs () {
         return [
@@ -122,7 +122,7 @@
             this.$msg.error(err.message)
           })
       },
-      showAddTaskDialog (uri, options = {}) {
+      showAddTaskDialog (uri, options: any = {}) {
         const {
           header,
           ...rest
@@ -395,7 +395,7 @@
       commands.on('copy-task-link', this.handleCopyTaskLink)
       commands.on('show-task-info', this.handleShowTaskInfo)
     },
-    destroyed () {
+    beforeUnmount () {
       commands.off('pause-task', this.handlePauseTask)
       commands.off('resume-task', this.handleResumeTask)
       commands.off('stop-task-seeding', this.handleStopTaskSeeding)

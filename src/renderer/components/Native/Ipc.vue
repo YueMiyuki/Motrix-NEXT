@@ -2,25 +2,36 @@
   <div v-if="false"></div>
 </template>
 
-<script>
+<script lang="ts">
   import { commands } from '@/components/CommandManager/instance'
 
   export default {
     name: 'mo-ipc',
+    data () {
+      return {
+        commandHandler: null
+      }
+    },
     methods: {
       bindIpcEvents () {
-        this.$electron.ipcRenderer.on('command', (event, command, ...args) => {
+        this.commandHandler = (event, command, ...args) => {
           commands.execute(command, ...args)
-        })
+        }
+
+        this.$electron.ipcRenderer.on('command', this.commandHandler)
       },
       unbindIpcEvents () {
-        this.$electron.ipcRenderer.removeAllListeners('command')
+        if (!this.commandHandler) {
+          return
+        }
+        this.$electron.ipcRenderer.removeListener('command', this.commandHandler)
+        this.commandHandler = null
       }
     },
     created () {
       this.bindIpcEvents()
     },
-    destroyed () {
+    beforeUnmount () {
       this.unbindIpcEvents()
     }
   }

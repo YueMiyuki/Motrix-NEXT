@@ -2,39 +2,51 @@
 
 process.env.NODE_ENV = 'production'
 
+const path = require('node:path')
 const { say } = require('cfonts')
-const chalk = require('chalk')
-const del = require('del')
 const Webpack = require('webpack')
 const Multispinner = require('@motrix/multispinner')
+const { syncAria2Binaries } = require('../build/syncAria2')
 
 const mainConfig = require('./webpack.main.config')
-const rendererConfig = require('./webpack.renderer.config')
-const webConfig = require('./webpack.web.config')
 
-const doneLog = chalk.bgGreen.white(' DONE ') + ' '
-const errorLog = chalk.bgRed.white(' ERROR ') + ' '
-const okayLog = chalk.bgBlue.white(' OKAY ') + ' '
 const isCI = process.env.CI || false
+let chalk
+let deleteSync
+let doneLog = 'DONE '
+let errorLog = 'ERROR '
+let okayLog = 'OKAY '
 
-if (process.env.BUILD_TARGET === 'clean') {
-  clean()
-} else if (process.env.BUILD_TARGET === 'web') {
-  web()
-} else {
-  build()
+init().catch(handleFatalError)
+
+async function init () {
+  ({ default: chalk } = await import('chalk'))
+  ;({ deleteSync } = await import('del'))
+  doneLog = chalk.bgGreen.white(' DONE ') + ' '
+  errorLog = chalk.bgRed.white(' ERROR ') + ' '
+  okayLog = chalk.bgBlue.white(' OKAY ') + ' '
+
+  if (process.env.BUILD_TARGET === 'clean') {
+    clean()
+  } else if (process.env.BUILD_TARGET === 'web') {
+    await web()
+  } else {
+    await build()
+  }
 }
 
 function clean () {
-  del.sync(['release/*', '!.gitkeep'])
+  deleteSync(['release/*', '!.gitkeep'])
   console.log(`\n${doneLog}\n`)
   process.exit()
 }
 
-function build () {
+async function build () {
   greeting()
 
-  del.sync(['dist/electron/*', '!.gitkeep'])
+  await syncAria2Binaries()
+
+  deleteSync(['dist/electron/*', '!.gitkeep'])
 
   const tasks = ['main', 'renderer']
   const m = new Multispinner(tasks, {
@@ -51,7 +63,7 @@ function build () {
     process.exit()
   })
 
-  pack(mainConfig).then(result => {
+  packMain(mainConfig).then(result => {
     results += result + '\n\n'
     m.success('main')
   }).catch(err => {
@@ -61,7 +73,7 @@ function build () {
     process.exit(1)
   })
 
-  pack(rendererConfig).then(result => {
+  packRenderer().then(result => {
     results += result + '\n\n'
     m.success('renderer')
   }).catch(err => {
@@ -72,25 +84,24 @@ function build () {
   })
 }
 
-function pack (config) {
+function packMain (config) {
   return new Promise((resolve, reject) => {
     config.mode = 'production'
     Webpack(config, (err, stats) => {
       if (err) {
         reject(err.stack || err)
       } else if (stats.hasErrors()) {
-        let err = ''
-
+        let buildErr = ''
         stats.toString({
           chunks: false,
           colors: true
         })
-        .split(/\r?\n/)
-        .forEach(line => {
-          err += `    ${line}\n`
-        })
+          .split(/\r?\n/)
+          .forEach(line => {
+            buildErr += `    ${line}\n`
+          })
 
-        reject(err)
+        reject(buildErr)
       } else {
         resolve(stats.toString({
           chunks: false,
@@ -101,19 +112,28 @@ function pack (config) {
   })
 }
 
-function web () {
-  deleteSync(['dist/web/*', '!.gitkeep'])
-  webConfig.mode = 'production'
-  Webpack(webConfig, (err, stats) => {
-    if (err || stats.hasErrors()) console.log(err)
-
-    console.log(stats.toString({
-      chunks: false,
-      colors: true
-    }))
-
-    process.exit()
+async function packRenderer () {
+  const { build } = await import('vite')
+  await build({
+    configFile: path.join(__dirname, '../vite.renderer.config.ts'),
+    mode: 'production'
   })
+  return chalk.green('  Vite renderer build completed')
+}
+
+async function web () {
+  const { build } = await import('vite')
+  await build({
+    configFile: path.join(__dirname, '../vite.renderer.config.ts'),
+    mode: 'production',
+    build: {
+      outDir: path.join(__dirname, '../dist/web'),
+      emptyOutDir: true
+    }
+  })
+
+  console.log(`${okayLog}web bundle generated in dist/web`)
+  process.exit()
 }
 
 function greeting () {
@@ -134,6 +154,14 @@ function greeting () {
       font: 'simple3d',
       space: false
     })
-  } else console.log(chalk.magentaBright.bold('\n  lets-build'))
+  } else {
+    console.log(chalk.magentaBright.bold('\n  lets-build'))
+  }
   console.log()
+}
+
+function handleFatalError (err) {
+  console.log(`\n  ${errorLog}build failed`)
+  console.error(`\n${err?.stack || err}\n`)
+  process.exit(1)
 }

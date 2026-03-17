@@ -209,6 +209,14 @@
               {{ new Date(form.lastSyncTrackerTime).toLocaleString() }}
             </div>
           </div>
+          <div class="form-item-sub">
+            <el-checkbox v-model="form.idleBtNetworkGuard">
+              {{ $t('preferences.idle-bt-network-guard') }}
+            </el-checkbox>
+            <div class="el-form-item__info" style="margin-top: 8px;">
+              {{ $t('preferences.idle-bt-network-guard-tips') }}
+            </div>
+          </div>
         </el-form-item>
         <el-form-item
           :label="`${$t('preferences.rpc')}: `"
@@ -229,9 +237,11 @@
                 v-model="form.rpcListenPort"
                 @change="onRpcListenPortChange"
               >
-                <i slot="append" @click.prevent="onRpcPortDiceClick">
-                  <mo-icon name="dice" width="12" height="12" />
-                </i>
+                <template #append>
+                  <i @click.prevent="onRpcPortDiceClick">
+                    <mo-icon name="dice" width="12" height="12" />
+                  </i>
+                </template>
               </el-input>
             </el-col>
           </el-row>
@@ -250,9 +260,11 @@
                 :maxlength="64"
                 v-model="form.rpcSecret"
               >
-                <i slot="append" @click.prevent="onRpcSecretDiceClick">
-                  <mo-icon name="dice" width="12" height="12" />
-                </i>
+                <template #append>
+                  <i @click.prevent="onRpcSecretDiceClick">
+                    <mo-icon name="dice" width="12" height="12" />
+                  </i>
+                </template>
               </el-input>
               <div class="el-form-item__info" style="margin-top: 8px;">
                 <a target="_blank" href="https://github.com/agalwood/Motrix/wiki/RPC" rel="noopener noreferrer">
@@ -295,9 +307,11 @@
                 :maxlength="8"
                 v-model="form.listenPort"
               >
-                <i slot="append" @click.prevent="onBtPortDiceClick">
-                  <mo-icon name="dice" width="12" height="12" />
-                </i>
+                <template #append>
+                  <i @click.prevent="onBtPortDiceClick">
+                    <mo-icon name="dice" width="12" height="12" />
+                  </i>
+                </template>
               </el-input>
             </el-col>
           </el-row>
@@ -315,9 +329,11 @@
                 :maxlength="8"
                 v-model="form.dhtListenPort"
               >
-                <i slot="append" @click.prevent="onDhtPortDiceClick">
-                  <mo-icon name="dice" width="12" height="12" />
-                </i>
+                <template #append>
+                  <i @click.prevent="onDhtPortDiceClick">
+                    <mo-icon name="dice" width="12" height="12" />
+                  </i>
+                </template>
               </el-input>
             </el-col>
           </el-row>
@@ -372,21 +388,23 @@
           <el-col class="form-item-sub" :span="24">
             {{ $t('preferences.aria2-conf-path') }}
             <el-input placeholder="" disabled v-model="aria2ConfPath">
-              <mo-show-in-folder
-                slot="append"
-                v-if="isRenderer"
-                :path="aria2ConfPath"
-              />
+              <template #append>
+                <mo-show-in-folder
+                  v-if="isRenderer"
+                  :path="aria2ConfPath"
+                />
+              </template>
             </el-input>
           </el-col>
           <el-col class="form-item-sub" :span="24">
             {{ $t('preferences.download-session-path') }}
             <el-input placeholder="" disabled v-model="sessionPath">
-              <mo-show-in-folder
-                slot="append"
-                v-if="isRenderer"
-                :path="sessionPath"
-              />
+              <template #append>
+                <mo-show-in-folder
+                  v-if="isRenderer"
+                  :path="sessionPath"
+                />
+              </template>
             </el-input>
           </el-col>
           <el-col class="form-item-sub" :span="24">
@@ -394,11 +412,12 @@
             <el-row :gutter="16">
               <el-col :span="18">
                 <el-input placeholder="" disabled v-model="logPath">
-                  <mo-show-in-folder
-                  slot="append"
-                  v-if="isRenderer"
-                  :path="logPath"
-                  />
+                  <template #append>
+                    <mo-show-in-folder
+                      v-if="isRenderer"
+                      :path="logPath"
+                    />
+                  </template>
                 </el-input>
               </el-col>
               <el-col :span="6">
@@ -440,14 +459,14 @@
   </el-container>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
   import { dialog } from '@electron/remote'
   import { mapState } from 'vuex'
   import { cloneDeep, extend, isEmpty } from 'lodash'
   import randomize from 'randomatic'
-  import ShowInFolder from '@/components/Native/ShowInFolder'
-  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
+  import ShowInFolder from '@/components/Native/ShowInFolder.vue'
+  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher.vue'
   import userAgentMap from '@shared/ua'
   import {
     EMPTY_STRING,
@@ -481,6 +500,7 @@
       dhtListenPort,
       enableUpnp,
       hideAppMenu,
+      idleBtNetworkGuard,
       lastCheckUpdateTime,
       lastSyncTrackerTime,
       listenPort,
@@ -500,6 +520,7 @@
       dhtListenPort,
       enableUpnp,
       hideAppMenu,
+      idleBtNetworkGuard: idleBtNetworkGuard !== false,
       lastCheckUpdateTime,
       lastSyncTrackerTime,
       listenPort,
@@ -522,8 +543,8 @@
       [ShowInFolder.name]: ShowInFolder
     },
     data () {
-      const { locale } = this.$store.state.preference.config
-      const formOriginal = initForm(this.$store.state.preference.config)
+      const { locale } = (this.$store as any).state.preference.config
+      const formOriginal = initForm((this.$store as any).state.preference.config)
       let form = {}
       form = initForm(extend(form, formOriginal, changedConfig.advanced))
 
@@ -568,11 +589,11 @@
       logLevels () {
         return LOG_LEVELS
       },
-      ...mapState('preference', {
-        config: state => state.config,
-        aria2ConfPath: state => state.config.aria2ConfPath,
-        logPath: state => state.config.logPath,
-        sessionPath: state => state.config.sessionPath
+      ...(mapState as any)('preference', {
+        config: (state: any) => state.config,
+        aria2ConfPath: (state: any) => state.config.aria2ConfPath,
+        logPath: (state: any) => state.config.logPath,
+        sessionPath: (state: any) => state.config.sessionPath
       })
     },
     watch: {

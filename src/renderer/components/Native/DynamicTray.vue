@@ -2,25 +2,29 @@
   <div style="display: none;">
     <img
       id="tray-icon-light-normal"
-      src="static/mo-tray-light-normal@2x.png"
+      :src="trayIconLightNormal"
     >
     <img
       id="tray-icon-light-active"
-      src="static/mo-tray-light-active@2x.png"
+      :src="trayIconLightActive"
     >
     <img
       id="tray-icon-dark-normal"
-      src="static/mo-tray-dark-normal@2x.png"
+      :src="trayIconDarkNormal"
     >
     <img
       id="tray-icon-dark-active"
-      src="static/mo-tray-dark-active@2x.png"
+      :src="trayIconDarkActive"
     >
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { mapState } from 'vuex'
+  import trayIconLightNormal from '@static/mo-tray-light-normal@2x.png'
+  import trayIconLightActive from '@static/mo-tray-light-active@2x.png'
+  import trayIconDarkNormal from '@static/mo-tray-dark-normal@2x.png'
+  import trayIconDarkActive from '@static/mo-tray-dark-active@2x.png'
 
   import { getInverseTheme } from '@shared/utils'
   import { APP_THEME } from '@shared/constants'
@@ -29,14 +33,22 @@
 
   export default {
     name: 'mo-dynamic-tray',
+    data () {
+      return {
+        trayIconLightNormal,
+        trayIconLightActive,
+        trayIconDarkNormal,
+        trayIconDarkActive
+      }
+    },
     computed: {
-      ...mapState('app', {
-        iconStatus: state => state.stat.numActive > 0 ? 'active' : 'normal',
-        theme: state => state.systemTheme,
-        focused: state => state.trayFocused,
-        uploadSpeed: state => state.stat.uploadSpeed,
-        downloadSpeed: state => state.stat.downloadSpeed,
-        speed: state => state.stat.uploadSpeed + state.stat.downloadSpeed
+      ...(mapState as any)('app', {
+        iconStatus: (state: any) => state.stat.numActive > 0 ? 'active' : 'normal',
+        theme: (state: any) => state.systemTheme,
+        focused: (state: any) => state.trayFocused,
+        uploadSpeed: (state: any) => state.stat.uploadSpeed,
+        downloadSpeed: (state: any) => state.stat.downloadSpeed,
+        speed: (state: any) => state.stat.uploadSpeed + state.stat.downloadSpeed
       }),
       scale () {
         return 2
@@ -73,7 +85,11 @@
           return cache[key]
         }
 
-        const iconImage = document.getElementById(key)
+        const iconImage = document.getElementById(key) as HTMLImageElement | null
+        if (!iconImage) {
+          return null
+        }
+
         const result = await createImageBitmap(iconImage)
         cache[key] = result
 
@@ -89,8 +105,11 @@
         } = this
 
         const icon = await this.getIcon(iconKey)
+        if (!icon) {
+          return
+        }
 
-        global.app.trayWorker.postMessage({
+        (global.app as any).trayWorker.postMessage({
           type: 'tray:draw',
           payload: {
             theme,

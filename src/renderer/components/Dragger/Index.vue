@@ -2,7 +2,7 @@
   <div v-if="false"></div>
 </template>
 
-<script>
+<script lang="ts">
   import { ADD_TASK_TYPE } from '@shared/constants'
 
   export default {
@@ -40,7 +40,7 @@
       document.body.addEventListener('dragleave', this.onDragLeave)
       document.body.addEventListener('drop', this.onDrop)
     },
-    destroyed () {
+    beforeUnmount () {
       document.removeEventListener('dragover', this.preventDefault)
       document.body.removeEventListener('dragenter', this.onDragEnter)
       document.body.removeEventListener('dragleave', this.onDragLeave)

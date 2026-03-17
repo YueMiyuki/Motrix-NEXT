@@ -15,13 +15,13 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { checkTaskIsSeeder, getTaskName } from '@shared/utils'
   import { TASK_STATUS } from '@shared/constants'
   import { openItem, getTaskFullPath } from '@/utils/native'
-  import TaskItemActions from './TaskItemActions'
-  import TaskProgress from './TaskProgress'
-  import TaskProgressInfo from './TaskProgressInfo'
+  import TaskItemActions from './TaskItemActions.vue'
+  import TaskProgress from './TaskProgress.vue'
+  import TaskProgressInfo from './TaskProgressInfo.vue'
 
   export default {
     name: 'mo-task-item',
@@ -65,7 +65,7 @@
         const { COMPLETE, WAITING, PAUSED } = TASK_STATUS
         if (status === COMPLETE) {
           this.openTask()
-        } else if ([WAITING, PAUSED].includes(status) !== -1) {
+        } else if ([WAITING, PAUSED].includes(status)) {
           this.toggleTask()
         }
       },

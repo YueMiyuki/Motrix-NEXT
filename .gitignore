@@ -18,8 +18,9 @@ npm-debug.log.*
 # electron builder
 *.provisionprofile
 build/*.plist
-dist/electron/*
-dist/web/*
+dist
 
 # release
-release/*
+release
+
+TODO

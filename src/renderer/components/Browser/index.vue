@@ -8,7 +8,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
   import { webContents } from '@electron/remote'
   import { Loading } from 'element-ui'
@@ -25,7 +25,8 @@
     },
     data () {
       return {
-        loading: null
+        loading: null,
+        handlers: null
       }
     },
     computed: {
@@ -34,9 +35,28 @@
     mounted () {
       const { iframe } = this.$refs
 
-      iframe.addEventListener('did-start-loading', this.loadStart.bind(this))
-      iframe.addEventListener('did-stop-loading', this.loadStop.bind(this))
-      iframe.addEventListener('dom-ready', this.ready.bind(this))
+      this.handlers = {
+        loadStart: this.loadStart.bind(this),
+        loadStop: this.loadStop.bind(this),
+        ready: this.ready.bind(this)
+      }
+
+      iframe.addEventListener('did-start-loading', this.handlers.loadStart)
+      iframe.addEventListener('did-stop-loading', this.handlers.loadStop)
+      iframe.addEventListener('dom-ready', this.handlers.ready)
+    },
+    beforeUnmount () {
+      const { iframe } = this.$refs
+      if (!iframe || !this.handlers) {
+        return
+      }
+      iframe.removeEventListener('did-start-loading', this.handlers.loadStart)
+      iframe.removeEventListener('did-stop-loading', this.handlers.loadStop)
+      iframe.removeEventListener('dom-ready', this.handlers.ready)
+      if (this.loading) {
+        this.loading.close()
+        this.loading = null
+      }
     },
     methods: {
       loadStart () {
@@ -54,9 +74,9 @@
         const { iframe } = this.$refs
 
         const wc = webContents.fromId(iframe.getWebContentsId())
-        wc.setWindowOpenHandler((event, url) => {
-          event.preventDefault()
+        wc.setWindowOpenHandler(({ url }) => {
           this.$electron.ipcRenderer.send('command', 'application:open-external', url)
+          return { action: 'deny' }
         })
       }
     }

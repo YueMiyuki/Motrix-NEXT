@@ -15,6 +15,15 @@ exports.default = async function (context) {
     return
   }
 
+  const hasNotarizeCredentials =
+    !!process.env.TEAM_ID &&
+    !!process.env.APPLE_ID &&
+    !!process.env.APPLE_APP_SPECIFIC_PASSWORD
+  if (!hasNotarizeCredentials) {
+    console.log('Skipping notarize: missing TEAM_ID / APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD')
+    return
+  }
+
   const appBundleId = appId
   const appName = context.packager.appInfo.productFilename
   const appPath = join(appOutDir, `${appName}.app`)

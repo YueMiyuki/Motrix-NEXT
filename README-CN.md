@@ -202,7 +202,7 @@ yarn run build:applesilicon
 
 ## 🌍 国际化
 
-欢迎大家将 Motrix 翻译成更多的语言版本 🧐，开工之前请先阅读一下 [翻译指南](./CONTRIBUTING-CN.md#-翻译指南)。
+欢迎大家将 Motrix 翻译成更多的语言版本 🧐，开工之前请先阅读一下 [翻译指南](./docs/CONTRIBUTING-CN.md#-翻译指南)。
 
 | Key   | Name                | Status       |
 |-------|:--------------------|:-------------|

@@ -4,15 +4,14 @@ const path = require('node:path')
 const { spawn } = require('node:child_process')
 const { say } = require('cfonts')
 const electron = require('electron')
-const chalk = require('chalk')
 const Webpack = require('webpack')
-const WebpackDevServer = require('webpack-dev-server')
 
 const mainConfig = require('./webpack.main.config')
-const rendererConfig = require('./webpack.renderer.config')
 
 let electronProcess = null
+let viteServer = null
 let manualRestart = false
+let chalk
 
 function logStats (proc, data) {
   let log = ''
@@ -36,29 +35,19 @@ function logStats (proc, data) {
   console.log(log)
 }
 
-function startRenderer () {
-  return new Promise(async (resolve, reject) => {
-    rendererConfig.entry.index = rendererConfig.entry.index
-    rendererConfig.mode = 'development'
-
-    const compiler = Webpack(rendererConfig)
-    const devServerOptions = {
-      ...rendererConfig.devServer,
-      port: 9080,
-      static: {
-        directory: path.resolve(__dirname, "../"),
-      },
-    };
-
-    const server = new WebpackDevServer(devServerOptions, compiler)
-    await server.start()
-    resolve()
+async function startRenderer () {
+  const { createServer } = await import('vite')
+  viteServer = await createServer({
+    configFile: path.join(__dirname, '../vite.renderer.config.ts'),
+    mode: 'development'
   })
+  await viteServer.listen()
+  logStats('Renderer', chalk.white.bold('vite dev server started: http://localhost:9080'))
 }
 
 function startMain () {
   return new Promise((resolve, reject) => {
-    mainConfig.entry.main = [path.join(__dirname, '../src/main/index.dev.js')].concat(mainConfig.entry.main)
+    mainConfig.entry.main = [path.join(__dirname, '../src/main/index.dev.ts')].concat(mainConfig.entry.main)
     mainConfig.mode = 'development'
     const compiler = Webpack(mainConfig)
 
@@ -92,7 +81,7 @@ function startMain () {
   })
 }
 
-function startElectron () {
+async function startElectron () {
   electronProcess = spawn(electron, ['--inspect=5858', path.join(__dirname, '../dist/electron/main.js')])
 
   electronProcess.stdout.on('data', data => {
@@ -102,8 +91,13 @@ function startElectron () {
     electronLog(data, 'red')
   })
 
-  electronProcess.on('close', () => {
-    if (!manualRestart) process.exit()
+  electronProcess.on('close', async () => {
+    if (!manualRestart) {
+      if (viteServer) {
+        await viteServer.close()
+      }
+      process.exit()
+    }
   })
 }
 
@@ -146,16 +140,19 @@ function greeting () {
   console.log(chalk.blue('  getting ready...') + '\n')
 }
 
-function init () {
+async function init () {
+  ({ default: chalk } = await import('chalk'))
   greeting()
 
-  Promise.all([startRenderer(), startMain()])
-    .then(() => {
-      startElectron()
-    })
-    .catch(err => {
-      console.error(err)
-    })
+  try {
+    await Promise.all([startRenderer(), startMain()])
+    await startElectron()
+  } catch (err) {
+    console.error(err)
+  }
 }
 
-init()
+init().catch(err => {
+  console.error(err)
+  process.exit(1)
+})

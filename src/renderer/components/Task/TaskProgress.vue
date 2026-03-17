@@ -14,7 +14,7 @@
   </el-progress>
 </template>
 
-<script>
+<script lang="ts">
   import { TASK_STATUS } from '@shared/constants'
   import { calcProgress } from '@shared/utils'
   import colors from '@shared/colors'

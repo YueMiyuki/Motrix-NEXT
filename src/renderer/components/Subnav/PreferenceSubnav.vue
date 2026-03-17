@@ -33,7 +33,7 @@
   </nav>
 </template>
 
-<script>
+<script lang="ts">
   import '@/components/Icons/preference-basic'
   import '@/components/Icons/preference-advanced'
   import '@/components/Icons/preference-lab'

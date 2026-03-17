@@ -7,7 +7,7 @@
   </el-button>
 </template>
 
-<script>
+<script lang="ts">
   import { dialog } from '@electron/remote'
   import '@/components/Icons/folder'
 

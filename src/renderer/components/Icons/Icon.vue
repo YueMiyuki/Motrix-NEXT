@@ -13,17 +13,17 @@
   >
     <slot>
       <template v-if="icon && icon.paths">
-        <path v-for="(path, i) in icon.paths" :key="`path-${i}`" v-bind="path" />
+        <path v-for="(path, i) in icon.paths" v-bind="path" :key="`path-${i}`" />
       </template>
       <template v-if="icon && icon.polygons">
-        <polygon v-for="(polygon, i) in icon.polygons" :key="`polygon-${i}`" v-bind="polygon" />
+        <polygon v-for="(polygon, i) in icon.polygons" v-bind="polygon" :key="`polygon-${i}`" />
       </template>
       <template v-if="icon && icon.raw"><g v-bind="icon.g" v-html="raw" /></template>
     </slot>
   </svg>
 </template>
 
-<script>
+<script lang="ts">
   const icons = {}
 
   export default {
@@ -31,7 +31,7 @@
     props: {
       name: {
         type: String,
-        validator (val) {
+        validator (val: string) {
           if (val && !(val in icons)) {
             console.warn(`Invalid prop: prop "name" is referring to an unregistered icon "${val}".` +
               '\nPlease make sure you have imported this icon before using it.')
@@ -78,7 +78,7 @@
           'mo-flip-vertical': this.flip === 'vertical',
           'mo-inverse': this.inverse,
           'mo-pulse': this.pulse,
-          [this.$options.name]: true
+          [String(this.$options.name)]: true
         }
       },
       icon () {
@@ -115,7 +115,7 @@
         }
       },
       raw () {
-        // generate unique id for each icon's SVG element with ID
+        // Give each SVG id a unique value so multiple icons do not collide.
         if (!this.icon || !this.icon.raw) {
           return null
         }

@@ -9,18 +9,17 @@ const TerserPlugin = require('terser-webpack-plugin')
 const { dependencies } = require('../package.json')
 const { appId } = require('../electron-builder.json')
 const devMode = process.env.NODE_ENV !== 'production'
+const bundledRuntimeDeps = new Set(['cross-fetch', 'node-fetch'])
 
 let mainConfig = {
   entry: {
-    main: path.join(__dirname, '../src/main/index.js')
+    main: path.join(__dirname, '../src/main/index.ts')
   },
-  externals: [
-    ...Object.keys(dependencies || {})
-  ],
+  externals: Object.keys(dependencies || {}).filter((dep) => !bundledRuntimeDeps.has(dep)),
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.[jt]s$/,
         use: 'babel-loader',
         exclude: /node_modules/
       },
@@ -50,7 +49,7 @@ let mainConfig = {
       '@': path.join(__dirname, '../src/main'),
       '@shared': path.join(__dirname, '../src/shared')
     },
-    extensions: ['.js', '.json', '.node']
+    extensions: ['.ts', '.js', '.json', '.node']
   },
   target: 'electron-main',
   optimization: {

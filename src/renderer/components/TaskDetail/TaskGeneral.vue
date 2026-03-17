@@ -18,11 +18,12 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-dir')}: `">
       <el-input placeholder="" readonly v-model="path">
-        <mo-show-in-folder
-          slot="append"
-          v-if="isRenderer"
-          :path="path"
-        />
+        <template #append>
+          <mo-show-in-folder
+            v-if="isRenderer"
+            :path="path"
+          />
+        </template>
       </el-input>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-status')}: `">
@@ -55,7 +56,7 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-piece-length')}: `" v-if="isBT">
       <div class="form-static-value">
-        {{ task.pieceLength | bytesToSize }}
+        {{ pieceLengthText }}
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-num-pieces')}: `" v-if="isBT">
@@ -65,7 +66,7 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-bittorrent-creation-date')}: `" v-if="isBT">
       <div class="form-static-value">
-        {{ task.bittorrent.creationDate | localeDateTimeFormat(locale) }}
+        {{ creationDateText }}
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-bittorrent-comment')}: `" v-if="isBT">
@@ -76,7 +77,7 @@
   </el-form>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
   import { mapState } from 'vuex'
   import {
@@ -90,8 +91,8 @@
   } from '@shared/utils'
   import { APP_THEME, TASK_STATUS } from '@shared/constants'
   import { getTaskFullPath } from '@/utils/native'
-  import ShowInFolder from '@/components/Native/ShowInFolder'
-  import TaskStatus from '@/components/Task/TaskStatus'
+  import ShowInFolder from '@/components/Native/ShowInFolder.vue'
+  import TaskStatus from '@/components/Task/TaskStatus.vue'
   import '@/components/Icons/folder'
   import '@/components/Icons/link'
 
@@ -107,7 +108,7 @@
       }
     },
     data () {
-      const { locale } = this.$store.state.preference.config
+      const { locale } = (this.$store as any).state.preference.config
       return {
         form: {},
         formLabelWidth: calcFormLabelWidth(locale),
@@ -116,11 +117,11 @@
     },
     computed: {
       isRenderer: () => is.renderer(),
-      ...mapState('app', {
-        systemTheme: state => state.systemTheme
+      ...(mapState as any)('app', {
+        systemTheme: (state: any) => state.systemTheme
       }),
-      ...mapState('preference', {
-        theme: state => state.config.theme
+      ...(mapState as any)('preference', {
+        theme: (state: any) => state.config.theme
       }),
       currentTheme () {
         if (this.theme === APP_THEME.AUTO) {
@@ -157,11 +158,17 @@
       },
       isBT () {
         return checkTaskIsBT(this.task)
+      },
+      pieceLengthText () {
+        const pieceLength = this.task && this.task.pieceLength
+        return bytesToSize(pieceLength)
+      },
+      creationDateText () {
+        const creationDate = this.task &&
+          this.task.bittorrent &&
+          this.task.bittorrent.creationDate
+        return localeDateTimeFormat(creationDate, this.locale)
       }
-    },
-    filters: {
-      bytesToSize,
-      localeDateTimeFormat
     },
     methods: {
       handleCopyClick () {

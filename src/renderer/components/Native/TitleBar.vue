@@ -15,7 +15,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { getCurrentWindow } from '@electron/remote'
   import '@/components/Icons/win-minimize'
   import '@/components/Icons/win-maximize'

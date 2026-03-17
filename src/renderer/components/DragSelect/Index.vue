@@ -7,7 +7,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   const getCoords = (e, containerRect) => ({
     x: e.clientX - containerRect.left,
     y: e.clientY - containerRect.top
@@ -43,7 +43,8 @@
     data () {
       return {
         intersected: [],
-        children: []
+        children: [],
+        cleanupListeners: null
       }
     },
     watch: {
@@ -119,12 +120,19 @@
       document.addEventListener('mouseup', endDrag)
       document.addEventListener('touchend', endDrag)
 
-      this.$once('on:destroy', () => {
+      this.cleanupListeners = () => {
+        endDrag()
         container.removeEventListener('mousedown', startDrag)
         container.removeEventListener('touchstart', touchStart)
         document.removeEventListener('mouseup', endDrag)
         document.removeEventListener('touchend', endDrag)
-      })
+      }
+    },
+    beforeUnmount () {
+      if (this.cleanupListeners) {
+        this.cleanupListeners()
+        this.cleanupListeners = null
+      }
     },
     methods: {
       createBox () {
@@ -133,7 +141,7 @@
         box.style.position = 'absolute'
         box.style.backgroundColor = this.color
         box.style.opacity = this.opacity
-        box.style.zIndex = 1000
+        box.style.zIndex = '1000'
 
         return box
       },
@@ -151,10 +159,17 @@
           }
         }
 
-        if (
-          JSON.stringify([...intersected]) !==
-          JSON.stringify([...this.intersected])
-        ) { this.intersected = intersected }
+        if (intersected.length !== this.intersected.length) {
+          this.intersected = intersected
+          return
+        }
+
+        for (let i = 0; i < intersected.length; i += 1) {
+          if (intersected[i] !== this.intersected[i]) {
+            this.intersected = intersected
+            return
+          }
+        }
       }
     }
   }

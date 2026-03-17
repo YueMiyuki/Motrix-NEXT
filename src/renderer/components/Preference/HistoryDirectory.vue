@@ -47,17 +47,16 @@
           </span>
         </li>
       </ul>
-      <el-button
-        slot="reference"
-        :disabled="popoverDisabled"
-      >
-        <i class="el-icon-time" />
-      </el-button>
+      <template #reference>
+        <el-button :disabled="popoverDisabled">
+          <i class="el-icon-time" />
+        </el-button>
+      </template>
     </el-popover>
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { mapState } from 'vuex'
   import { MAX_NUM_OF_DIRECTORIES } from '@shared/constants'
   import { cloneArray } from '@shared/utils'
@@ -82,7 +81,7 @@
       }
     },
     computed: {
-      ...mapState('preference', {
+      ...(mapState as any)('preference', {
         historyDirectories: state => {
           return cloneArray(state.config.historyDirectories, true)
         },

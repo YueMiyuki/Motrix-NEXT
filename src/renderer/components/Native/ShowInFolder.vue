@@ -4,7 +4,7 @@
   </i>
 </template>
 
-<script>
+<script lang="ts">
   import '@/components/Icons/folder'
   import {
     showItemInFolder

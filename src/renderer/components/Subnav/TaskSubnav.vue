@@ -33,7 +33,7 @@
   </nav>
 </template>
 
-<script>
+<script lang="ts">
   import '@/components/Icons/task-start'
   import '@/components/Icons/task-pause'
   import '@/components/Icons/task-stop'

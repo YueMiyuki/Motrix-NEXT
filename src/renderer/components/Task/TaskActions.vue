@@ -68,12 +68,11 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { mapState } from 'vuex'
 
   import { commands } from '@/components/CommandManager/instance'
   import { ADD_TASK_TYPE } from '@shared/constants'
-  import { bytesToSize, timeFormat } from '@shared/utils'
   import '@/components/Icons/menu-add'
   import '@/components/Icons/refresh'
   import '@/components/Icons/task-start-line'
@@ -93,14 +92,10 @@
       }
     },
     computed: {
-      ...mapState('task', {
-        currentList: state => state.currentList,
-        selectedGidListCount: state => state.selectedGidList.length
+      ...(mapState as any)('task', {
+        currentList: (state: any) => state.currentList,
+        selectedGidListCount: (state: any) => state.selectedGidList.length
       })
-    },
-    filters: {
-      bytesToSize,
-      timeFormat
     },
     methods: {
       refreshSpin () {

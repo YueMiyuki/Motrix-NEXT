@@ -13,14 +13,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
   import { mapGetters, mapState } from 'vuex'
   import { APP_RUN_MODE, APP_THEME } from '@shared/constants'
-  import DynamicTray from '@/components/Native/DynamicTray'
-  import EngineClient from '@/components/Native/EngineClient'
-  import Ipc from '@/components/Native/Ipc'
-  import TitleBar from '@/components/Native/TitleBar'
+  import DynamicTray from '@/components/Native/DynamicTray.vue'
+  import EngineClient from '@/components/Native/EngineClient.vue'
+  import Ipc from '@/components/Native/Ipc.vue'
+  import TitleBar from '@/components/Native/TitleBar.vue'
   import { getLanguage } from '@shared/locales'
   import { getLocaleManager } from '@/components/Locale'
 
@@ -35,18 +35,18 @@
     computed: {
       isMac: () => is.macOS(),
       isRenderer: () => is.renderer(),
-      ...mapState('app', {
-        systemTheme: state => state.systemTheme
+      ...(mapState as any)('app', {
+        systemTheme: (state: any) => state.systemTheme
       }),
-      ...mapState('preference', {
+      ...(mapState as any)('preference', {
         showWindowActions: state => {
           return (is.windows() || is.linux()) && state.config.hideAppMenu
         },
-        runMode: state => state.config.runMode,
-        traySpeedometer: state => state.config.traySpeedometer,
-        rpcSecret: state => state.config.rpcSecret
+        runMode: (state: any) => state.config.runMode,
+        traySpeedometer: (state: any) => state.config.traySpeedometer,
+        rpcSecret: (state: any) => state.config.rpcSecret
       }),
-      ...mapGetters('preference', [
+      ...(mapGetters as any)('preference', [
         'theme',
         'locale',
         'direction'

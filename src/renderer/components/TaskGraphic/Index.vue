@@ -20,8 +20,8 @@
   </svg>
 </template>
 
-<script>
-  import Atom from './Atom'
+<script lang="ts">
+  import Atom from './Atom.vue'
 
   export default {
     name: 'mo-task-graphic',
@@ -66,12 +66,12 @@
       },
       columnCount () {
         const { outerWidth, atomWidth, atomWG } = this
-        const result = parseInt((outerWidth - atomWidth) / atomWG, 10) + 1
+        const result = Math.trunc((outerWidth - atomWidth) / atomWG) + 1
         return result
       },
       rowCount () {
         const { len, columnCount } = this
-        const result = parseInt((len / columnCount), 10) + 1
+        const result = Math.trunc(len / columnCount) + 1
         return result
       },
       offset () {
@@ -83,12 +83,12 @@
       width () {
         const { atomWidth, atomWG, columnCount } = this
         const result = atomWG * (columnCount - 1) + atomWidth
-        return parseInt(result, 10)
+        return Math.trunc(result)
       },
       height () {
         const { atomHeight, atomHG, rowCount, offset } = this
         const result = atomHG * (rowCount - 1) + atomHeight + offset * 2
-        return parseInt(result, 10)
+        return Math.trunc(result)
       },
       box () {
         return `0 0 ${this.width} ${this.height}`
@@ -115,7 +115,7 @@
         const { bitfield, offset, atomWG, atomHG, columnCount } = this
         const hIndex = index + 1
         let chIndex = index % columnCount
-        let rhIndex = parseInt((index / columnCount), 10)
+        let rhIndex = Math.trunc(index / columnCount)
         chIndex = chIndex < 0 ? 0 : chIndex
         rhIndex = rhIndex < 0 ? 0 : rhIndex
         const result = {

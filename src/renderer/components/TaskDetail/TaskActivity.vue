@@ -33,20 +33,10 @@
     </el-form-item>
     <el-form-item>
       <div class="form-static-value">
-        <span>{{ task.completedLength | bytesToSize(2) }}</span>
-        <span v-if="task.totalLength > 0"> / {{ task.totalLength | bytesToSize(2) }}</span>
+        <span>{{ formatBytes(task.completedLength, 2) }}</span>
+        <span v-if="task.totalLength > 0"> / {{ formatBytes(task.totalLength, 2) }}</span>
         <span class="task-time-remaining" v-if="isActive && remaining > 0">
-          {{
-            remaining | timeFormat({
-              prefix: $t('task.remaining-prefix'),
-              i18n: {
-                'gt1d': $t('app.gt1d'),
-                'hour': $t('app.hour'),
-                'minute': $t('app.minute'),
-                'second': $t('app.second')
-              }
-            })
-          }}
+          {{ remainingText }}
         </span>
       </div>
     </el-form-item>
@@ -62,17 +52,17 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-download-speed')}: `">
       <div class="form-static-value">
-        <span>{{ task.downloadSpeed | bytesToSize }}/s</span>
+        <span>{{ formatBytes(task.downloadSpeed) }}/s</span>
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-upload-speed')}: `" v-if="isBT">
       <div class="form-static-value">
-        <span>{{ task.uploadSpeed | bytesToSize }}/s</span>
+        <span>{{ formatBytes(task.uploadSpeed) }}/s</span>
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-upload-length')}: `" v-if="isBT">
       <div class="form-static-value">
-        <span>{{ task.uploadLength | bytesToSize }}</span>
+        <span>{{ formatBytes(task.uploadLength) }}</span>
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-ratio')}: `" v-if="isBT">
@@ -83,7 +73,7 @@
   </el-form>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
   import {
     bytesToSize,
@@ -96,8 +86,8 @@
     timeRemaining
   } from '@shared/utils'
   import { TASK_STATUS } from '@shared/constants'
-  import TaskGraphic from '@/components/TaskGraphic/Index'
-  import TaskProgress from '@/components/Task/TaskProgress'
+  import TaskGraphic from '@/components/TaskGraphic/Index.vue'
+  import TaskProgress from '@/components/Task/TaskProgress.vue'
 
   export default {
     name: 'mo-task-activity',
@@ -130,7 +120,7 @@
       }
     },
     data () {
-      const { locale } = this.$store.state.preference.config
+      const { locale } = (this.$store as any).state.preference.config
       return {
         form: {},
         formLabelWidth: calcFormLabelWidth(locale),
@@ -166,6 +156,17 @@
         const { totalLength, completedLength, downloadSpeed } = this.task
         return timeRemaining(totalLength, completedLength, downloadSpeed)
       },
+      remainingText () {
+        return timeFormat(this.remaining, {
+          prefix: this.$t('task.remaining-prefix'),
+          i18n: {
+            gt1d: this.$t('app.gt1d'),
+            hour: this.$t('app.hour'),
+            minute: this.$t('app.minute'),
+            second: this.$t('app.second')
+          }
+        })
+      },
       ratio () {
         if (!this.isBT) {
           return 0
@@ -175,10 +176,6 @@
         const ratio = calcRatio(totalLength, uploadLength)
         return ratio
       }
-    },
-    filters: {
-      bytesToSize,
-      timeFormat
     },
     mounted () {
       setImmediate(() => {
@@ -202,6 +199,9 @@
         const paddingLeft = parseInt(style.paddingLeft, 10)
         const paddingRight = parseInt(style.paddingRight, 10)
         return width - paddingLeft - paddingRight
+      },
+      formatBytes (value, precision) {
+        return bytesToSize(value, precision)
       }
     }
   }

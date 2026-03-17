@@ -1,18 +1,18 @@
 <template>
-  <el-dropdown @command="handleRoute" class="subnav-switch" size="medium">
-    <h4 class="subnav-title">
-      {{ title }}
-      <i class="el-icon-arrow-down el-icon--right" />
-    </h4>
-    <el-dropdown-menu slot="dropdown" class="subnav-switch-dropdown">
-      <el-dropdown-item :command="sn.route" v-for="sn in subnavs" :key="sn.key">
-        {{ sn.title }}
-      </el-dropdown-item>
-    </el-dropdown-menu>
-  </el-dropdown>
+  <div class="subnav-switch">
+    <h4 class="subnav-title">{{ title }}</h4>
+    <div class="subnav-select-wrap">
+      <select class="subnav-select" :value="currentRoute" @change="handleRoute($event.target.value)">
+        <option v-for="sn in subnavs" :key="sn.key" :value="sn.route">
+          {{ sn.title }}
+        </option>
+      </select>
+      <i class="el-icon-arrow-down subnav-select-arrow" />
+    </div>
+  </div>
 </template>
 
-<script>
+<script lang="ts">
   export default {
     name: 'mo-subnav-switcher',
     props: {
@@ -23,53 +23,74 @@
         type: Array
       }
     },
+    computed: {
+      currentRoute () {
+        const route = this.$route?.path
+        const exists = this.subnavs.find(item => item.route === route)
+        return exists ? route : (this.subnavs[0]?.route || '/')
+      }
+    },
     methods: {
       handleRoute (route) {
+        if (!route) {
+          return
+        }
         this.$router.push({
           path: route
-        }).catch(err => {
-          console.log(err)
-        })
+        }).catch(() => {})
       }
     }
   }
 </script>
 
 <style lang='scss'>
-.subnav-switch-dropdown {
-  background: $--select-dropdown-background;
-  & .el-dropdown-menu__item {
-    font-size: 16px;
-    color: $--select-option-color;
-  }
-}
 .subnav-switch {
-  & .subnav-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  .subnav-title {
     color: $--subnav-action-color;
     font-size: 16px;
+    margin: 0;
+  }
+  .subnav-select-wrap {
+    position: relative;
+    min-width: 112px;
+  }
+  .subnav-select {
+    width: 100%;
+    border: 1px solid $--input-border-color;
+    border-radius: 6px;
+    background: $--select-dropdown-background;
+    color: $--select-option-color;
+    padding: 4px 28px 4px 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+  .subnav-select-arrow {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: $--subnav-action-color;
   }
 }
 .theme-dark {
-  .subnav-switch-dropdown {
+  .subnav-switch {
+    .subnav-title {
+      color: $--dk-subnav-action-color;
+    }
+  }
+  .subnav-select {
     background-color: $--dk-subnav-background;
     border-color: $--dk-subnav-border-color;
     color: $--dk-subnav-text-color;
-    & .el-dropdown-menu__item {
-      color: $--dk-subnav-text-color;
-      &.selected {
-        color: $--color-primary;
-      }
-      &.hover,
-      &:hover {
-        background-color: $--color-primary;
-        color: $--dk-titlebar-close-active-color;
-      }
-    }
-  }
-  & .el-dropdown {
-    & .subnav-title {
-      color: $--dk-subnav-action-color;
-    }
   }
 }
 </style>

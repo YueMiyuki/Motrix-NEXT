@@ -2,6 +2,10 @@
   <el-aside width="78px" :class="['aside', 'hidden-sm-and-down', { 'draggable': asideDraggable }]" :style="vibrancy">
     <div class="aside-inner">
       <mo-logo-mini />
+      <p class="aside-next">NEXT</p>
+      <div class="aside-version" v-if="appVersion">
+        {{ appVersion }}
+      </div>
       <ul class="menu top-menu">
         <li @click="nav('/task')" class="non-draggable">
           <mo-icon name="menu-task" width="20" height="20" />
@@ -22,11 +26,12 @@
   </el-aside>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
   import { mapState } from 'vuex'
   import { ADD_TASK_TYPE } from '@shared/constants'
-  import LogoMini from '@/components/Logo/LogoMini'
+  import LogoMini from '@/components/Logo/LogoMini.vue'
+  import { getMotrixVersion } from '@/utils/version'
   import '@/components/Icons/menu-task'
   import '@/components/Icons/menu-add'
   import '@/components/Icons/menu-preference'
@@ -38,8 +43,11 @@
       [LogoMini.name]: LogoMini
     },
     computed: {
-      ...mapState('app', {
-        currentPage: state => state.currentPage
+      appVersion () {
+        return getMotrixVersion()
+      },
+      ...(mapState as any)('app', {
+        currentPage: (state: any) => state.currentPage
       }),
       asideDraggable () {
         return is.macOS()
@@ -78,6 +86,29 @@
 }
 .logo-mini {
   margin-top: 40px;
+}
+.aside-next {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: rgba(255, 255, 255, 0.7);
+}
+.aside-version {
+  margin: 6px auto 4px;
+  min-width: 46px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 .menu {
   list-style: none;

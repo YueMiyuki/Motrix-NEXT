@@ -43,10 +43,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { mapState } from 'vuex'
-  import { remote } from 'parse-torrent'
-  import TaskFiles from '@/components/TaskDetail/TaskFiles'
+  import TaskFiles from '@/components/TaskDetail/TaskFiles.vue'
   import '@/components/Icons/inbox'
   import {
     EMPTY_STRING,
@@ -56,19 +55,26 @@
   import {
     buildFileList,
     listTorrentFiles,
-    bytesToSize,
-    getAsBase64,
-    removeExtensionDot
+    getAsBase64
   } from '@shared/utils'
+
+  function getParseTorrentRemote () {
+    if (typeof window === 'undefined' || typeof window.require !== 'function') {
+      return null
+    }
+
+    try {
+      const parseTorrent = window.require('parse-torrent')
+      return parseTorrent.remote
+    } catch (err) {
+      return null
+    }
+  }
 
   export default {
     name: 'mo-select-torrent',
     components: {
       [TaskFiles.name]: TaskFiles
-    },
-    filters: {
-      bytesToSize,
-      removeExtensionDot
     },
     props: {
     },
@@ -81,11 +87,11 @@
       }
     },
     computed: {
-      ...mapState('app', {
-        torrents: state => state.addTaskTorrents
+      ...(mapState as any)('app', {
+        torrents: (state: any) => state.addTaskTorrents
       }),
-      ...mapState('preference', {
-        config: state => state.config
+      ...(mapState as any)('preference', {
+        config: (state: any) => state.config
       }),
       isTorrentsEmpty () {
         return this.torrents.length === 0
@@ -103,7 +109,13 @@
           return
         }
 
-        remote(file.raw, { timeout: 60 * 1000 }, (err, parsedTorrent) => {
+        const parseTorrentRemote = getParseTorrentRemote()
+        if (!parseTorrentRemote) {
+          console.warn('[Motrix] parse-torrent is unavailable in renderer process.')
+          return
+        }
+
+        parseTorrentRemote(file.raw, { timeout: 60 * 1000 }, (err, parsedTorrent) => {
           if (err) throw err
           console.log('[Motrix] parsed torrent: ', parsedTorrent)
           this.files = listTorrentFiles(parsedTorrent.files)

@@ -22,7 +22,7 @@
   </el-row>
 </template>
 
-<script>
+<script lang="ts">
   export default {
     name: 'mo-copyright',
     data () {

@@ -20,7 +20,7 @@
   </el-form>
 </template>
 
-<script>
+<script lang="ts">
   import is from 'electron-is'
   import {
     calcFormLabelWidth,
@@ -38,7 +38,7 @@
       }
     },
     data () {
-      const { locale } = this.$store.state.preference.config
+      const { locale } = (this.$store as any).state.preference.config
       return {
         form: {},
         formLabelWidth: calcFormLabelWidth(locale),

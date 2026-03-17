@@ -12,7 +12,7 @@
   </rect>
 </template>
 
-<script>
+<script lang="ts">
   export default {
     name: 'mo-task-graphic-atom',
     props: {

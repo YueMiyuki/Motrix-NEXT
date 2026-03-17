@@ -10,39 +10,39 @@
         <el-table-column
           :label="`${$t('task.task-peer-host')}: `"
           min-width="140">
-          <template slot-scope="scope">
-            {{ `${scope.row.ip}:${scope.row.port}` }}
+          <template #default="{ row }">
+            {{ `${row.ip}:${row.port}` }}
           </template>
         </el-table-column>
         <el-table-column
           :label="`${$t('task.task-peer-client')}: `"
           min-width="125">
-          <template slot-scope="scope">
-            {{ scope.row.peerId | peerIdParser }}
+          <template #default="{ row }">
+            {{ formatPeerId(row.peerId) }}
           </template>
         </el-table-column>
         <el-table-column
           :label="`%`"
           align="right"
           width="55">
-          <template slot-scope="scope">
-            {{ scope.row.bitfield | bitfieldToPercent }}%
+          <template #default="{ row }">
+            {{ formatBitfieldPercent(row.bitfield) }}%
           </template>
         </el-table-column>
         <el-table-column
           :label="`↑`"
           align="right"
           width="90">
-          <template slot-scope="scope">
-            {{ scope.row.uploadSpeed | bytesToSize }}/s
+          <template #default="{ row }">
+            {{ formatBytes(row.uploadSpeed) }}/s
           </template>
         </el-table-column>
         <el-table-column
           :label="`↓`"
           align="right"
           width="90">
-          <template slot-scope="scope">
-            {{ scope.row.downloadSpeed | bytesToSize }}/s
+          <template #default="{ row }">
+            {{ formatBytes(row.downloadSpeed) }}/s
           </template>
         </el-table-column>
       </el-table>
@@ -50,7 +50,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import {
     bitfieldToPercent,
     bytesToSize,
@@ -59,17 +59,23 @@
 
   export default {
     name: 'mo-task-peers',
-    filters: {
-      bitfieldToPercent,
-      bytesToSize,
-      peerIdParser
-    },
     props: {
       peers: {
         type: Array,
         default: function () {
           return []
         }
+      }
+    },
+    methods: {
+      formatBitfieldPercent (bitfield) {
+        return bitfieldToPercent(bitfield)
+      },
+      formatBytes (value) {
+        return bytesToSize(value)
+      },
+      formatPeerId (peerId) {
+        return peerIdParser(peerId)
       }
     }
   }

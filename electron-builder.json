@@ -190,11 +190,9 @@
     },
     "publish": [
       {
-        "provider": "generic",
-        "url": "https://dl.motrix.app/releases/"
-      },
-      {
-        "provider": "github"
+        "provider": "github",
+        "owner": "YueMiyuki",
+        "repo": "Motrix-NEXT"
       }
     ]
   }

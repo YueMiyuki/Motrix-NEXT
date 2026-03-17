@@ -66,7 +66,7 @@ body:
       label: 验证
       description: 在提交问题之前，请确保您完成了以下操作
       options:
-        - label: 遵循我们的[行为准则](https：//github.com/agalwood/Motrix/blob/master/CODE_OF_CONDUCT.md)
+        - label: 遵循我们的[行为准则](https://github.com/agalwood/Motrix/blob/master/docs/CODE_OF_CONDUCT.md)
           required: true
         - label: 确认是否已经有一个报告了相同的 Bug，以避免创建重复的问题。
           required: true

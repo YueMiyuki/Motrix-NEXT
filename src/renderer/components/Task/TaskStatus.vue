@@ -4,7 +4,7 @@
   </el-tag>
 </template>
 
-<script>
+<script lang="ts">
   import { APP_THEME, TASK_STATUS } from '@shared/constants'
   import colors from '@shared/colors'
 
@@ -24,7 +24,7 @@
       theme: {
         type: String,
         default: APP_THEME.DARK,
-        validator: function (value) {
+        validator: function (value: string) {
           return [APP_THEME.LIGHT, APP_THEME.DARK].indexOf(value) !== -1
         }
       },
