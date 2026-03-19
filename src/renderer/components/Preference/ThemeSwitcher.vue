@@ -1,113 +1,116 @@
 <template>
-  <div>
-    <ul class="theme-switcher">
-      <li
-        v-for="item in themeOptions"
-        :class="['theme-item', item.className, { active: currentValue === item.value }]"
-        :key="item.value"
-        @click.prevent="() => handleChange(item.value)"
-      >
-        <div class="theme-thumb"></div>
-        <span>{{ item.text }}</span>
-      </li>
-    </ul>
+  <div class="theme-switcher">
+    <div
+      v-for="item in themeOptions"
+      :key="item.value"
+      :class="['theme-option', { active: currentValue === item.value }]"
+      @click.prevent="() => handleChange(item.value)"
+    >
+      <div :class="['theme-preview', item.className]">
+        <!-- Light preview -->
+        <template v-if="item.value === 'light'">
+          <div class="preview-sidebar preview-sidebar--light"></div>
+          <div class="preview-content preview-content--light">
+            <div class="preview-header preview-header--light"></div>
+            <div class="preview-body">
+              <div class="preview-line preview-line--light"></div>
+              <div class="preview-line preview-line--light short"></div>
+            </div>
+          </div>
+        </template>
+        <!-- Dark preview -->
+        <template v-else-if="item.value === 'dark'">
+          <div class="preview-sidebar preview-sidebar--dark"></div>
+          <div class="preview-content preview-content--dark">
+            <div class="preview-header preview-header--dark"></div>
+            <div class="preview-body">
+              <div class="preview-line preview-line--dark"></div>
+              <div class="preview-line preview-line--dark short"></div>
+            </div>
+          </div>
+        </template>
+        <!-- Auto preview (split) -->
+        <template v-else>
+          <div class="preview-split">
+            <div class="preview-half preview-half--light">
+              <div class="mini-sidebar"></div>
+              <div class="mini-content"></div>
+            </div>
+            <div class="preview-half preview-half--dark">
+              <div class="mini-sidebar"></div>
+              <div class="mini-content"></div>
+            </div>
+          </div>
+        </template>
+      </div>
+      <span class="theme-label">{{ item.text }}</span>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-  import { APP_THEME } from '@shared/constants'
+import { APP_THEME } from "@shared/constants";
 
-  export default {
-    name: 'mo-theme-switcher',
-    props: {
-      value: {
-        type: String,
-        default: APP_THEME.AUTO
+export default {
+  name: "mo-theme-switcher",
+  props: {
+    modelValue: {
+      type: String,
+      default: APP_THEME.AUTO,
+    },
+    // legacy v-model support
+    value: {
+      type: String,
+      default: null,
+    },
+  },
+  emits: ["update:modelValue", "change"],
+  data() {
+    return {
+      currentValue: this.modelValue ?? this.value ?? APP_THEME.AUTO,
+    };
+  },
+  computed: {
+    themeOptions() {
+      return [
+        {
+          className: "preview-auto",
+          value: APP_THEME.AUTO,
+          text: this.$t("preferences.theme-auto"),
+        },
+        {
+          className: "preview-light",
+          value: APP_THEME.LIGHT,
+          text: this.$t("preferences.theme-light"),
+        },
+        {
+          className: "preview-dark",
+          value: APP_THEME.DARK,
+          text: this.$t("preferences.theme-dark"),
+        },
+      ];
+    },
+  },
+  watch: {
+    modelValue(val) {
+      if (val !== null && val !== this.currentValue) {
+        this.currentValue = val;
       }
     },
-    data () {
-      return {
-        currentValue: this.value
+    value(val) {
+      if (val !== null && val !== this.currentValue) {
+        this.currentValue = val;
       }
     },
-    computed: {
-      themeOptions () {
-        return [
-          {
-            className: 'theme-item-auto',
-            value: APP_THEME.AUTO,
-            text: this.$t('preferences.theme-auto')
-          },
-          {
-            className: 'theme-item-light',
-            value: APP_THEME.LIGHT,
-            text: this.$t('preferences.theme-light')
-          },
-          {
-            className: 'theme-item-dark',
-            value: APP_THEME.DARK,
-            text: this.$t('preferences.theme-dark')
-          }
-        ]
-      }
+    currentValue(val) {
+      this.$emit("update:modelValue", val);
+      this.$emit("change", val);
     },
-    watch: {
-      currentValue (val) {
-        this.$emit('change', val)
-      }
+  },
+  methods: {
+    handleChange(theme) {
+      this.currentValue = theme;
     },
-    methods: {
-      handleChange (theme) {
-        this.currentValue = theme
-      }
-    }
-  }
+  },
+};
 </script>
-
-<style lang="scss">
-.theme-switcher {
-  padding: 0;
-  margin: 0;
-  font-size: 0;
-  line-height: 0;
-  .theme-item {
-    text-align: center;
-    display: inline-block;
-    margin: 0 16px 0 0;
-    cursor: pointer;
-    span {
-      font-size: 13px;
-      line-height: 20px;
-    }
-    &.active {
-      .theme-thumb {
-        border-color: $--color-primary;
-        box-shadow: 0 0 1px $--color-primary;
-      }
-      span {
-        color: $--color-primary;
-      }
-    }
-    &.theme-item-auto .theme-thumb {
-      background: url('@/assets/theme-auto@2x.png') center center no-repeat;
-      background-size: 68px 44px;
-    }
-    &.theme-item-light .theme-thumb {
-      background: url('@/assets/theme-light@2x.png') center center no-repeat;
-      background-size: 68px 44px;
-    }
-    &.theme-item-dark .theme-thumb {
-      background: url('@/assets/theme-dark@2x.png') center center no-repeat;
-      background-size: 68px 44px;
-    }
-  }
-  .theme-thumb {
-    box-sizing: border-box;
-    border: 1px solid #aaa;
-    border-radius: 5px;
-    width: 68px;
-    height: 44px;
-    margin-bottom: 8px;
-  }
-}
-</style>

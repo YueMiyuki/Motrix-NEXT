@@ -6,16 +6,20 @@
  */
 
 /* eslint-disable */
+const logger = require('./core/Logger').default
 
 // Install `vue-devtools`
-require('electron').app.whenReady().then(() => {
-  let installExtension = require('electron-devtools-installer')
-  installExtension.default(installExtension.VUEJS_DEVTOOLS)
-    .then(() => {})
-    .catch(err => {
-      console.log('Unable to install `vue-devtools`: \n', err)
-    })
-})
+require('electron')
+  .app.whenReady()
+  .then(() => {
+    let installExtension = require('electron-devtools-installer')
+    installExtension
+      .default(installExtension.VUEJS_DEVTOOLS)
+      .then(() => {})
+      .catch((err) => {
+        logger.log('Unable to install `vue-devtools`: \n', err)
+      })
+  })
 
 // Require `main` process to boot app
 require('./index')

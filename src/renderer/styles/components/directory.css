@@ -1,0 +1,113 @@
+/* Directory popper and history */
+@layer components {
+  .mo-directory-popper {
+    padding: 12px 0;
+  }
+  .mo-history-directory .history-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-foreground);
+  }
+  .mo-directory-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 72px;
+    padding: 20px 0;
+    color: var(--mo-color-text-secondary);
+    font-size: 13px;
+  }
+  .mo-directory-divider {
+    padding: 0 12px;
+    margin: 6px 0;
+  }
+  .mo-directory-divider::after {
+    content: ' ';
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: #dcdfe6;
+  }
+  .mo-directory-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .mo-directory-list > li {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    line-height: 24px;
+    margin: 0;
+    font-size: 13px;
+    color: #606266;
+    cursor: pointer;
+    outline: none;
+    padding: 6px 6px 6px 12px;
+  }
+  .mo-directory-list > li:focus,
+  .mo-directory-list > li:hover {
+    background-color: #f5f7fa;
+    color: var(--mo-link-color);
+  }
+  .mo-directory-list .mo-directory-path {
+    display: inline-block;
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .mo-directory-list .mo-directory-actions {
+    min-width: 40px;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mo-directory-list .mo-directory-actions .history-icon {
+    padding: 3px;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+  .mo-directory-list .icon-history-favorite:focus,
+  .mo-directory-list .icon-history-favorite:hover {
+    color: #e6a23c;
+  }
+  .mo-directory-list .icon-history-favorited {
+    color: #e6a23c;
+  }
+  .mo-directory-list .icon-history-remove:focus,
+  .mo-directory-list .icon-history-remove:hover {
+    color: #f56c6c;
+  }
+  .dark .mo-history-directory .history-button svg {
+    color: var(--muted-foreground) !important;
+    stroke: currentColor;
+  }
+  .dark .mo-history-directory .history-button:hover svg {
+    color: var(--foreground) !important;
+  }
+  .dark .mo-directory-divider::after {
+    background: #555;
+  }
+  .dark .mo-directory-list > li {
+    color: #eee;
+  }
+  .dark .mo-directory-list > li:focus,
+  .dark .mo-directory-list > li:hover {
+    background-color: var(--primary);
+    color: #fff;
+  }
+  .dark .mo-directory-list .history-icon,
+  .dark .mo-directory-list .history-icon svg {
+    color: #e5e7eb !important;
+  }
+  .dark .mo-directory-list .history-icon svg {
+    stroke: currentColor;
+  }
+  .dark .mo-directory-list .icon-history-favorited,
+  .dark .mo-directory-list .icon-history-favorited svg {
+    color: #e6a23c !important;
+  }
+}

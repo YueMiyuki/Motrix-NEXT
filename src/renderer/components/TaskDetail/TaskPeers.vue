@@ -1,89 +1,53 @@
 <template>
   <div class="mo-task-peers">
-    <div class="mo-table-wrapper">
-      <el-table
-        stripe
-        ref="peerTable"
-        class="mo-peer-table"
-        :data="peers"
-      >
-        <el-table-column
-          :label="`${$t('task.task-peer-host')}: `"
-          min-width="140">
-          <template #default="{ row }">
-            {{ `${row.ip}:${row.port}` }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          :label="`${$t('task.task-peer-client')}: `"
-          min-width="125">
-          <template #default="{ row }">
-            {{ formatPeerId(row.peerId) }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          :label="`%`"
-          align="right"
-          width="55">
-          <template #default="{ row }">
-            {{ formatBitfieldPercent(row.bitfield) }}%
-          </template>
-        </el-table-column>
-        <el-table-column
-          :label="`↑`"
-          align="right"
-          width="90">
-          <template #default="{ row }">
-            {{ formatBytes(row.uploadSpeed) }}/s
-          </template>
-        </el-table-column>
-        <el-table-column
-          :label="`↓`"
-          align="right"
-          width="90">
-          <template #default="{ row }">
+    <div v-if="peers.length === 0" class="peers-empty">
+      {{ $t("task.no-peers") }}
+    </div>
+    <div v-else class="peers-list">
+      <div class="peer-card" v-for="(row, i) in peers" :key="i">
+        <div class="peer-card-header">
+          <span class="peer-card-host">{{ row.ip }}:{{ row.port }}</span>
+          <span class="peer-card-progress"
+            >{{ formatBitfieldPercent(row.bitfield) }}%</span
+          >
+        </div>
+        <div class="peer-card-client">{{ formatPeerId(row.peerId) }}</div>
+        <div class="peer-card-speeds">
+          <span class="peer-speed">
+            <span class="peer-speed-arrow">↓</span>
             {{ formatBytes(row.downloadSpeed) }}/s
-          </template>
-        </el-table-column>
-      </el-table>
+          </span>
+          <span class="peer-speed">
+            <span class="peer-speed-arrow">↑</span>
+            {{ formatBytes(row.uploadSpeed) }}/s
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-  import {
-    bitfieldToPercent,
-    bytesToSize,
-    peerIdParser
-  } from '@shared/utils'
+import { bitfieldToPercent, bytesToSize, peerIdParser } from "@shared/utils";
 
-  export default {
-    name: 'mo-task-peers',
-    props: {
-      peers: {
-        type: Array,
-        default: function () {
-          return []
-        }
-      }
+export default {
+  name: "mo-task-peers",
+  props: {
+    peers: {
+      type: Array,
+      default: () => [],
     },
-    methods: {
-      formatBitfieldPercent (bitfield) {
-        return bitfieldToPercent(bitfield)
-      },
-      formatBytes (value) {
-        return bytesToSize(value)
-      },
-      formatPeerId (peerId) {
-        return peerIdParser(peerId)
-      }
-    }
-  }
+  },
+  methods: {
+    formatBitfieldPercent(bitfield: string) {
+      return bitfieldToPercent(bitfield);
+    },
+    formatBytes(value: any) {
+      return bytesToSize(value);
+    },
+    formatPeerId(peerId: string) {
+      return peerIdParser(peerId);
+    },
+  },
+};
 </script>
-
-<style lang="scss">
-.el-table.mo-peer-table .cell {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-</style>

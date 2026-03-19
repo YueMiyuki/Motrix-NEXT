@@ -1,0 +1,67 @@
+/* Torrent upload and select */
+@layer components {
+  .upload-torrent {
+    width: 100%;
+  }
+  .upload-torrent-drop {
+    width: 100%;
+    border: 1px dashed var(--border);
+    border-radius: calc(var(--radius) - 2px);
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .upload-torrent-drop:hover {
+    border-color: var(--primary);
+  }
+  .upload-torrent-drop.is-dragover {
+    border-color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 6%, transparent);
+  }
+  .upload-torrent-drop .upload-inbox-icon {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: var(--muted-foreground);
+  }
+  .upload-torrent-drop .upload-text {
+    font-size: 14px;
+    color: var(--mo-color-text-secondary, #606266);
+  }
+  .upload-torrent-drop .torrent-name {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #909399;
+    line-height: 16px;
+  }
+  .selective-torrent .torrent-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .selective-torrent .torrent-info {
+    margin-bottom: 15px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+  .selective-torrent .torrent-actions {
+    text-align: right;
+    line-height: 16px;
+  }
+  .selective-torrent .torrent-actions > span {
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    height: 14px;
+    padding: 1px;
+  }
+  .dark .upload-torrent-drop {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  .dark .upload-torrent-drop .upload-text {
+    color: var(--muted-foreground);
+  }
+  .dark .selective-torrent .torrent-info {
+    color: var(--foreground);
+  }
+}

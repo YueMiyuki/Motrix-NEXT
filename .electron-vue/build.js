@@ -19,8 +19,8 @@ let okayLog = 'OKAY '
 
 init().catch(handleFatalError)
 
-async function init () {
-  ({ default: chalk } = await import('chalk'))
+async function init() {
+  ;({ default: chalk } = await import('chalk'))
   ;({ deleteSync } = await import('del'))
   doneLog = chalk.bgGreen.white(' DONE ') + ' '
   errorLog = chalk.bgRed.white(' ERROR ') + ' '
@@ -35,13 +35,13 @@ async function init () {
   }
 }
 
-function clean () {
+function clean() {
   deleteSync(['release/*', '!.gitkeep'])
   console.log(`\n${doneLog}\n`)
   process.exit()
 }
 
-async function build () {
+async function build() {
   greeting()
 
   await syncAria2Binaries()
@@ -51,7 +51,7 @@ async function build () {
   const tasks = ['main', 'renderer']
   const m = new Multispinner(tasks, {
     preText: 'building',
-    postText: 'process'
+    postText: 'process',
   })
 
   let results = ''
@@ -63,28 +63,32 @@ async function build () {
     process.exit()
   })
 
-  packMain(mainConfig).then(result => {
-    results += result + '\n\n'
-    m.success('main')
-  }).catch(err => {
-    m.error('main')
-    console.log(`\n  ${errorLog}failed to build main process`)
-    console.error(`\n${err}\n`)
-    process.exit(1)
-  })
+  packMain(mainConfig)
+    .then((result) => {
+      results += result + '\n\n'
+      m.success('main')
+    })
+    .catch((err) => {
+      m.error('main')
+      console.log(`\n  ${errorLog}failed to build main process`)
+      console.error(`\n${err}\n`)
+      process.exit(1)
+    })
 
-  packRenderer().then(result => {
-    results += result + '\n\n'
-    m.success('renderer')
-  }).catch(err => {
-    m.error('renderer')
-    console.log(`\n  ${errorLog}failed to build renderer process`)
-    console.error(`\n${err}\n`)
-    process.exit(1)
-  })
+  packRenderer()
+    .then((result) => {
+      results += result + '\n\n'
+      m.success('renderer')
+    })
+    .catch((err) => {
+      m.error('renderer')
+      console.log(`\n  ${errorLog}failed to build renderer process`)
+      console.error(`\n${err}\n`)
+      process.exit(1)
+    })
 }
 
-function packMain (config) {
+function packMain(config) {
   return new Promise((resolve, reject) => {
     config.mode = 'production'
     Webpack(config, (err, stats) => {
@@ -92,51 +96,54 @@ function packMain (config) {
         reject(err.stack || err)
       } else if (stats.hasErrors()) {
         let buildErr = ''
-        stats.toString({
-          chunks: false,
-          colors: true
-        })
+        stats
+          .toString({
+            chunks: false,
+            colors: true,
+          })
           .split(/\r?\n/)
-          .forEach(line => {
+          .forEach((line) => {
             buildErr += `    ${line}\n`
           })
 
         reject(buildErr)
       } else {
-        resolve(stats.toString({
-          chunks: false,
-          colors: true
-        }))
+        resolve(
+          stats.toString({
+            chunks: false,
+            colors: true,
+          }),
+        )
       }
     })
   })
 }
 
-async function packRenderer () {
+async function packRenderer() {
   const { build } = await import('vite')
   await build({
     configFile: path.join(__dirname, '../vite.renderer.config.ts'),
-    mode: 'production'
+    mode: 'production',
   })
   return chalk.green('  Vite renderer build completed')
 }
 
-async function web () {
+async function web() {
   const { build } = await import('vite')
   await build({
     configFile: path.join(__dirname, '../vite.renderer.config.ts'),
     mode: 'production',
     build: {
       outDir: path.join(__dirname, '../dist/web'),
-      emptyOutDir: true
-    }
+      emptyOutDir: true,
+    },
   })
 
   console.log(`${okayLog}web bundle generated in dist/web`)
   process.exit()
 }
 
-function greeting () {
+function greeting() {
   const cols = process.stdout.columns
   let text = ''
 
@@ -152,7 +159,7 @@ function greeting () {
     say(text, {
       colors: ['magentaBright'],
       font: 'simple3d',
-      space: false
+      space: false,
     })
   } else {
     console.log(chalk.magentaBright.bold('\n  lets-build'))
@@ -160,7 +167,7 @@ function greeting () {
   console.log()
 }
 
-function handleFatalError (err) {
+function handleFatalError(err) {
   console.log(`\n  ${errorLog}build failed`)
   console.error(`\n${err?.stack || err}\n`)
   process.exit(1)

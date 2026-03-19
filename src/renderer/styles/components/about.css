@@ -1,0 +1,91 @@
+/* About dialog and app info */
+@layer components {
+  .app-info {
+    position: relative;
+    margin: 4px 0 !important;
+  }
+  .app-info .app-version span {
+    display: inline-block;
+    vertical-align: bottom;
+    font-size: 18px;
+    margin-left: 20px;
+    color: var(--mo-app-version-color);
+    line-height: 18px;
+  }
+  .app-info .app-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: transparent url('@/assets/app-icon.png') center center no-repeat;
+    background-size: 128px 128px;
+    width: 128px;
+    height: 128px;
+  }
+  .app-info .engine-info {
+    margin: 50px 35% 0 8px;
+  }
+  .app-info .engine-info h4 {
+    font-size: 14px;
+    font-weight: normal;
+    color: var(--mo-app-engine-title-color);
+  }
+  .app-info .engine-info ul {
+    font-size: 12px;
+    color: var(--mo-app-engine-info-color);
+    list-style: none;
+    padding: 0;
+    line-height: 20px;
+  }
+  .app-info .engine-info ul::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+  .app-info .engine-info ul li {
+    float: left;
+    width: 50%;
+  }
+  .copyright {
+    width: 100%;
+    font-size: 13px;
+  }
+  .copyright a {
+    color: var(--mo-app-copyright-color);
+    text-decoration: none;
+  }
+  .copyright-left {
+    text-align: left;
+  }
+  .copyright-right {
+    text-align: right;
+  }
+  .copyright-right a {
+    margin-left: 30px;
+  }
+  .app-about-dialog {
+    max-width: 632px;
+    min-width: 380px;
+    width: 61.8vw;
+    animation: about-dialog-enter 0.4s var(--ease-decelerate);
+  }
+  .version-indicator {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+  }
+  .version-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .version-name {
+    font-size: 13px;
+    color: var(--muted-foreground);
+  }
+  .version-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--foreground);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  }
+}

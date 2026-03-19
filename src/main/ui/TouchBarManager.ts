@@ -9,18 +9,18 @@ const { TouchBarButton, TouchBarLabel, TouchBarSpacer, TouchBarGroup } = TouchBa
 
 export default class TouchBarManager extends EventEmitter {
   [key: string]: any
-  constructor (options: any = {}) {
+  constructor(options: any = {}) {
     super()
     this.options = options
     this.bars = {}
     this.load()
   }
 
-  load () {
+  load() {
     this.template = require('../menus/touchBar.json')
   }
 
-  getClickFn (item) {
+  getClickFn(item) {
     let fn = () => {}
     if (item.command) {
       fn = () => {
@@ -30,7 +30,7 @@ export default class TouchBarManager extends EventEmitter {
     return fn
   }
 
-  getIconImage (icon) {
+  getIconImage(icon) {
     if (!icon) {
       return
     }
@@ -38,46 +38,46 @@ export default class TouchBarManager extends EventEmitter {
     return nativeImage.createFromPath(img)
   }
 
-  buildItem (type, options) {
+  buildItem(type, options) {
     let result = null
     const { label, backgroundColor, textColor, size } = options
 
     switch (type) {
-    case 'button':
-      result = new TouchBarButton({
-        label,
-        backgroundColor,
-        icon: this.getIconImage(options.icon),
-        click: this.getClickFn(options)
-      })
-      break
-    case 'label':
-      result = new TouchBarLabel({
-        label,
-        textColor
-      })
-      break
-    case 'spacer':
-      result = new TouchBarSpacer({ size })
-      break
-    case 'group':
-      result = new TouchBarGroup({
-        items: new TouchBar({
-          items: options.items
+      case 'button':
+        result = new TouchBarButton({
+          label,
+          backgroundColor,
+          icon: this.getIconImage(options.icon),
+          click: this.getClickFn(options),
         })
-      })
-      break
-    default:
-      result = null
+        break
+      case 'label':
+        result = new TouchBarLabel({
+          label,
+          textColor,
+        })
+        break
+      case 'spacer':
+        result = new TouchBarSpacer({ size })
+        break
+      case 'group':
+        result = new TouchBarGroup({
+          items: new TouchBar({
+            items: options.items,
+          }),
+        })
+        break
+      default:
+        result = null
     }
 
     return result
   }
 
-  build (template) {
+  build(template) {
     const result = []
 
-    template.forEach(tpl => {
+    template.forEach((tpl) => {
       const { id, type, ...rest } = tpl
       let options = { ...rest }
       if (type === 'group') {
@@ -89,7 +89,7 @@ export default class TouchBarManager extends EventEmitter {
     return result
   }
 
-  getTouchBarByPage (page) {
+  getTouchBarByPage(page) {
     let bar = this.bars[page] || null
     if (!bar) {
       try {
@@ -103,7 +103,7 @@ export default class TouchBarManager extends EventEmitter {
     return bar
   }
 
-  setup (page, window) {
+  setup(page, window) {
     const bar = this.getTouchBarByPage(page)
     window.setTouchBar(bar)
   }

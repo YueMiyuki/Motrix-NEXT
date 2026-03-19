@@ -7,7 +7,7 @@ const fallback = {
   macOS: () => (typeof navigator !== 'undefined' ? /mac/i.test(navigator.platform) : false),
   windows: () => (typeof navigator !== 'undefined' ? /win/i.test(navigator.platform) : false),
   linux: () => (typeof navigator !== 'undefined' ? /linux/i.test(navigator.platform) : false),
-  mas: () => false
+  mas: () => false,
 }
 
 export default fallback

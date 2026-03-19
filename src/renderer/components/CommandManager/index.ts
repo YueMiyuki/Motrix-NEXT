@@ -1,20 +1,23 @@
+import logger from '@shared/utils/logger'
 import EventEmitter from 'eventemitter3'
 
 export default class CommandManager extends EventEmitter {
   [key: string]: any
-  constructor () {
+  constructor() {
     super()
 
     this.commands = {}
   }
 
-  register (id, fn) {
+  register(id, fn) {
     if (this.commands[id]) {
-      console.log('[Motrix] Attempting to register an already-registered command: ' + id)
+      logger.log('[Motrix] Attempting to register an already-registered command: ' + id)
       return null
     }
     if (!id || !fn) {
-      console.error('[Motrix] Attempting to register a command with a missing id, or command function.')
+      logger.error(
+        '[Motrix] Attempting to register a command with a missing id, or command function.',
+      )
       return null
     }
     this.commands[id] = fn
@@ -22,7 +25,7 @@ export default class CommandManager extends EventEmitter {
     this.emit('commandRegistered', id)
   }
 
-  unregister (id) {
+  unregister(id) {
     if (this.commands[id]) {
       delete this.commands[id]
 
@@ -30,13 +33,13 @@ export default class CommandManager extends EventEmitter {
     }
   }
 
-  execute (id, ...args) {
+  execute(id, ...args) {
     const fn = this.commands[id]
     if (fn) {
       try {
         this.emit('beforeExecuteCommand', id)
       } catch (err) {
-        console.error(err)
+        logger.error(err)
       }
       const result = fn(...args)
       return result

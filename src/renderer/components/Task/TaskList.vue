@@ -11,10 +11,9 @@
         <div
           :attr="item.gid"
           :class="getItemClass(item)"
+          @click="handleItemClick(item, $event)"
         >
-          <mo-task-item
-            :task="item"
-          />
+          <mo-task-item :task="item" />
         </div>
       </template>
     </recycle-scroller>
@@ -25,98 +24,90 @@
       @change="handleDragSelectChange"
     >
       <div
-        v-for="item in taskList"
+        v-for="(item, index) in taskList"
         :key="item.gid"
         :attr="item.gid"
         :class="getItemClass(item)"
+        :style="{ '--stagger-index': index }"
+        @click="handleItemClick(item, $event)"
       >
-        <mo-task-item
-          :task="item"
-        />
+        <mo-task-item :task="item" />
       </div>
     </mo-drag-select>
   </div>
   <div class="no-task" v-else>
     <div class="no-task-inner">
-      {{ $t('task.no-task') }}
+      {{ $t("task.no-task") }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
-  import { mapState } from 'vuex'
-  import { cloneDeep } from 'lodash'
-  import DragSelect from '@/components/DragSelect/Index.vue'
-  import TaskItem from './TaskItem.vue'
+import { cloneDeep } from "lodash";
+import { useTaskStore } from "@/store/task";
+import DragSelect from "@/components/DragSelect/Index.vue";
+import TaskItem from "./TaskItem.vue";
 
-  const VIRTUAL_LIST_THRESHOLD = 120
+const VIRTUAL_LIST_THRESHOLD = 120;
 
-  export default {
-    name: 'mo-task-list',
-    components: {
-      [DragSelect.name]: DragSelect,
-      [TaskItem.name]: TaskItem
+export default {
+  name: "mo-task-list",
+  components: {
+    [DragSelect.name]: DragSelect,
+    [TaskItem.name]: TaskItem,
+  },
+  data() {
+    const selectedList = cloneDeep(useTaskStore().selectedGidList) || [];
+    return {
+      selectedList,
+    };
+  },
+  computed: {
+    taskList() {
+      return useTaskStore().taskList;
     },
-    data () {
-      const selectedList = cloneDeep((this.$store as any).state.task.selectedGidList) || []
+    selectedGidList() {
+      return useTaskStore().selectedGidList;
+    },
+    useVirtualList() {
+      return this.taskList.length >= VIRTUAL_LIST_THRESHOLD;
+    },
+  },
+  methods: {
+    handleItemClick(item, event) {
+      const gid = item.gid;
+      const isMulti = event.metaKey || event.ctrlKey;
+      let newList;
+      if (isMulti) {
+        const idx = this.selectedList.indexOf(gid);
+        newList =
+          idx === -1
+            ? [...this.selectedList, gid]
+            : this.selectedList.filter((id) => id !== gid);
+      } else {
+        newList =
+          this.selectedList.length === 1 && this.selectedList[0] === gid
+            ? []
+            : [gid];
+      }
+      this.selectedList = newList;
+      useTaskStore().selectTasks(cloneDeep(newList));
+    },
+    handleDragSelectChange(selectedList) {
+      this.selectedList = selectedList;
+      useTaskStore().selectTasks(cloneDeep(selectedList));
+    },
+    getItemClass(item) {
+      const isSelected = this.selectedList.includes(item.gid);
       return {
-        selectedList
-      }
+        selected: isSelected,
+      };
     },
-    computed: {
-      ...(mapState as any)('task', {
-        taskList: (state: any) => state.taskList,
-        selectedGidList: (state: any) => state.selectedGidList
-      }),
-      useVirtualList () {
-        return this.taskList.length >= VIRTUAL_LIST_THRESHOLD
-      }
+  },
+  watch: {
+    selectedGidList(newVal) {
+      this.selectedList = newVal;
     },
-    methods: {
-      handleDragSelectChange (selectedList) {
-        this.selectedList = selectedList
-        this.$store.dispatch('task/selectTasks', cloneDeep(selectedList))
-      },
-      getItemClass (item) {
-        const isSelected = this.selectedList.includes(item.gid)
-        return {
-          selected: isSelected
-        }
-      }
-    },
-    watch: {
-      selectedGidList (newVal) {
-        this.selectedList = newVal
-      }
-    }
-  }
+  },
+};
 </script>
-
-<style lang="scss">
-.task-list-wrapper {
-  height: 100%;
-}
-.task-list {
-  padding: 16px 16px 64px;
-  min-height: 100%;
-  box-sizing: border-box;
-}
-.task-list-virtual {
-  height: 100%;
-}
-.no-task {
-  display: flex;
-  height: 100%;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: #555;
-  user-select: none;
-}
-.no-task-inner {
-  width: 100%;
-  padding-top: 360px;
-  background: transparent url('@/assets/no-task.svg') top center no-repeat;
-}
-</style>

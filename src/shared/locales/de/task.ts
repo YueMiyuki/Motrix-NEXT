@@ -1,21 +1,23 @@
 export default {
-  'active': 'Aktiv',
-  'waiting': 'Warteschlange',
-  'stopped': 'Gestoppt',
+  active: 'Aktiv',
+  waiting: 'Warteschlange',
+  stopped: 'Gestoppt',
   'new-task': 'Neue Aufgabe',
   'new-bt-task': 'Neue BT Aufgabe',
   'open-file': 'Torrent-Datei öffnen...',
   'uri-task': 'URL',
   'torrent-task': 'Torrent',
   'uri-task-tips': 'Eine Download URL pro Zeile (magnet wird unterstützt)',
-  'thunder-link-tips': 'Tipp: Thunder Links werden möglicherweise nach dem dekodieren nicht heruntergeladen',
+  'thunder-link-tips':
+    'Tipp: Thunder Links werden möglicherweise nach dem dekodieren nicht heruntergeladen',
   'new-task-uris-required': 'Bitte geben Sie mindestens eine gültige URL ein',
   'new-task-torrent-required': 'Bitte wählen Sie eine Torrent-Datei',
   'file-name': 'Dateiname',
   'file-extension': 'Dateityp',
   'file-size': 'Dateigröße',
   'file-completed-size': 'Heruntergeladen',
-  'selected-files-sum': 'Ausgewählt: {{selectedFilesCount}} Dateien, insgesamt {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Ausgewählt: {{selectedFilesCount}} Dateien, insgesamt {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Bitte wählen Sie mindestens eine Datei aus',
   'task-gid': 'GID',
   'task-name': 'Aufgaben Name',
@@ -54,10 +56,12 @@ export default {
   'navigate-to-downloading': 'Navigiere zu aktive Downloads',
   'show-advanced-options': 'Erweiterte Optionen',
   'copyright-warning': 'Copyright Warnung',
-  'copyright-warning-message': 'Die Datei, die Sie herunterladen möchten, könnte unter Copyright stehen. Bitte überprüfen Sie ob Sie in Besitz der notwendigen Lizenz sind.',
+  'copyright-warning-message':
+    'Die Datei, die Sie herunterladen möchten, könnte unter Copyright stehen. Bitte überprüfen Sie ob Sie in Besitz der notwendigen Lizenz sind.',
   'copyright-yes': 'Ja, Ich habe',
   'copyright-no': 'Nein',
-  'copyright-error-message': 'Aufgabe konnte Aufgrund von Copyright Problemen nicht hinzugefügt werden',
+  'copyright-error-message':
+    'Aufgabe konnte Aufgrund von Copyright Problemen nicht hinzugefügt werden',
   'pause-task-success': 'Aufgabe "{{taskName}}" erfolgreich pausiert',
   'pause-task-fail': 'Aufgabe "{{taskName}}" pausieren fehlgeschlagen',
   'resume-task': 'Aufgabe fortsetzen',
@@ -66,12 +70,14 @@ export default {
   'delete-task': 'Aufgabe löschen',
   'delete-selected-tasks': 'Ausgewählte Aufgaben löschen',
   'delete-task-confirm': 'Den Download von "{{taskName}}" unwiederruflich löschen?',
-  'batch-delete-task-confirm': 'Möchten Sie wirklich {{count}} Download-Aufgaben im Batch entfernen?',
+  'batch-delete-task-confirm':
+    'Möchten Sie wirklich {{count}} Download-Aufgaben im Batch entfernen?',
   'delete-task-label': 'Datei auch löschen',
   'delete-task-success': 'Aufgabe "{{taskName}}" erfolgreich gelöscht',
   'delete-task-fail': 'Aufgabe "{{taskName}}" löschen fehlgeschlagen',
   'remove-task-file-fail': 'Aufgaben Datei löschen fehlgeschlagen, bitte manuell löschen',
-  'remove-task-config-file-fail': 'Aufgaben Konfigurationsdatei löschen fehlgeschlagen, bitte manuell löschen',
+  'remove-task-config-file-fail':
+    'Aufgaben Konfigurationsdatei löschen fehlgeschlagen, bitte manuell löschen',
   'move-task-up': 'Aufgabe nach oben verschieben',
   'move-task-down': 'Aufgabe nach unten verschieben',
   'pause-all-task': 'Alle Aufgaben pausieren',
@@ -113,7 +119,8 @@ export default {
   'bt-download-complete-message': 'Download von {{taskName}} abgeschlossen, aussaat...',
   'bt-download-complete-notify': 'BT Download abgeschlossen, Aussaat...',
   'bt-download-complete-tips': 'Tipps: Sie können die Aufgabe stoppen, die aussaat zu beenden',
-  'bt-stopping-seeding-tip': 'Wenn Sie die Aussaat beenden, dauert es einige Zeit, bis die Verbindung getrennt ist. Bitte warten Sie ...',
+  'bt-stopping-seeding-tip':
+    'Wenn Sie die Aussaat beenden, dauert es einige Zeit, bis die Verbindung getrennt ist. Bitte warten Sie ...',
   'download-fail-message': 'Download von {{taskName}} fehlgeschlagen',
-  'download-fail-notify': 'Download fehlgeschlagen'
+  'download-fail-notify': 'Download fehlgeschlagen',
 }

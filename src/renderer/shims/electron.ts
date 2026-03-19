@@ -15,7 +15,7 @@ const ipcRenderer = electron.ipcRenderer || {
   invoke: asyncNoop,
   on: noop,
   once: noop,
-  removeListener: noop
+  removeListener: noop,
 }
 
 export { ipcRenderer }

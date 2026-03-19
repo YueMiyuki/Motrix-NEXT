@@ -1,8 +1,10 @@
-import { createStore } from 'vuex'
+import { createPinia, setActivePinia } from 'pinia'
 
-import modules from './modules'
+const pinia = createPinia()
+setActivePinia(pinia)
 
-export default createStore({
-  modules,
-  strict: import.meta.env.DEV
-})
+export default pinia
+
+export * from './app'
+export * from './preference'
+export * from './task'

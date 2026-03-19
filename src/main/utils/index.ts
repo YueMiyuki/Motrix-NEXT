@@ -8,17 +8,13 @@ import {
   ENGINE_MAX_CONNECTION_PER_SERVER,
   IP_VERSION,
   IS_PORTABLE,
-  PORTABLE_EXECUTABLE_DIR
+  PORTABLE_EXECUTABLE_DIR,
 } from '@shared/constants'
 import { engineBinMap, engineArchMap } from '../configs/engine'
 import logger from '../core/Logger'
 
-export const getUserDataPath = () => {
+const getUserDataPath = () => {
   return IS_PORTABLE ? PORTABLE_EXECUTABLE_DIR : app.getPath('userData')
-}
-
-export const getSystemLogPath = () => {
-  return app.getPath('logs')
 }
 
 export const getUserDownloadsPath = () => {
@@ -26,8 +22,7 @@ export const getUserDownloadsPath = () => {
 }
 
 export const getConfigBasePath = () => {
-  const path = getUserDataPath()
-  return path
+  return getUserDataPath()
 }
 
 export const getSessionPath = () => {
@@ -43,28 +38,23 @@ export const getDhtPath = (protocol) => {
   return resolve(getUserDataPath(), `./${name}`)
 }
 
-export const getEngineBin = (platform) => {
-  const result = engineBinMap[platform] || ''
-  return result
+const getEngineBin = (platform) => {
+  return engineBinMap[platform] || ''
 }
 
-export const getEngineArch = (platform, arch) => {
+const getEngineArch = (platform, arch) => {
   if (!['darwin', 'win32', 'linux'].includes(platform)) {
     return ''
   }
-
-  const result = engineArchMap[platform][arch]
-  return result
+  return engineArchMap[platform][arch]
 }
 
-export const getDevEnginePath = (platform, arch) => {
+const getDevEnginePath = (platform, arch) => {
   const ah = getEngineArch(platform, arch)
-  const base = `../../../extra/${platform}/${ah}/engine`
-  const result = resolve(__dirname, base)
-  return result
+  return resolve(__dirname, `../../../extra/${platform}/${ah}/engine`)
 }
 
-export const getProdEnginePath = () => {
+const getProdEnginePath = () => {
   return resolve(app.getAppPath(), '../engine')
 }
 
@@ -74,9 +64,7 @@ export const getEnginePath = (platform, arch) => {
 
 export const getAria2BinPath = (platform, arch) => {
   const base = getEnginePath(platform, arch)
-  const binName = getEngineBin(platform)
-  const result = resolve(base, `./${binName}`)
-  return result
+  return resolve(base, `./${getEngineBin(platform)}`)
 }
 
 export const getAria2ConfPath = (platform, arch) => {
@@ -92,30 +80,6 @@ export const transformConfig = (config) => {
     }
   }
   return result
-}
-
-export const isRunningInDmg = () => {
-  if (!is.macOS() || is.dev()) {
-    return false
-  }
-  const appPath = app.getAppPath()
-  const result = appPath.startsWith('/Volumes/')
-  return result
-}
-
-export const moveAppToApplicationsFolder = (errorMsg = '') => {
-  return new Promise((resolve, reject) => {
-    try {
-      const result = app.moveToApplicationsFolder()
-      if (result) {
-        resolve(result)
-      } else {
-        reject(new Error(errorMsg))
-      }
-    } catch (err) {
-      reject(err)
-    }
-  })
 }
 
 export const splitArgv = (argv) => {
@@ -145,24 +109,14 @@ export const parseArgvAsUrl = (argv) => {
   }
 }
 
-export const checkIsSupportedSchema = (url = '') => {
+const SUPPORTED_SCHEMAS = ['ftp:', 'http:', 'https:', 'magnet:', 'thunder:', 'mo:', 'motrix:']
+
+const checkIsSupportedSchema = (url = '') => {
   const str = url.toLowerCase()
-  if (
-    str.startsWith('ftp:') ||
-    str.startsWith('http:') ||
-    str.startsWith('https:') ||
-    str.startsWith('magnet:') ||
-    str.startsWith('thunder:') ||
-    str.startsWith('mo:') ||
-    str.startsWith('motrix:')
-  ) {
-    return true
-  } else {
-    return false
-  }
+  return SUPPORTED_SCHEMAS.some((schema) => str.startsWith(schema))
 }
 
-export const isDirectory = (path) => {
+const isDirectory = (path) => {
   return existsSync(path) && lstatSync(path).isDirectory()
 }
 
@@ -183,18 +137,11 @@ export const getMaxConnectionPerServer = () => {
 }
 
 export const getSystemTheme = () => {
-  let result = APP_THEME.LIGHT
-  result = nativeTheme.shouldUseDarkColors ? APP_THEME.DARK : APP_THEME.LIGHT
-  return result
+  return nativeTheme.shouldUseDarkColors ? APP_THEME.DARK : APP_THEME.LIGHT
 }
 
 export const convertArrayBufferToBuffer = (arrayBuffer) => {
-  const buffer = Buffer.alloc(arrayBuffer.byteLength)
-  const view = new Uint8Array(arrayBuffer)
-  for (let i = 0; i < buffer.length; ++i) {
-    buffer[i] = view[i]
-  }
-  return buffer
+  return Buffer.from(arrayBuffer)
 }
 
 export const showItemInFolder = (fullPath) => {
@@ -205,7 +152,7 @@ export const showItemInFolder = (fullPath) => {
   fullPath = resolve(fullPath)
   access(fullPath, constants.F_OK, (err) => {
     if (err) {
-      logger.warn(`[Motrix] ${fullPath} ${err ? 'does not exist' : 'exists'}`)
+      logger.warn(`[Motrix] ${fullPath} does not exist`)
       return
     }
 

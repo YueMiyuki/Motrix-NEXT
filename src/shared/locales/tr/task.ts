@@ -1,7 +1,7 @@
 export default {
-  'active': 'İndiriliyor',
-  'waiting': 'Bekleniyor',
-  'stopped': 'Durdu',
+  active: 'İndiriliyor',
+  waiting: 'Bekleniyor',
+  stopped: 'Durdu',
   'new-task': 'Yeni Görev',
   'new-bt-task': 'Yeni BT Görevi',
   'open-file': 'Torrent Dosyasını Aç...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'uzantı',
   'file-size': 'Boyut',
   'file-completed-size': 'İndirildi',
-  'selected-files-sum': 'Seçildi: {{selectedFilesCount}} dosya sayısı, total {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Seçildi: {{selectedFilesCount}} dosya sayısı, total {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Lütfen en az bir dosya seçin',
   'task-gid': 'GID',
   'task-name': 'Görev Adı',
@@ -54,7 +55,8 @@ export default {
   'navigate-to-downloading': 'İndirilenlere git',
   'show-advanced-options': 'Gelişmiş ayarlar',
   'copyright-warning': 'Telif Uyarısı',
-  'copyright-warning-message': 'İndirmek istediğiniz dosya telif hakkıyla korunan ses veya videoya ait olabilir, lütfen telif hakkı lisansına sahip olduğunuzdan emin olun.',
+  'copyright-warning-message':
+    'İndirmek istediğiniz dosya telif hakkıyla korunan ses veya videoya ait olabilir, lütfen telif hakkı lisansına sahip olduğunuzdan emin olun.',
   'copyright-yes': 'Evet, sahibim',
   'copyright-no': 'Hayır',
   'copyright-error-message': 'Telif hakkı sorunları nedeniyle görev ekleme işlemi başarısız oldu',
@@ -66,12 +68,14 @@ export default {
   'delete-task': 'Görevi sil',
   'delete-selected-tasks': 'Seçilen görevleri sil',
   'delete-task-confirm': '"{{taskName}}" adlı görevi silmek istediğinizden emin misiniz?',
-  'batch-delete-task-confirm': '{{count}} indirme görevini toplu olarak kaldırmak istediğinizden emin misiniz?',
+  'batch-delete-task-confirm':
+    '{{count}} indirme görevini toplu olarak kaldırmak istediğinizden emin misiniz?',
   'delete-task-label': 'Dosyalar ile birlikte sil',
   'delete-task-success': '"{{taskName}}" silindi',
   'delete-task-fail': '"{{taskName}}" silinemedi',
   'remove-task-file-fail': 'Görev dosyaları silinemedi, lütfen manuel olarak silin',
-  'remove-task-config-file-fail': 'Görev yapılandırma dosyası silinemedi, lütfen manuel olarak silin',
+  'remove-task-config-file-fail':
+    'Görev yapılandırma dosyası silinemedi, lütfen manuel olarak silin',
   'move-task-up': 'Görevi yukarı taşı',
   'move-task-down': 'Görevi aşağı taşı',
   'pause-all-task': 'Bütün görevleri durdur',
@@ -112,8 +116,10 @@ export default {
   'download-complete-notify': 'İndirme bitti',
   'bt-download-complete-message': '{{taskName}} indirme tamamlandı, tohumlama...',
   'bt-download-complete-notify': 'BT Indirme tamamlandı, tohumlama...',
-  'bt-download-complete-tips': 'Ipuçları: Eğer tohumlama sona erdirmek için görev durdurabilirsiniz',
-  'bt-stopping-seeding-tip': 'Ekim işlemini durdurmak, bağlantıyı kesmek biraz zaman alacak, lütfen bekleyin...',
+  'bt-download-complete-tips':
+    'Ipuçları: Eğer tohumlama sona erdirmek için görev durdurabilirsiniz',
+  'bt-stopping-seeding-tip':
+    'Ekim işlemini durdurmak, bağlantıyı kesmek biraz zaman alacak, lütfen bekleyin...',
   'download-fail-message': '{{taskName}} görevi indirilemedi',
-  'download-fail-notify': 'İndirme başarısız'
+  'download-fail-notify': 'İndirme başarısız',
 }

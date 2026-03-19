@@ -42,10 +42,18 @@ export const buildHeadersFromCurl = (uris = []) => {
 export const buildDefaultOptionsFromCurl = (form, headers = []) => {
   const firstNonNullHeader = headers.find((elem) => elem)
   if (firstNonNullHeader) {
-    form.cookie = !form.cookie && firstNonNullHeader.cookie ? firstNonNullHeader.cookie : form.cookie
-    form.referer = !form.referer && firstNonNullHeader.referer ? firstNonNullHeader.referer : form.referer
-    form.userAgent = !form.userAgent && firstNonNullHeader['user-agent'] ? firstNonNullHeader['user-agent'] : form.userAgent
-    form.authorization = !form.authorization && firstNonNullHeader.authorization ? firstNonNullHeader.authorization : form.authorization
+    form.cookie =
+      !form.cookie && firstNonNullHeader.cookie ? firstNonNullHeader.cookie : form.cookie
+    form.referer =
+      !form.referer && firstNonNullHeader.referer ? firstNonNullHeader.referer : form.referer
+    form.userAgent =
+      !form.userAgent && firstNonNullHeader['user-agent']
+        ? firstNonNullHeader['user-agent']
+        : form.userAgent
+    form.authorization =
+      !form.authorization && firstNonNullHeader.authorization
+        ? firstNonNullHeader.authorization
+        : form.authorization
   }
   return form
 }

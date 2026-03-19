@@ -2,16 +2,12 @@ import { EventEmitter } from 'node:events'
 import { Menu } from 'electron'
 
 import keymap from '@shared/keymap'
-import {
-  translateTemplate,
-  flattenMenuItems,
-  updateStates
-} from '../utils/menu'
+import { translateTemplate, flattenMenuItems, updateStates } from '../utils/menu'
 import { getI18n } from '../ui/Locale'
 
 export default class MenuManager extends EventEmitter {
   [key: string]: any
-  constructor (options: any = {}) {
+  constructor(options: any = {}) {
     super()
     this.options = options
     this.i18n = getI18n()
@@ -24,12 +20,12 @@ export default class MenuManager extends EventEmitter {
     this.setup()
   }
 
-  load () {
+  load() {
     const template = require(`../menus/${process.platform}.json`)
     this.template = template.menu
   }
 
-  build () {
+  build() {
     const keystrokesByCommand = {}
     for (const item in this.keymap) {
       keystrokesByCommand[this.keymap[item]] = item
@@ -42,30 +38,30 @@ export default class MenuManager extends EventEmitter {
     return menu
   }
 
-  setup () {
+  setup() {
     const menu = this.build()
     Menu.setApplicationMenu(menu)
     this.items = flattenMenuItems(menu)
   }
 
-  handleLocaleChange (locale) {
+  handleLocaleChange(locale) {
     this.setup()
   }
 
-  updateMenuStates (visibleStates, enabledStates, checkedStates) {
+  updateMenuStates(visibleStates, enabledStates, checkedStates) {
     updateStates(this.items, visibleStates, enabledStates, checkedStates)
   }
 
-  updateMenuItemVisibleState (id, flag) {
+  updateMenuItemVisibleState(id, flag) {
     const visibleStates = {
-      [id]: flag
+      [id]: flag,
     }
     this.updateMenuStates(visibleStates, null, null)
   }
 
-  updateMenuItemEnabledState (id, flag) {
+  updateMenuItemEnabledState(id, flag) {
     const enabledStates = {
-      [id]: flag
+      [id]: flag,
     }
     this.updateMenuStates(null, enabledStates, null)
   }

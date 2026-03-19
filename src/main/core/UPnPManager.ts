@@ -7,23 +7,23 @@ const mappingStatus: Record<string, boolean> = {}
 
 export default class UPnPManager {
   [key: string]: any
-  constructor (options: Record<string, any> = {}) {
+  constructor(options: Record<string, any> = {}) {
     this.options = {
-      ...options
+      ...options,
     }
   }
 
-  init () {
+  init() {
     if (client) {
       return
     }
 
     client = new NatAPI({
-      autoUpdate: true
+      autoUpdate: true,
     })
   }
 
-  map (port: number | string) {
+  map(port: number | string) {
     this.init()
 
     return new Promise<void>((resolve, reject) => {
@@ -51,7 +51,7 @@ export default class UPnPManager {
     })
   }
 
-  unmap (port: number | string) {
+  unmap(port: number | string) {
     this.init()
 
     return new Promise<void>((resolve, reject) => {
@@ -84,7 +84,7 @@ export default class UPnPManager {
     })
   }
 
-  closeClient () {
+  closeClient() {
     if (!client) {
       return
     }

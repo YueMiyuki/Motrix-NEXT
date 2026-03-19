@@ -1,7 +1,7 @@
 export default {
-  'active': 'Baixando',
-  'waiting': 'Aguardando',
-  'stopped': 'Parou',
+  active: 'Baixando',
+  waiting: 'Aguardando',
+  stopped: 'Parou',
   'new-task': 'Nova Tarefa',
   'new-bt-task': 'Nova Tarefa BT',
   'open-file': 'Abra o arquivo Torrent...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'Ext',
   'file-size': 'Tamanho',
   'file-completed-size': 'Baixado',
-  'selected-files-sum': 'Selecionado: {{selectedFilesCount}} arquivos, total {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Selecionado: {{selectedFilesCount}} arquivos, total {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Selecione pelo menos um arquivo',
   'task-gid': 'GID',
   'task-name': 'Nome da Tarefa',
@@ -54,7 +55,8 @@ export default {
   'navigate-to-downloading': 'Navegar para o Downloading',
   'show-advanced-options': 'Opções Avançadas',
   'copyright-warning': 'Aviso de Copyright',
-  'copyright-warning-message': 'O arquivo que você deseja baixa pode ser protegido por direitos de copyright de áudio ou vídeo, tenha certeza que você possui os direitos de licensa.',
+  'copyright-warning-message':
+    'O arquivo que você deseja baixa pode ser protegido por direitos de copyright de áudio ou vídeo, tenha certeza que você possui os direitos de licensa.',
   'copyright-yes': 'Sim, Eu Tenho',
   'copyright-no': 'Não',
   'copyright-error-message': 'A operação falhou devido os direitos de copyright',
@@ -65,13 +67,17 @@ export default {
   'resume-task-fail': 'Falha ao resumir a tarefa "{{taskName}}"',
   'delete-task': 'Apagar Tarefa',
   'delete-selected-tasks': 'Apagar as Tarefas Selecionadas',
-  'delete-task-confirm': 'Você tem certeza de que deseja apagar a seguinte tarefa de download: "{{taskName}}"?',
-  'batch-delete-task-confirm': 'Tem certeza de que deseja remover {{count}} tarefas de download em lote?',
+  'delete-task-confirm':
+    'Você tem certeza de que deseja apagar a seguinte tarefa de download: "{{taskName}}"?',
+  'batch-delete-task-confirm':
+    'Tem certeza de que deseja remover {{count}} tarefas de download em lote?',
   'delete-task-label': 'Apagar com os Arquivos',
   'delete-task-success': 'Tarefa "{{taskName}}" apagada com sucesso',
   'delete-task-fail': 'Falha ao apagar a tarefa "{{taskName}}"',
-  'remove-task-file-fail': 'Falha ao tentar deletar o arquivo da tarefa, por favor, apague manualmente',
-  'remove-task-config-file-fail': 'Falha ao tentar deletar o arquivo de configuração da tarefa, por favor, apague manualmente',
+  'remove-task-file-fail':
+    'Falha ao tentar deletar o arquivo da tarefa, por favor, apague manualmente',
+  'remove-task-config-file-fail':
+    'Falha ao tentar deletar o arquivo de configuração da tarefa, por favor, apague manualmente',
   'move-task-up': 'Mover Tarefa para Cima',
   'move-task-down': 'Mover Tarefa para Baixar',
   'pause-all-task': 'Pausar Todas as Tarefas',
@@ -92,7 +98,8 @@ export default {
   'copy-link': 'Copiar Link',
   'copy-link-success': 'Link copiado com sucesso',
   'remove-record': 'Apagar Registro de Tarefas',
-  'remove-record-confirm': 'Você tem certeza de que deseja remover o registro de download da tarefa "{{taskName}}"?',
+  'remove-record-confirm':
+    'Você tem certeza de que deseja remover o registro de download da tarefa "{{taskName}}"?',
   'remove-record-label': 'Deletar com arquivos',
   'remove-record-success': 'Registro da tarefa "{{taskName}}" apagado com sucesso',
   'remove-record-fail': 'Falha ao apagar o registro da tarefa "{{taskName}}"',
@@ -113,7 +120,8 @@ export default {
   'bt-download-complete-message': '{{taskName}} download completado, propagação ...',
   'bt-download-complete-notify': 'Download do BT concluído, Propagação ...',
   'bt-download-complete-tips': 'Dicas: você pode parar a tarefa para terminar a propagação',
-  'bt-stopping-seeding-tip': 'Parando a propagação, levará algum tempo para desconectar, aguarde ...',
+  'bt-stopping-seeding-tip':
+    'Parando a propagação, levará algum tempo para desconectar, aguarde ...',
   'download-fail-message': '{{taskName}} falha no download',
-  'download-fail-notify': 'Falha no Download'
+  'download-fail-notify': 'Falha no Download',
 }

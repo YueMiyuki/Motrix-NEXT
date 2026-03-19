@@ -4,61 +4,70 @@
     <ul>
       <li
         @click="() => nav('basic')"
-        :class="[ current === 'basic' ? 'active' : '' ]"
-        >
+        :class="[current === 'basic' ? 'active' : '']"
+        style="--stagger-index: 0"
+      >
         <i class="subnav-icon">
-          <mo-icon name='preference-basic' width="20" height="20" />
+          <SlidersHorizontal :size="20" />
         </i>
-        <span>{{ $t('preferences.basic') }}</span>
+        <span>{{ $t("preferences.basic") }}</span>
       </li>
       <li
         @click="() => nav('advanced')"
-        :class="[ current === 'advanced' ? 'active' : '' ]"
-        >
+        :class="[current === 'advanced' ? 'active' : '']"
+        style="--stagger-index: 1"
+      >
         <i class="subnav-icon">
-          <mo-icon name='preference-advanced' width="20" height="20" />
+          <Wrench :size="20" />
         </i>
-        <span>{{ $t('preferences.advanced') }}</span>
+        <span>{{ $t("preferences.advanced") }}</span>
       </li>
       <li
         @click="() => nav('lab')"
-        :class="[ current === 'lab' ? 'active' : '' ]"
-        >
+        :class="[current === 'lab' ? 'active' : '']"
+        style="--stagger-index: 2"
+      >
         <i class="subnav-icon">
-          <mo-icon name='preference-lab' width="20" height="20" />
+          <FlaskConical :size="20" />
         </i>
-        <span>{{ $t('preferences.lab') }}</span>
+        <span>{{ $t("preferences.lab") }}</span>
       </li>
     </ul>
   </nav>
 </template>
 
 <script lang="ts">
-  import '@/components/Icons/preference-basic'
-  import '@/components/Icons/preference-advanced'
-  import '@/components/Icons/preference-lab'
+import logger from "@shared/utils/logger";
+import { FlaskConical, SlidersHorizontal, Wrench } from "lucide-vue-next";
 
-  export default {
-    name: 'mo-preference-subnav',
-    props: {
-      current: {
-        type: String,
-        default: 'basic'
-      }
+export default {
+  name: "mo-preference-subnav",
+  components: {
+    FlaskConical,
+    SlidersHorizontal,
+    Wrench,
+  },
+  props: {
+    current: {
+      type: String,
+      default: "basic",
     },
-    computed: {
-      title () {
-        return this.$t('subnav.preferences')
-      }
+  },
+  computed: {
+    title() {
+      return this.$t("subnav.preferences");
     },
-    methods: {
-      nav (category = 'basic') {
-        this.$router.push({
-          path: `/preference/${category}`
-        }).catch(err => {
-          console.log(err)
+  },
+  methods: {
+    nav(category = "basic") {
+      this.$router
+        .push({
+          path: `/preference/${category}`,
         })
-      }
-    }
-  }
+        .catch((err) => {
+          logger.log(err);
+        });
+    },
+  },
+};
 </script>

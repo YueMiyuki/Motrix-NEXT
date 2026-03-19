@@ -1,7 +1,7 @@
 export default {
-  'active': '下載中',
-  'waiting': '等待中',
-  'stopped': '已停止',
+  active: '下載中',
+  waiting: '等待中',
+  stopped: '已停止',
   'new-task': '新增任務',
   'new-bt-task': '新增 BT 任務',
   'open-file': '開啟種子檔案...',
@@ -80,6 +80,12 @@ export default {
   'resume-all-task': '繼續所有任務',
   'resume-all-task-success': '繼續所有任務成功',
   'resume-all-task-fail': '繼續所有任務失敗',
+  'pause-selected-tasks': '暫停選取的任務',
+  'pause-selected-tasks-success': '暫停選取的任務成功',
+  'pause-selected-tasks-fail': '暫停選取的任務失敗',
+  'resume-selected-tasks': '繼續選取的任務',
+  'resume-selected-tasks-success': '繼續選取的任務成功',
+  'resume-selected-tasks-fail': '繼續選取的任務失敗',
   'select-all-task': '選擇所有任務',
   'clear-recent-tasks': '清除最近的下載紀錄',
   'purge-record': '清除下載紀錄',
@@ -116,5 +122,6 @@ export default {
   'bt-download-complete-tips': '提示：你可以停止任務結束做種',
   'bt-stopping-seeding-tip': '停止做種中，需要些時間才能斷開連接，請稍候...',
   'download-fail-message': '{{taskName}} 下載失敗',
-  'download-fail-notify': '下載失敗'
+  'download-fail-notify': '下載失敗',
+  'no-peers': '目前沒有連接的節點',
 }

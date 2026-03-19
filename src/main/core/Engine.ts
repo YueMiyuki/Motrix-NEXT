@@ -9,7 +9,7 @@ import {
   getAria2BinPath,
   getAria2ConfPath,
   getSessionPath,
-  transformConfig
+  transformConfig,
 } from '../utils/index'
 
 const { platform, arch } = process
@@ -19,7 +19,7 @@ export default class Engine {
   // ChildProcess | null
   static instance = null
 
-  constructor (options: any = {}) {
+  constructor(options: any = {}) {
     this.options = options
 
     this.i18n = getI18n()
@@ -27,7 +27,7 @@ export default class Engine {
     this.userConfig = options.userConfig
   }
 
-  start () {
+  start() {
     const pidPath = getEnginePidPath()
     logger.info('[Motrix] Engie pid path:', pidPath)
 
@@ -39,7 +39,7 @@ export default class Engine {
     const args = this.getStartArgs()
     this.instance = spawn(binPath, args, {
       windowsHide: false,
-      stdio: is.dev() ? 'pipe' : 'ignore'
+      stdio: is.dev() ? 'pipe' : 'ignore',
     })
     const pid = this.instance.pid.toString()
     this.writePidFile(pidPath, pid)
@@ -67,7 +67,7 @@ export default class Engine {
     }
   }
 
-  stop () {
+  stop() {
     logger.info('[Motrix] engine.stop.instance')
     if (this.instance) {
       this.instance.kill()
@@ -75,7 +75,7 @@ export default class Engine {
     }
   }
 
-  writePidFile (pidPath, pid) {
+  writePidFile(pidPath, pid) {
     writeFile(pidPath, pid, (err) => {
       if (err) {
         logger.error(`[Motrix] Write engine process pid failed: ${err}`)
@@ -83,7 +83,7 @@ export default class Engine {
     })
   }
 
-  getEngineBinPath () {
+  getEngineBinPath() {
     const result = getAria2BinPath(platform, arch)
     const binIsExist = existsSync(result)
     if (!binIsExist) {
@@ -94,7 +94,7 @@ export default class Engine {
     return result
   }
 
-  getStartArgs () {
+  getStartArgs() {
     const confPath = getAria2ConfPath(platform, arch)
 
     const sessionPath = getSessionPath()
@@ -105,16 +105,24 @@ export default class Engine {
       result = [...result, `--input-file=${sessionPath}`]
     }
 
-    const extraConfig = {
-      ...this.systemConfig
+    const extraConfig: any = {
+      ...this.systemConfig,
     }
+    const idleBtNetworkGuard = this.userConfig['idle-bt-network-guard'] !== false
+    if (idleBtNetworkGuard) {
+      extraConfig['bt-enable-lpd'] = false
+      extraConfig['enable-peer-exchange'] = false
+      extraConfig['enable-dht'] = false
+      extraConfig['enable-dht6'] = false
+    }
+
     const keepSeeding = this.userConfig['keep-seeding']
     const seedRatio = this.systemConfig['seed-ratio']
     if (keepSeeding || seedRatio === 0) {
       extraConfig['seed-ratio'] = 0
       delete extraConfig['seed-time']
     }
-    console.log('extraConfig===>', extraConfig)
+    logger.log('extraConfig===>', extraConfig)
 
     const extra = transformConfig(extraConfig)
     result = [...result, ...extra]
@@ -122,7 +130,7 @@ export default class Engine {
     return result
   }
 
-  isRunning (pid) {
+  isRunning(pid) {
     try {
       return process.kill(pid, 0)
     } catch (e) {
@@ -130,7 +138,7 @@ export default class Engine {
     }
   }
 
-  restart () {
+  restart() {
     this.stop()
     this.start()
   }

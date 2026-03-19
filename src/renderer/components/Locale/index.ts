@@ -2,9 +2,9 @@ import resources from '@shared/locales/all'
 import LocaleManager from '@shared/locales/LocaleManager'
 
 const localeManager = new LocaleManager({
-  resources
+  resources,
 })
 
-export function getLocaleManager () {
+export function getLocaleManager() {
   return localeManager
 }

@@ -1,21 +1,23 @@
 export default {
-  'active': 'Se descarcă',
-  'waiting': 'În aşteptare',
-  'stopped': 'Oprite',
+  active: 'Se descarcă',
+  waiting: 'În aşteptare',
+  stopped: 'Oprite',
   'new-task': 'Sarcină Nouă',
   'new-bt-task': 'Sarcină Nouă BT',
   'open-file': 'Deschide fişier Torrent...',
   'uri-task': 'URL',
   'torrent-task': 'Torrent',
   'uri-task-tips': 'O adresă URL de sarcină pe linie (acceptă magnet)',
-  'thunder-link-tips': 'Sfat: Este posibil ca linkurile Thunder să nu poată fi descărcate după decodare',
+  'thunder-link-tips':
+    'Sfat: Este posibil ca linkurile Thunder să nu poată fi descărcate după decodare',
   'new-task-uris-required': 'Introduceți cel puțin o adresă URL validă',
   'new-task-torrent-required': 'Vă rugăm să selectați un fișier torrent',
   'file-name': 'Nume',
   'file-extension': 'Extensie',
   'file-size': 'Dimensiune',
   'file-completed-size': 'Descărcat',
-  'selected-files-sum': 'Selectate: {{selectedFilesCount}} fișiere, dimensiune totală {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Selectate: {{selectedFilesCount}} fișiere, dimensiune totală {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Vă rugăm să selectați cel puțin un fișier',
   'task-gid': 'GID',
   'task-name': 'Nume sarcină',
@@ -54,10 +56,12 @@ export default {
   'navigate-to-downloading': 'Mergi la Descărcări',
   'show-advanced-options': 'Opțiuni avansate',
   'copyright-warning': 'Avertisment privind drepturile de autor',
-  'copyright-warning-message': 'Fișierul pe care doriți să îl descărcați poate fi audio sau video cu drepturi de autor, vă rugăm să vă asigurați că aveți permisiunea pentru a-l accesa.',
+  'copyright-warning-message':
+    'Fișierul pe care doriți să îl descărcați poate fi audio sau video cu drepturi de autor, vă rugăm să vă asigurați că aveți permisiunea pentru a-l accesa.',
   'copyright-yes': 'Da, am permisiunea',
   'copyright-no': 'Nu, nu am permisiunea',
-  'copyright-error-message': 'Adăugarea sarcinii nu a reușit din cauza problemei drepturilor de autor',
+  'copyright-error-message':
+    'Adăugarea sarcinii nu a reușit din cauza problemei drepturilor de autor',
   'pause-task-success': 'Sarcina "{{taskName}}" a fost întreruptă cu succes',
   'pause-task-fail': 'Nu s-a putut întrerupe sarcina "{{taskName}}"',
   'resume-task': 'Reluați sarcina',
@@ -71,7 +75,8 @@ export default {
   'delete-task-success': 'Sarcina "{{taskName}}" a fost ștearsă cu succes',
   'delete-task-fail': 'Nu s-a putut ștearge sarcina "{{taskName}}"',
   'remove-task-file-fail': 'Nu s-au putut șterge fișierele sarcinii, ștergeți-le manual',
-  'remove-task-config-file-fail': 'Ștergerea fișierului de configurare a sarcinii nu a reușit, ștergeți-l manual',
+  'remove-task-config-file-fail':
+    'Ștergerea fișierului de configurare a sarcinii nu a reușit, ștergeți-l manual',
   'move-task-up': 'Muta sarcina în sus',
   'move-task-down': 'Muta sarcina în jos',
   'pause-all-task': 'Întrerupeți toate sarcinile',
@@ -113,7 +118,8 @@ export default {
   'bt-download-complete-message': 'Descărcare finalizată {{taskName}}, se stă la seed',
   'bt-download-complete-notify': 'Descărcare BT finalizată, se stă la seed...',
   'bt-download-complete-tips': 'Sfaturi: puteți opri o sarcină pentru a nu mai sta la "seed"',
-  'bt-stopping-seeding-tip': 'Se oprește statul la seed, va dura ceva timp pentru a vă deconecta, vă rugăm să așteptați ...',
+  'bt-stopping-seeding-tip':
+    'Se oprește statul la seed, va dura ceva timp pentru a vă deconecta, vă rugăm să așteptați ...',
   'download-fail-message': 'Descărcarea nu a reușit {{taskName}}',
-  'download-fail-notify': 'Descărcarea nu a reușit'
+  'download-fail-notify': 'Descărcarea nu a reușit',
 }

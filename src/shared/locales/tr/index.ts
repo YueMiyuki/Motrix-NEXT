@@ -17,5 +17,5 @@ export default {
   preferences,
   subnav,
   task,
-  window
+  window,
 }

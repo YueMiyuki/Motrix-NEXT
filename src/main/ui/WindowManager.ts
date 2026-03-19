@@ -14,25 +14,25 @@ const baseBrowserOptions = {
   height: 768,
   backgroundColor: '#fff',
   webPreferences: {
-    nodeIntegration: true
-  }
+    nodeIntegration: true,
+  },
 }
 
 // fix: BrowserWindow rendering bug under linux
 const defaultBrowserOptions = is.macOS()
   ? {
-    ...baseBrowserOptions,
-    vibrancy: 'sidebar',
-    visualEffectState: 'active',
-    backgroundColor: '#00000000'
-  }
+      ...baseBrowserOptions,
+      vibrancy: 'sidebar',
+      visualEffectState: 'active',
+      backgroundColor: '#00000000',
+    }
   : {
-    ...baseBrowserOptions
-  }
+      ...baseBrowserOptions,
+    }
 
 export default class WindowManager extends EventEmitter {
   [key: string]: any
-  constructor (options: any = {}) {
+  constructor(options: any = {}) {
     super()
     this.userConfig = options.userConfig || {}
 
@@ -45,11 +45,11 @@ export default class WindowManager extends EventEmitter {
     this.handleAllWindowClosed()
   }
 
-  setWillQuit (flag) {
+  setWillQuit(flag) {
     this.willQuit = flag
   }
 
-  getPageOptions (page) {
+  getPageOptions(page) {
     const result = pageConfig[page] || {}
     const hideAppMenu = this.userConfig['hide-app-menu']
     if (hideAppMenu) {
@@ -72,7 +72,7 @@ export default class WindowManager extends EventEmitter {
     return result
   }
 
-  getPageBounds (page) {
+  getPageBounds(page) {
     const enabled = this.userConfig['keep-window-state']
     const windowStateMap = this.userConfig['window-state'] || {}
     let result = null
@@ -83,7 +83,7 @@ export default class WindowManager extends EventEmitter {
     return result
   }
 
-  openWindow (page: string, options: any = {}) {
+  openWindow(page: string, options: any = {}) {
     const pageOptions = this.getPageOptions(page)
     const { hidden } = options
     const autoHideWindow = this.userConfig['auto-hide-window']
@@ -100,8 +100,8 @@ export default class WindowManager extends EventEmitter {
       webPreferences: {
         contextIsolation: false,
         nodeIntegration: true,
-        nodeIntegrationInWorker: true
-      }
+        nodeIntegrationInWorker: true,
+      },
     })
 
     const bounds = this.getPageBounds(page)
@@ -151,23 +151,23 @@ export default class WindowManager extends EventEmitter {
     return window
   }
 
-  getWindow (page) {
+  getWindow(page) {
     return this.windows[page]
   }
 
-  getWindows () {
+  getWindows() {
     return this.windows || {}
   }
 
-  getWindowList (): any[] {
+  getWindowList(): any[] {
     return Object.values(this.getWindows()) as any[]
   }
 
-  addWindow (page, window) {
+  addWindow(page, window) {
     this.windows[page] = window
   }
 
-  destroyWindow (page) {
+  destroyWindow(page) {
     const win = this.getWindow(page)
     if (!win) {
       return
@@ -181,29 +181,35 @@ export default class WindowManager extends EventEmitter {
     win.destroy()
   }
 
-  removeWindow (page) {
+  removeWindow(page) {
     this.windows[page] = null
   }
 
-  bindAfterClosed (page, window) {
+  bindAfterClosed(page, window) {
     window.on('closed', (event) => {
       this.removeWindow(page)
     })
   }
 
-  handleWindowState (page, window) {
-    window.on('resize', debounce(() => {
-      const bounds = window.getBounds()
-      this.emit('window-resized', { page, bounds })
-    }, 500))
+  handleWindowState(page, window) {
+    window.on(
+      'resize',
+      debounce(() => {
+        const bounds = window.getBounds()
+        this.emit('window-resized', { page, bounds })
+      }, 500),
+    )
 
-    window.on('move', debounce(() => {
-      const bounds = window.getBounds()
-      this.emit('window-moved', { page, bounds })
-    }, 500))
+    window.on(
+      'move',
+      debounce(() => {
+        const bounds = window.getBounds()
+        this.emit('window-moved', { page, bounds })
+      }, 500),
+    )
   }
 
-  handleWindowClose (pageOptions, page, window) {
+  handleWindowClose(pageOptions, page, window) {
     window.on('close', (event) => {
       if (pageOptions.bindCloseToHide && !this.willQuit) {
         event.preventDefault()
@@ -222,7 +228,7 @@ export default class WindowManager extends EventEmitter {
     })
   }
 
-  bindRendererRecovery (page, window) {
+  bindRendererRecovery(page, window) {
     let recovering = false
     window.webContents.on('render-process-gone', (event, details) => {
       logger.error('[Motrix] renderer process gone:', page, details)
@@ -241,7 +247,7 @@ export default class WindowManager extends EventEmitter {
     })
   }
 
-  showWindow (page) {
+  showWindow(page) {
     const window = this.getWindow(page)
     if (!window || (window.isVisible() && !window.isMinimized())) {
       return
@@ -250,7 +256,7 @@ export default class WindowManager extends EventEmitter {
     window.show()
   }
 
-  hideWindow (page) {
+  hideWindow(page) {
     const window = this.getWindow(page)
     if (!window || !window.isVisible()) {
       return
@@ -258,13 +264,13 @@ export default class WindowManager extends EventEmitter {
     window.hide()
   }
 
-  hideAllWindow () {
+  hideAllWindow() {
     this.getWindowList().forEach((window: any) => {
       window?.hide()
     })
   }
 
-  toggleWindow (page) {
+  toggleWindow(page) {
     const window = this.getWindow(page)
     if (!window) {
       return
@@ -277,35 +283,35 @@ export default class WindowManager extends EventEmitter {
     }
   }
 
-  getFocusedWindow () {
+  getFocusedWindow() {
     return BrowserWindow.getFocusedWindow()
   }
 
-  handleBeforeQuit () {
+  handleBeforeQuit() {
     app.on('before-quit', () => {
       this.setWillQuit(true)
     })
   }
 
-  onWindowBlur (event, window) {
+  onWindowBlur(event, window) {
     window.hide()
   }
 
-  handleWindowBlur () {
+  handleWindowBlur() {
     app.on('browser-window-blur', this.onWindowBlur)
   }
 
-  unbindWindowBlur () {
+  unbindWindowBlur() {
     app.removeListener('browser-window-blur', this.onWindowBlur)
   }
 
-  handleAllWindowClosed () {
+  handleAllWindowClosed() {
     app.on('window-all-closed', () => {
       // Keep app alive in tray mode; app lifecycle is managed elsewhere.
     })
   }
 
-  sendCommandTo (window, command, ...args) {
+  sendCommandTo(window, command, ...args) {
     if (!window) {
       return
     }
@@ -313,7 +319,7 @@ export default class WindowManager extends EventEmitter {
     window.webContents.send('command', command, ...args)
   }
 
-  sendMessageTo (window, channel, ...args) {
+  sendMessageTo(window, channel, ...args) {
     if (!window) {
       return
     }

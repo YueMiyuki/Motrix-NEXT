@@ -1,3 +1,4 @@
+import logger from '@shared/utils/logger'
 import {
   camelCase,
   compact,
@@ -5,12 +6,11 @@ import {
   isArray,
   isEmpty,
   isFunction,
-  isNaN,
   isPlainObject,
   kebabCase,
   omitBy,
   parseInt,
-  pick
+  pick,
 } from 'lodash'
 import bitTorrentPeerId from 'bittorrent-peerid'
 
@@ -18,9 +18,6 @@ import { userKeys, systemKeys, needRestartKeys } from '@shared/configKeys'
 import {
   APP_THEME,
   ENGINE_RPC_HOST,
-  GRAPHIC,
-  NONE_SELECTED_FILES,
-  SELECTED_ALL_FILES,
   RESOURCE_TAGS,
   IMAGE_SUFFIXES,
   AUDIO_SUFFIXES,
@@ -29,16 +26,20 @@ import {
   UNKNOWN_PEERID,
   SUPPORT_RTL_LOCALES,
   UNKNOWN_PEERID_NAME,
-  DOCUMENT_SUFFIXES
+  DOCUMENT_SUFFIXES,
 } from '@shared/constants'
 
 export const bytesToSize = (bytes, precision = 1) => {
   const b = parseInt(bytes, 10)
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-  if (b === 0) { return '0 KB' }
+  if (b === 0) {
+    return '0 KB'
+  }
   const i = parseInt(Math.floor(Math.log(b) / Math.log(1024)), 10)
-  if (i === 0) { return `${b} ${sizes[i]}` }
-  return `${(b / (1024 ** i)).toFixed(precision)} ${sizes[i]}`
+  if (i === 0) {
+    return `${b} ${sizes[i]}`
+  }
+  return `${(b / 1024 ** i).toFixed(precision)} ${sizes[i]}`
 }
 
 export const extractSpeedUnit = (speed = '') => {
@@ -63,20 +64,11 @@ export const bitfieldToPercent = (text) => {
   for (let i = 0; i < len; i++) {
     p = parseInt(text[i], 16)
     for (let j = 0; j < 4; j++) {
-      one += (p & 1)
+      one += p & 1
       p >>= 1
     }
   }
-  return Math.floor(one / (4 * len) * 100).toString()
-}
-
-export const bitfieldToGraphic = (text) => {
-  const len = text.length
-  let result = ''
-  for (let i = 0; i < len; i++) {
-    result += GRAPHIC[Math.floor(parseInt(text[i], 16) / 4)] + ' '
-  }
-  return result
+  return Math.floor((one / (4 * len)) * 100).toString()
 }
 
 export const peerIdParser = (str) => {
@@ -92,13 +84,11 @@ export const peerIdParser = (str) => {
     const buffer = Buffer.from(decodedStr, 'binary')
     parsed = bitTorrentPeerId(buffer)
   } catch (e) {
-    console.log('peerIdParser.fail', e, str, decodedStr)
+    logger.log('peerIdParser.fail', e, str, decodedStr)
     return UNKNOWN_PEERID_NAME
   }
 
-  const result = parsed.version
-    ? `${parsed.client} v${parsed.version}`
-    : parsed.client
+  const result = parsed.version ? `${parsed.client} v${parsed.version}` : parsed.client
   return result
 }
 
@@ -108,7 +98,7 @@ export const calcProgress = (totalLength, completedLength, decimal = 2) => {
   if (total === 0 || completed === 0) {
     return 0
   }
-  const percentage = completed / total * 100
+  const percentage = (completed / total) * 100
   const result = parseFloat(percentage.toFixed(decimal))
   return result
 }
@@ -153,7 +143,7 @@ export const timeFormat = (seconds, { prefix = '', suffix = '', i18n }) => {
     hour: 'h',
     minute: 'm',
     second: 's',
-    ...i18n
+    ...i18n,
   }
 
   if (secs <= 0) {
@@ -190,48 +180,22 @@ export const localeDateTimeFormat = (timestamp, locale) => {
     day: 'numeric',
     hour: 'numeric',
     minute: 'numeric',
-    second: 'numeric'
+    second: 'numeric',
   })
 }
 
-export const ellipsis = (str = '', maxLen = 64) => {
-  const len = str.length
-  let result = str
-  if (len < maxLen) {
-    return result
+const ellipsis = (str = '', maxLen = 64) => {
+  if (str.length < maxLen) {
+    return str
   }
-
-  if (maxLen > 0) {
-    result = `${result.substring(0, maxLen)}...`
-  }
-
-  return result
-}
-
-export const getFileSelection = (files = []) => {
-  console.log('getFileSelection===>', files)
-  const selectedFiles = files.filter((file) => file.selected)
-  if (files.length === 0 || selectedFiles.length === 0) {
-    return NONE_SELECTED_FILES
-  }
-
-  if (files.length === selectedFiles.length) {
-    return SELECTED_ALL_FILES
-  }
-
-  const indexArr = []
-  files.forEach((_, index) => {
-    indexArr.push(index)
-  })
-  const result = indexArr.join(',')
-  return result
+  return maxLen > 0 ? `${str.substring(0, maxLen)}...` : str
 }
 
 export const getTaskName = (task, options = {}) => {
   const o = {
     defaultName: '',
     maxLen: 64, // -1: No limit length
-    ...options
+    ...options,
   }
   const { defaultName, maxLen } = o
   let result = defaultName
@@ -240,11 +204,10 @@ export const getTaskName = (task, options = {}) => {
   }
 
   const { files, bittorrent } = task
-  const total = files.length
 
   if (bittorrent && bittorrent.info && bittorrent.info.name) {
     result = ellipsis(bittorrent.info.name, maxLen)
-  } else if (total === 1) {
+  } else if (files.length === 1) {
     result = getFileNameFromFile(files[0])
     result = ellipsis(result, maxLen)
   }
@@ -297,13 +260,11 @@ export const getTaskUri = (task, withTracker = false) => {
   return result
 }
 
-export const buildMagnetLink = (task, withTracker = false, btTracker = []) => {
+const buildMagnetLink = (task, withTracker = false, btTracker = []) => {
   const { bittorrent, infoHash } = task
   const { info } = bittorrent
 
-  const params = [
-    `magnet:?xt=urn:btih:${infoHash}`
-  ]
+  const params = [`magnet:?xt=urn:btih:${infoHash}`]
   if (info && info.name) {
     params.push(`dn=${encodeURI(info.name)}`)
   }
@@ -315,20 +276,7 @@ export const buildMagnetLink = (task, withTracker = false, btTracker = []) => {
     })
   }
 
-  const result = params.join('&')
-
-  return result
-}
-
-export const checkTaskTitleIsEmpty = (task) => {
-  const { files, bittorrent } = task
-  const [file] = files
-  const { path } = file
-  let result = path
-  if (bittorrent && bittorrent.info && bittorrent.info.name) {
-    result = bittorrent.info.name
-  }
-  return result === ''
+  return params.join('&')
 }
 
 export const checkTaskIsBT = (task: any = {}) => {
@@ -336,18 +284,11 @@ export const checkTaskIsBT = (task: any = {}) => {
   return !!bittorrent
 }
 
-export const isTorrent = (file) => {
-  const { name, type } = file
-  return name.endsWith('.torrent') || type === 'application/x-bittorrent'
-}
-
 export const getAsBase64 = (file, callback) => {
   const reader = new FileReader()
   reader.addEventListener('load', () => {
     // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
-    const result = typeof reader.result === 'string'
-      ? reader.result.split('base64,')[1]
-      : ''
+    const result = typeof reader.result === 'string' ? reader.result.split('base64,')[1] : ''
     callback(result)
   })
   reader.readAsDataURL(file)
@@ -370,7 +311,7 @@ export const mergeTaskResult = (response = []) => {
   return result
 }
 
-export const changeKeysCase = (obj, caseConverter) => {
+const changeKeysCase = (obj, caseConverter) => {
   const result = {}
   if (isEmpty(obj) || !isFunction(caseConverter)) {
     return result
@@ -392,46 +333,21 @@ export const changeKeysToKebabCase = (obj = {}) => {
   return changeKeysCase(obj, kebabCase)
 }
 
-export const validateNumber = (n) => {
-  return !isNaN(parseFloat(n)) && isFinite(n) && Number(n) === n
-}
-
-export const fixValue = (obj = {}) => {
-  const result = {}
-  for (const [k, v] of Object.entries(obj)) {
-    if (v === 'true') {
-      result[k] = true
-    } else if (v === 'false') {
-      result[k] = false
-    } else if (validateNumber(v)) {
-      result[k] = Number(v)
-    } else {
-      result[k] = v
-    }
-  }
-  return result
-}
-
 export const separateConfig = (options) => {
-  // user
   const user = {}
-  // system
   const system = {}
-  // others
   const others = {}
 
   for (const [k, v] of Object.entries(options)) {
-    if (userKeys.indexOf(k) !== -1) {
+    if (userKeys.includes(k)) {
       user[k] = v
-    } else if (systemKeys.indexOf(k) !== -1) {
+    } else if (systemKeys.includes(k)) {
       system[k] = v
     } else {
       others[k] = v
     }
   }
-  return {
-    user, system, others
-  }
+  return { user, system, others }
 }
 
 export const compactUndefined = (arr = []) => {
@@ -440,27 +356,27 @@ export const compactUndefined = (arr = []) => {
   })
 }
 
-export const splitTextRows = (text = '') => {
+const splitTextRows = (text = '') => {
   text = `${text}`
-  let result = text
-    .replace(/(?:\\\r\\\n|\\\r|\\\n)/g, ' ')
-    .replace(/(?:\r\n|\r|\n)/g, '\n')
-    .split('\n') || []
+  let result =
+    text
+      .replace(/(?:\\\r\\\n|\\\r|\\\n)/g, ' ')
+      .replace(/(?:\r\n|\r|\n)/g, '\n')
+      .split('\n') || []
   result = result.map((row) => row.trim())
   return result
 }
 
 export const convertCommaToLine = (text = '') => {
-  text = `${text}`
-  let arr = text.split(',')
-  arr = arr.map((row) => row.trim())
-  const result = arr.join('\n').trim()
-  return result
+  return `${text}`
+    .split(',')
+    .map((row) => row.trim())
+    .join('\n')
+    .trim()
 }
 
 export const convertLineToComma = (text = '') => {
-  const result = text.trim().replace(/(?:\r\n|\r|\n)/g, ',')
-  return result
+  return text.trim().replace(/(?:\r\n|\r|\n)/g, ',')
 }
 
 export const filterVideoFiles = (files = []) => {
@@ -488,25 +404,7 @@ export const filterDocumentFiles = (files = []) => {
   })
 }
 
-export const isAudioOrVideo = (uri = '') => {
-  const suffixs = [...AUDIO_SUFFIXES, ...VIDEO_SUFFIXES]
-  const result = suffixs.some((suffix) => {
-    return uri.includes(suffix)
-  })
-  return result
-}
-
-export const needCheckCopyright = (links = '') => {
-  const uris = splitTaskLinks(links)
-  const avs = uris.filter(uri => {
-    return isAudioOrVideo(uri)
-  })
-
-  const result = avs.length > 0
-  return result
-}
-
-export const decodeThunderLink = (url = '') => {
+const decodeThunderLink = (url = '') => {
   if (!url.startsWith('thunder://')) {
     return url
   }
@@ -519,11 +417,7 @@ export const decodeThunderLink = (url = '') => {
 }
 
 export const splitTaskLinks = (links = '') => {
-  const temp = compact(splitTextRows(links))
-  const result = temp.map((item) => {
-    return decodeThunderLink(item)
-  })
-  return result
+  return compact(splitTextRows(links)).map(decodeThunderLink)
 }
 
 export const detectResource = (content) => {
@@ -534,24 +428,20 @@ export const detectResource = (content) => {
 
 export const buildFileList = (rawFile) => {
   rawFile.uid = Date.now()
-  const file = {
-    status: 'ready',
-    name: rawFile.name,
-    size: rawFile.size,
-    percentage: 0,
-    uid: rawFile.uid,
-    raw: rawFile
-  }
-  const fileList = [file]
-  return fileList
-}
-
-export const isRTL = (locale = 'en-US') => {
-  return SUPPORT_RTL_LOCALES.includes(locale)
+  return [
+    {
+      status: 'ready',
+      name: rawFile.name,
+      size: rawFile.size,
+      percentage: 0,
+      uid: rawFile.uid,
+      raw: rawFile,
+    },
+  ]
 }
 
 export const getLangDirection = (locale = 'en-US') => {
-  return isRTL(locale) ? 'rtl' : 'ltr'
+  return SUPPORT_RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr'
 }
 
 export const listTorrentFiles = (files) => {
@@ -562,7 +452,7 @@ export const listTorrentFiles = (files) => {
       // possible Values: 1-1048576
       idx: index + 1,
       extension: `.${extension}`,
-      ...file
+      ...file,
     }
     return item
   })
@@ -575,7 +465,7 @@ export const getFileName = (fullPath) => {
 }
 
 export const getFileExtension = (filename) => {
-  return filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2)
+  return filename.slice(((filename.lastIndexOf('.') - 1) >>> 0) + 2)
 }
 
 export const removeExtensionDot = (extension = '') => {
@@ -594,8 +484,8 @@ export const diffConfig = (current = {}, next = {}) => {
   return result
 }
 
-export const calcFormLabelWidth = (locale) => {
-  return locale.startsWith('de') ? '28%' : '25%'
+export const calcFormLabelWidth = (locale = 'en-US') => {
+  return typeof locale === 'string' && locale.startsWith('de') ? '28%' : '25%'
 }
 
 export const parseHeader = (header = '') => {
@@ -644,22 +534,12 @@ export const buildRpcUrl = (options: any = {}) => {
 }
 
 export const checkIsNeedRestart = (changed = {}) => {
-  let result = false
-
   if (isEmpty(changed)) {
-    return result
+    return false
   }
 
-  const kebabCaseChanged = changeKeysToKebabCase(changed)
-  needRestartKeys.some((key) => {
-    if (Object.keys(kebabCaseChanged).includes(key)) {
-      result = true
-      return true
-    }
-    return false
-  })
-
-  return result
+  const changedKeys = Object.keys(changeKeysToKebabCase(changed))
+  return needRestartKeys.some((key) => changedKeys.includes(key))
 }
 
 export const checkIsNeedRun = (enable, lastTime, interval) => {
@@ -667,14 +547,11 @@ export const checkIsNeedRun = (enable, lastTime, interval) => {
     return false
   }
 
-  return (Date.now() - lastTime > interval)
+  return Date.now() - lastTime > interval
 }
 
 export const generateRandomInt = (min = 0, max = 10000) => {
-  let result = min
-  const range = max - min
-  result += Math.floor(Math.random() * Math.floor(range))
-  return result
+  return min + Math.floor(Math.random() * (max - min))
 }
 
 export const intersection = (array1 = [], array2 = []) => {
@@ -682,7 +559,7 @@ export const intersection = (array1 = [], array2 = []) => {
     return []
   }
 
-  return array1.filter(value => array2.includes(value))
+  return array1.filter((value) => array2.includes(value))
 }
 
 export const cloneArray = (arr = [], reversed = false) => {
@@ -695,9 +572,7 @@ export const cloneArray = (arr = [], reversed = false) => {
 }
 
 export const pushItemToFixedLengthArray = (arr = [], maxLength, item) => {
-  const result = arr.length >= maxLength
-    ? [...arr.slice(1, maxLength - 1), item]
-    : [...arr, item]
+  const result = arr.length >= maxLength ? [...arr.slice(1, maxLength - 1), item] : [...arr, item]
   return result
 }
 
@@ -707,16 +582,12 @@ export const removeArrayItem = (arr = [], item) => {
     return [...arr]
   }
 
-  const result = [
-    ...arr.slice(0, idx),
-    ...arr.slice(idx + 1)
-  ]
+  const result = [...arr.slice(0, idx), ...arr.slice(idx + 1)]
   return result
 }
 
 export const getInverseTheme = (theme) => {
-  return (theme === APP_THEME.LIGHT) ? APP_THEME.DARK : APP_THEME.LIGHT
+  return theme === APP_THEME.LIGHT ? APP_THEME.DARK : APP_THEME.LIGHT
 }
 
 export const changedConfig = { basic: {}, advanced: {} }
-export const backupConfig = { theme: undefined, locale: undefined }

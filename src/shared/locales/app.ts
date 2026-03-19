@@ -25,125 +25,125 @@ import appLocaleZhTW from '@shared/locales/zh-TW'
 
 // Please keep the locale key in alphabetical order.
 const resources = {
-  'ar': {
+  ar: {
     translation: {
-      ...appLocaleAr
-    }
+      ...appLocaleAr,
+    },
   },
-  'bg': {
+  bg: {
     translation: {
-      ...appLocaleBg
-    }
+      ...appLocaleBg,
+    },
   },
-  'ca': {
+  ca: {
     translation: {
-      ...appLocaleCa
-    }
+      ...appLocaleCa,
+    },
   },
-  'de': {
+  de: {
     translation: {
-      ...appLocaleDe
-    }
+      ...appLocaleDe,
+    },
   },
-  'el': {
+  el: {
     translation: {
-      ...appLocaleEl
-    }
+      ...appLocaleEl,
+    },
   },
   'en-US': {
     translation: {
-      ...appLocaleEnUS
-    }
+      ...appLocaleEnUS,
+    },
   },
-  'fa': {
+  fa: {
     translation: {
-      ...appLocaleFa
-    }
+      ...appLocaleFa,
+    },
   },
-  'fr': {
+  fr: {
     translation: {
-      ...appLocaleFr
-    }
+      ...appLocaleFr,
+    },
   },
-  'hu': {
+  hu: {
     translation: {
-      ...appLocaleHu
-    }
+      ...appLocaleHu,
+    },
   },
-  'id': {
+  id: {
     translation: {
-      ...appLocaleId
-    }
+      ...appLocaleId,
+    },
   },
-  'it': {
+  it: {
     translation: {
-      ...appLocaleIt
-    }
+      ...appLocaleIt,
+    },
   },
-  'ja': {
+  ja: {
     translation: {
-      ...appLocaleJa
-    }
+      ...appLocaleJa,
+    },
   },
-  'nl': {
+  nl: {
     translation: {
-      ...appLocaleNl
-    }
+      ...appLocaleNl,
+    },
   },
-  'ko': {
+  ko: {
     translation: {
-      ...appLocaleKo
-    }
+      ...appLocaleKo,
+    },
   },
-  'pl': {
+  pl: {
     translation: {
-      ...appLocalePl
-    }
+      ...appLocalePl,
+    },
   },
   'pt-BR': {
     translation: {
-      ...appLocalePtBR
-    }
+      ...appLocalePtBR,
+    },
   },
-  'ro': {
+  ro: {
     translation: {
-      ...appLocaleRo
-    }
+      ...appLocaleRo,
+    },
   },
-  'ru': {
+  ru: {
     translation: {
-      ...appLocaleRu
-    }
+      ...appLocaleRu,
+    },
   },
-  'th': {
+  th: {
     translation: {
-      ...appLocaleTh
-    }
+      ...appLocaleTh,
+    },
   },
-  'tr': {
+  tr: {
     translation: {
-      ...appLocaleTr
-    }
+      ...appLocaleTr,
+    },
   },
-  'uk': {
+  uk: {
     translation: {
-      ...appLocaleUk
-    }
+      ...appLocaleUk,
+    },
   },
-  'vi': {
+  vi: {
     translation: {
-      ...appLocaleVi
-    }
+      ...appLocaleVi,
+    },
   },
   'zh-CN': {
     translation: {
-      ...appLocaleZhCN
-    }
+      ...appLocaleZhCN,
+    },
   },
   'zh-TW': {
     translation: {
-      ...appLocaleZhTW
-    }
-  }
+      ...appLocaleZhTW,
+    },
+  },
 }
 export default resources

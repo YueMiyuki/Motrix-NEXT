@@ -1,17 +1,13 @@
 import { isEmpty } from 'lodash'
 
-import {
-  ADD_TASK_TYPE,
-  NONE_SELECTED_FILES,
-  SELECTED_ALL_FILES
-} from '@shared/constants'
+import { ADD_TASK_TYPE, NONE_SELECTED_FILES, SELECTED_ALL_FILES } from '@shared/constants'
 import { splitTaskLinks } from '@shared/utils'
 import { buildOuts } from '@shared/utils/rename'
 
 import {
   buildUrisFromCurl,
   buildHeadersFromCurl,
-  buildDefaultOptionsFromCurl
+  buildDefaultOptionsFromCurl,
 } from '@shared/utils/curl'
 
 export const initTaskForm = (state: any) => {
@@ -24,7 +20,7 @@ export const initTaskForm = (state: any) => {
     followTorrent,
     maxConnectionPerServer,
     newTaskShowDownloading,
-    split
+    split,
   } = state.preference.config
   const result = {
     allProxy,
@@ -43,12 +39,12 @@ export const initTaskForm = (state: any) => {
     uris: addTaskUrl,
     userAgent: '',
     authorization: '',
-    ...addTaskOptions
+    ...addTaskOptions,
   }
   return result
 }
 
-export const buildHeader = (form: any) => {
+const buildHeader = (form: any) => {
   const { userAgent, referer, cookie, authorization } = form
   const result = []
 
@@ -68,14 +64,8 @@ export const buildHeader = (form: any) => {
   return result
 }
 
-export const buildOption = (type: string, form: any) => {
-  const {
-    allProxy,
-    dir,
-    out,
-    selectFile,
-    split
-  } = form
+const buildOption = (type: string, form: any) => {
+  const { allProxy, dir, out, selectFile, split } = form
   const result: any = {}
 
   if (!isEmpty(allProxy)) {
@@ -95,10 +85,7 @@ export const buildOption = (type: string, form: any) => {
   }
 
   if (type === ADD_TASK_TYPE.TORRENT) {
-    if (
-      selectFile !== SELECTED_ALL_FILES &&
-      selectFile !== NONE_SELECTED_FILES
-    ) {
+    if (selectFile !== SELECTED_ALL_FILES && selectFile !== NONE_SELECTED_FILES) {
       result.selectFile = selectFile
     }
   }
@@ -128,7 +115,7 @@ export const buildUriPayload = (form: any) => {
   const result = {
     uris,
     outs,
-    options
+    options,
   }
   return result
 }
@@ -142,7 +129,7 @@ export const buildTorrentPayload = (form: any) => {
   const options = buildOption(ADD_TASK_TYPE.TORRENT, form)
   const result = {
     torrent,
-    options
+    options,
   }
   return result
 }

@@ -3,25 +3,25 @@ import { getLanguage } from '@shared/locales'
 
 export default class LocaleManager {
   [key: string]: any
-  constructor (options: any = {}) {
+  constructor(options: any = {}) {
     this.options = options
 
     i18next.init({
       fallbackLng: 'en-US',
-      resources: options.resources
+      resources: options.resources,
     })
   }
 
-  changeLanguage (lng) {
+  changeLanguage(lng) {
     return i18next.changeLanguage(lng)
   }
 
-  changeLanguageByLocale (locale) {
+  changeLanguageByLocale(locale) {
     const lng = getLanguage(locale)
     return this.changeLanguage(lng)
   }
 
-  getI18n () {
+  getI18n() {
     return i18next
   }
 }

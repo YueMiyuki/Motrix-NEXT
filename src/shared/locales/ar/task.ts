@@ -1,7 +1,7 @@
 export default {
-  'active': 'جاري التحميل',
-  'waiting': 'جاري الانتظار',
-  'stopped': 'المتوقفة',
+  active: 'جاري التحميل',
+  waiting: 'جاري الانتظار',
+  stopped: 'المتوقفة',
   'new-task': 'اضافة تحميل جديد',
   'new-bt-task': 'اضافة تحميل تورنت جديد',
   'open-file': 'فتح ملف تورنت...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'نوع الملف',
   'file-size': 'حجم الملف',
   'file-completed-size': 'تم التنزيل',
-  'selected-files-sum': 'الملف المختار: {{selectedFilesCount}} ملف, الحجم الكلي {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'الملف المختار: {{selectedFilesCount}} ملف, الحجم الكلي {{selectedFilesTotalSize}}',
   'select-at-least-one': 'الرجاء تحديد ملف واحد على الأقل',
   'task-gid': 'GID',
   'task-name': 'اسم التحميل',
@@ -54,7 +55,8 @@ export default {
   'navigate-to-downloading': 'الانتقال إلى التحميل',
   'show-advanced-options': 'الخيارات المتقدمة',
   'copyright-warning': 'تحذير حقوق الطبع والنشر',
-  'copyright-warning-message': 'قد يكون الملف الذي تريد تحميله محميًا بحقوق الطبع والنشر بالصوت أو بالفيديو، يرجى التأكد من حصولك على إذن للوصول إليه.',
+  'copyright-warning-message':
+    'قد يكون الملف الذي تريد تحميله محميًا بحقوق الطبع والنشر بالصوت أو بالفيديو، يرجى التأكد من حصولك على إذن للوصول إليه.',
   'copyright-yes': 'نعم، أملك الإذن',
   'copyright-no': 'لا، لا أملك الإذن',
   'copyright-error-message': 'فشل في إضافة التحميل بسبب حقوق الطبع والنشر',
@@ -113,7 +115,8 @@ export default {
   'bt-download-complete-message': 'اكتمل تحميل {{taskName}، وعملية البَذر',
   'bt-download-complete-notify': 'اكتمل تحميل التورنت، وعملية البَذر...',
   'bt-download-complete-tips': 'نصيحة: يمكنك إيقاف التحميل لإنهاء عملية البَذر',
-  'bt-stopping-seeding-tip': 'جاري إيقاف عملية البَذر، سيستغرق قطع الاتصال بعض الوقت، الرجاء الانتظار...',
+  'bt-stopping-seeding-tip':
+    'جاري إيقاف عملية البَذر، سيستغرق قطع الاتصال بعض الوقت، الرجاء الانتظار...',
   'download-fail-message': 'فشل تحميل {{taskName}}',
-  'download-fail-notify': 'فشل التحميل'
+  'download-fail-notify': 'فشل التحميل',
 }

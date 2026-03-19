@@ -11,7 +11,7 @@ import { getI18n } from '../ui/Locale'
 const UPDATE_PROVIDER = {
   provider: 'github',
   owner: 'YueMiyuki',
-  repo: 'Motrix-NEXT'
+  repo: 'Motrix-NEXT',
 } as const
 
 if (is.dev()) {
@@ -20,7 +20,7 @@ if (is.dev()) {
 
 export default class UpdateManager extends EventEmitter {
   [key: string]: any
-  constructor (options: any = {}) {
+  constructor(options: any = {}) {
     super()
     this.options = options
     this.i18n = getI18n()
@@ -38,17 +38,17 @@ export default class UpdateManager extends EventEmitter {
 
     this.autoCheckData = {
       checkEnable: this.options.autoCheck,
-      userCheck: false
+      userCheck: false,
     }
     this.init()
   }
 
-  setupUpdateFeed () {
+  setupUpdateFeed() {
     try {
       this.updater.setFeedURL(UPDATE_PROVIDER as any)
       this.updateFeedReady = true
       logger.info(
-        `[Motrix] updater feed source: github/${UPDATE_PROVIDER.owner}/${UPDATE_PROVIDER.repo}`
+        `[Motrix] updater feed source: github/${UPDATE_PROVIDER.owner}/${UPDATE_PROVIDER.repo}`,
       )
     } catch (error) {
       this.updateFeedReady = false
@@ -57,11 +57,11 @@ export default class UpdateManager extends EventEmitter {
     }
   }
 
-  setupProxy (proxy) {
+  setupProxy(proxy) {
     const { enable, server, scope = [] } = proxy
     if (!enable || !server || !scope.includes(PROXY_SCOPES.UPDATE_APP)) {
       this.updater.netSession.setProxy({
-        proxyRules: undefined
+        proxyRules: undefined,
       })
       return
     }
@@ -72,7 +72,7 @@ export default class UpdateManager extends EventEmitter {
 
     logger.info(`[Motrix] setup proxy: ${proxyRules}`, username, password, protocol, host, port)
     this.updater.netSession.setProxy({
-      proxyRules
+      proxyRules,
     })
 
     if (server.includes('@')) {
@@ -82,7 +82,7 @@ export default class UpdateManager extends EventEmitter {
     }
   }
 
-  init () {
+  init() {
     // Event: error
     // Event: checking-for-update
     // Event: update-available
@@ -106,19 +106,19 @@ export default class UpdateManager extends EventEmitter {
     }
   }
 
-  canCheckForUpdates () {
+  canCheckForUpdates() {
     if (!this.updateFeedReady) {
       logger.warn('[Motrix] skip update check: updater feed is not ready')
     }
     return this.updateFeedReady
   }
 
-  check () {
+  check() {
     this.autoCheckData.userCheck = true
     if (!this.canCheckForUpdates()) {
       dialog.showMessageBox({
         title: this.i18n.t('app.check-for-updates-title'),
-        message: this.i18n.t('app.update-not-available-message')
+        message: this.i18n.t('app.update-not-available-message'),
       })
       return
     }
@@ -128,35 +128,37 @@ export default class UpdateManager extends EventEmitter {
     })
   }
 
-  checkingForUpdate () {
+  checkingForUpdate() {
     this.isChecking = true
     this.emit('checking')
   }
 
-  updateAvailable (event, info) {
+  updateAvailable(event, info) {
     this.emit('update-available', info)
-    dialog.showMessageBox({
-      type: 'info',
-      title: this.i18n.t('app.check-for-updates-title'),
-      message: this.i18n.t('app.update-available-message'),
-      buttons: [this.i18n.t('app.yes'), this.i18n.t('app.no')],
-      cancelId: 1
-    }).then(({ response }) => {
-      if (response === 0) {
-        this.updater.downloadUpdate()
-      } else {
-        this.emit('update-cancelled', info)
-      }
-    })
+    dialog
+      .showMessageBox({
+        type: 'info',
+        title: this.i18n.t('app.check-for-updates-title'),
+        message: this.i18n.t('app.update-available-message'),
+        buttons: [this.i18n.t('app.yes'), this.i18n.t('app.no')],
+        cancelId: 1,
+      })
+      .then(({ response }) => {
+        if (response === 0) {
+          this.updater.downloadUpdate()
+        } else {
+          this.emit('update-cancelled', info)
+        }
+      })
   }
 
-  updateNotAvailable (event, info) {
+  updateNotAvailable(event, info) {
     this.isChecking = false
     this.emit('update-not-available', info)
     if (this.autoCheckData.userCheck) {
       dialog.showMessageBox({
         title: this.i18n.t('app.check-for-updates-title'),
-        message: this.i18n.t('app.update-not-available-message')
+        message: this.i18n.t('app.update-not-available-message'),
       })
     }
   }
@@ -170,35 +172,36 @@ export default class UpdateManager extends EventEmitter {
    * total,
    * transferred
    */
-  updateDownloadProgress (event) {
+  updateDownloadProgress(event) {
     this.emit('download-progress', event)
   }
 
-  updateDownloaded (event, info) {
+  updateDownloaded(event, info) {
     this.emit('update-downloaded', info)
     this.updater.logger.log(`Update Downloaded: ${info}`)
-    dialog.showMessageBox({
-      title: this.i18n.t('app.check-for-updates-title'),
-      message: this.i18n.t('app.update-downloaded-message')
-    }).then(_ => {
-      this.isChecking = false
-      this.emit('will-updated')
-      setTimeout(() => {
-        this.updater.quitAndInstall()
-      }, 200)
-    })
+    dialog
+      .showMessageBox({
+        title: this.i18n.t('app.check-for-updates-title'),
+        message: this.i18n.t('app.update-downloaded-message'),
+      })
+      .then((_) => {
+        this.isChecking = false
+        this.emit('will-updated')
+        setTimeout(() => {
+          this.updater.quitAndInstall()
+        }, 200)
+      })
   }
 
-  updateCancelled () {
+  updateCancelled() {
     this.isChecking = false
   }
 
-  updateError (event, error) {
+  updateError(event, error) {
     this.isChecking = false
     this.emit('update-error', error)
-    const msg = (error == null)
-      ? this.i18n.t('app.update-error-message')
-      : (error.stack || error).toString()
+    const msg =
+      error == null ? this.i18n.t('app.update-error-message') : (error.stack || error).toString()
 
     this.updater.logger.warn(`[Motrix] update-error: ${msg}`)
     dialog.showErrorBox('Error', msg)

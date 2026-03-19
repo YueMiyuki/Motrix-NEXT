@@ -2,7 +2,7 @@ import { isEmpty } from 'lodash'
 import axios from 'axios'
 import { MAX_BT_TRACKER_LENGTH, ONE_SECOND, PROXY_SCOPES } from '@shared/constants'
 
-export const convertToAxiosProxy = (proxyServer = '') => {
+const convertToAxiosProxy = (proxyServer = '') => {
   if (!proxyServer) {
     return
   }
@@ -13,20 +13,21 @@ export const convertToAxiosProxy = (proxyServer = '') => {
   let result: any = {
     protocol: protocol.replace(':', ''),
     host: hostname,
-    port: port ? Number(port) : undefined
+    port: port ? Number(port) : undefined,
   }
 
-  const auth = username || password
-    ? {
-      username,
-      password
-    }
-    : undefined
+  const auth =
+    username || password
+      ? {
+          username,
+          password,
+        }
+      : undefined
 
   if (auth) {
     result = {
       ...result,
-      auth
+      auth,
     }
   }
 
@@ -40,16 +41,19 @@ export const fetchBtTrackerFromSource = async (source, proxyConfig: any = {}) =>
 
   const now = Date.now()
   const { enable, server, scope = [] } = proxyConfig
-  const proxy = enable && server && scope.includes(PROXY_SCOPES.UPDATE_TRACKERS)
-    ? convertToAxiosProxy(server)
-    : undefined
+  const proxy =
+    enable && server && scope.includes(PROXY_SCOPES.UPDATE_TRACKERS)
+      ? convertToAxiosProxy(server)
+      : undefined
 
   // Axios's config.proxy is Node.js only
   const promises = source.map(async (url) => {
-    return axios.get(`${url}?t=${now}`, {
-      timeout: 30 * ONE_SECOND,
-      proxy
-    }).then((value) => value.data)
+    return axios
+      .get(`${url}?t=${now}`, {
+        timeout: 30 * ONE_SECOND,
+        proxy,
+      })
+      .then((value) => value.data)
   })
 
   const results = await Promise.allSettled(promises)
@@ -61,13 +65,16 @@ export const fetchBtTrackerFromSource = async (source, proxyConfig: any = {}) =>
 }
 
 export const convertTrackerDataToLine = (arr = []) => {
-  const result = arr.join('\r\n').replace(/^\s*[\r\n]/gm, '').trim()
-  return result
+  return arr
+    .join('\r\n')
+    .replace(/^\s*[\r\n]/gm, '')
+    .trim()
 }
 
 export const convertTrackerDataToComma = (arr = []) => {
-  const result = convertTrackerDataToLine(arr).replace(/(?:\r\n|\r|\n)/g, ',').trim()
-  return result
+  return convertTrackerDataToLine(arr)
+    .replace(/(?:\r\n|\r|\n)/g, ',')
+    .trim()
 }
 
 export const reduceTrackerString = (str = '') => {

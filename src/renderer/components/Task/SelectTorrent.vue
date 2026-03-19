@@ -1,38 +1,41 @@
 <template>
-  <el-upload
-    class="upload-torrent"
-    drag
-    action="/"
-    v-if="isTorrentsEmpty"
-    :limit="1"
-    :multiple="false"
-    accept=".torrent"
-    :on-change="handleChange"
-    :on-exceed="handleExceed"
-    :auto-upload="false"
-    :show-file-list="false">
-    <i class="upload-inbox-icon"><mo-icon name="inbox" width="24" height="24" /></i>
-    <div class="el-upload__text">
-      {{ $t('task.select-torrent') }}
-      <div class="torrent-name" v-if="name">{{ name }}</div>
+  <div v-if="isTorrentsEmpty" class="upload-torrent">
+    <div
+      class="upload-torrent-drop"
+      :class="{ 'is-dragover': isDragOver }"
+      @dragover.prevent
+      @dragenter.prevent="isDragOver = true"
+      @dragleave.prevent="isDragOver = false"
+      @drop.prevent="onDrop"
+      @click="triggerFileInput"
+    >
+      <input
+        ref="fileInput"
+        type="file"
+        accept=".torrent"
+        hidden
+        @change="onFileInputChange"
+      />
+      <i class="upload-inbox-icon"><Inbox :size="24" /></i>
+      <div class="upload-text">
+        {{ $t("task.select-torrent") }}
+        <div class="torrent-name" v-if="name">{{ name }}</div>
+      </div>
     </div>
-  </el-upload>
-  <div
-    class="selective-torrent"
-    v-else
-  >
-    <el-row class="torrent-info" :gutter="12">
-      <el-col class="torrent-name" :span="20">
-        <el-tooltip class="item" effect="dark" :content="name" placement="top">
+  </div>
+  <div class="selective-torrent" v-else>
+    <ui-row class="torrent-info" :gutter="12">
+      <ui-col class="torrent-name" :span="20">
+        <ui-tooltip class="item" effect="dark" :content="name" placement="top">
           <span>{{ name }}</span>
-        </el-tooltip>
-      </el-col>
-      <el-col class="torrent-actions" :span="4">
+        </ui-tooltip>
+      </ui-col>
+      <ui-col class="torrent-actions" :span="4">
         <span @click="handleTrashClick">
-          <mo-icon name="trash" width="14" height="14" />
+          <Trash :size="14" />
         </span>
-      </el-col>
-    </el-row>
+      </ui-col>
+    </ui-row>
     <mo-task-files
       ref="torrentFileList"
       mode="ADD"
@@ -44,162 +47,140 @@
 </template>
 
 <script lang="ts">
-  import { mapState } from 'vuex'
-  import TaskFiles from '@/components/TaskDetail/TaskFiles.vue'
-  import '@/components/Icons/inbox'
-  import {
-    EMPTY_STRING,
-    NONE_SELECTED_FILES,
-    SELECTED_ALL_FILES
-  } from '@shared/constants'
-  import {
-    buildFileList,
-    listTorrentFiles,
-    getAsBase64
-  } from '@shared/utils'
+import logger from "@shared/utils/logger";
+import { useAppStore } from "@/store/app";
+import { usePreferenceStore } from "@/store/preference";
+import TaskFiles from "@/components/TaskDetail/TaskFiles.vue";
+import { Inbox, Trash } from "lucide-vue-next";
+import {
+  EMPTY_STRING,
+  NONE_SELECTED_FILES,
+  SELECTED_ALL_FILES,
+} from "@shared/constants";
+import { buildFileList, listTorrentFiles, getAsBase64 } from "@shared/utils";
 
-  function getParseTorrentRemote () {
-    if (typeof window === 'undefined' || typeof window.require !== 'function') {
-      return null
-    }
-
-    try {
-      const parseTorrent = window.require('parse-torrent')
-      return parseTorrent.remote
-    } catch (err) {
-      return null
-    }
+function getParseTorrentRemote() {
+  if (typeof window === "undefined" || typeof window.require !== "function") {
+    return null;
   }
 
-  export default {
-    name: 'mo-select-torrent',
-    components: {
-      [TaskFiles.name]: TaskFiles
+  try {
+    const parseTorrent = window.require("parse-torrent");
+    return parseTorrent.remote;
+  } catch (err) {
+    return null;
+  }
+}
+
+export default {
+  name: "mo-select-torrent",
+  components: {
+    [TaskFiles.name]: TaskFiles,
+    Inbox,
+    Trash,
+  },
+  props: {},
+  data() {
+    return {
+      name: EMPTY_STRING,
+      currentTorrent: EMPTY_STRING,
+      files: [],
+      selectedFiles: [],
+      isDragOver: false,
+    };
+  },
+  computed: {
+    torrents() {
+      return useAppStore().addTaskTorrents;
     },
-    props: {
+    config() {
+      return usePreferenceStore().config;
     },
-    data () {
-      return {
-        name: EMPTY_STRING,
-        currentTorrent: EMPTY_STRING,
-        files: [],
-        selectedFiles: []
+    isTorrentsEmpty() {
+      return this.torrents.length === 0;
+    },
+  },
+  watch: {
+    torrents(fileList) {
+      if (fileList.length === 0) {
+        this.reset();
+        return;
       }
-    },
-    computed: {
-      ...(mapState as any)('app', {
-        torrents: (state: any) => state.addTaskTorrents
-      }),
-      ...(mapState as any)('preference', {
-        config: (state: any) => state.config
-      }),
-      isTorrentsEmpty () {
-        return this.torrents.length === 0
+
+      const file = fileList[0];
+      if (!file.raw) {
+        return;
       }
-    },
-    watch: {
-      torrents (fileList) {
-        if (fileList.length === 0) {
-          this.reset()
-          return
-        }
 
-        const file = fileList[0]
-        if (!file.raw) {
-          return
-        }
+      const parseTorrentRemote = getParseTorrentRemote();
+      if (!parseTorrentRemote) {
+        logger.warn(
+          "[Motrix] parse-torrent is unavailable in renderer process.",
+        );
+        return;
+      }
 
-        const parseTorrentRemote = getParseTorrentRemote()
-        if (!parseTorrentRemote) {
-          console.warn('[Motrix] parse-torrent is unavailable in renderer process.')
-          return
-        }
-
-        parseTorrentRemote(file.raw, { timeout: 60 * 1000 }, (err, parsedTorrent) => {
-          if (err) throw err
-          console.log('[Motrix] parsed torrent: ', parsedTorrent)
-          this.files = listTorrentFiles(parsedTorrent.files)
-          this.$refs.torrentFileList.toggleAllSelection()
+      parseTorrentRemote(
+        file.raw,
+        { timeout: 60 * 1000 },
+        (err, parsedTorrent) => {
+          if (err) throw err;
+          logger.log("[Motrix] parsed torrent: ", parsedTorrent);
+          this.files = listTorrentFiles(parsedTorrent.files);
+          this.$refs.torrentFileList.toggleAllSelection();
 
           getAsBase64(file.raw, (torrent) => {
-            this.name = file.name
-            this.currentTorrent = torrent
-            this.$emit('change', torrent, SELECTED_ALL_FILES)
-          })
-        })
-      }
+            this.name = file.name;
+            this.currentTorrent = torrent;
+            this.$emit("change", torrent, SELECTED_ALL_FILES);
+          });
+        },
+      );
     },
-    methods: {
-      reset () {
-        this.name = EMPTY_STRING
-        this.currentTorrent = EMPTY_STRING
-        this.files = []
-        if (this.$refs.torrentFileList) {
-          this.$refs.torrentFileList.clearSelection()
-        }
-        this.$emit('change', EMPTY_STRING, NONE_SELECTED_FILES)
-      },
-      handleChange (file, fileList) {
-        this.$store.dispatch('app/addTaskAddTorrents', { fileList })
-      },
-      handleExceed (files) {
-        const fileList = buildFileList(files[0])
-        this.$store.dispatch('app/addTaskAddTorrents', { fileList })
-      },
-      handleTrashClick () {
-        this.$store.dispatch('app/addTaskAddTorrents', { fileList: [] })
-      },
-      handleSelectionChange (val) {
-        const { currentTorrent } = this
-        this.$emit('change', currentTorrent, val)
+  },
+  methods: {
+    reset() {
+      this.name = EMPTY_STRING;
+      this.currentTorrent = EMPTY_STRING;
+      this.files = [];
+      if (this.$refs.torrentFileList) {
+        this.$refs.torrentFileList.clearSelection();
       }
-    }
-  }
+      this.$emit("change", EMPTY_STRING, NONE_SELECTED_FILES);
+    },
+    triggerFileInput() {
+      this.$refs.fileInput?.click();
+    },
+    onFileInputChange(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+      const file = files[0];
+      const fileList = [{ name: file.name, raw: file }];
+      this.handleChange(fileList[0], fileList);
+    },
+    onDrop(event) {
+      this.isDragOver = false;
+      const files = event.dataTransfer?.files;
+      if (!files || files.length === 0) return;
+      const file = files[0];
+      if (!file.name.endsWith(".torrent")) return;
+      const fileList = [{ name: file.name, raw: file }];
+      this.handleChange(fileList[0], fileList);
+    },
+    handleChange(file, fileList) {
+      useAppStore().addTaskAddTorrents({ fileList });
+    },
+    handleExceed(files) {
+      const fileList = buildFileList(files[0]);
+      useAppStore().addTaskAddTorrents({ fileList });
+    },
+    handleTrashClick() {
+      useAppStore().addTaskAddTorrents({ fileList: [] });
+    },
+    handleSelectionChange(val) {
+      const { currentTorrent } = this;
+      this.$emit("change", currentTorrent, val);
+    },
+  },
+};
 </script>
-
-<style lang="scss">
-.upload-torrent {
-  width: 100%;
-  .el-upload, .el-upload-dragger {
-    width: 100%;
-  }
-  .el-upload-dragger {
-    border-radius: 4px;
-    padding: 24px;
-    height: auto;
-  }
-  .upload-inbox-icon {
-    display: inline-block;
-    margin-bottom: 12px;
-  }
-  .torrent-name {
-    margin-top: 4px;
-    font-size: $--font-size-small;
-    color: $--color-text-secondary;
-    line-height: 16px;
-  }
-}
-.selective-torrent {
-  .torrent-name {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  .torrent-info {
-    margin-bottom: 15px;
-    font-size: 12px;
-    line-height: 16px;
-  }
-  .torrent-actions {
-    text-align: right;
-    line-height: 16px;
-    &> span {
-      cursor: pointer;
-      display: inline-block;
-      vertical-align: middle;
-      height: 14px;
-      padding: 1px;
-    }
-  }
-}
-</style>

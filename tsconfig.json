@@ -33,9 +33,5 @@
     ".electron-vue/**/*.js",
     "build/**/*.js"
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "release"
-  ]
+  "exclude": ["node_modules", "dist", "release"]
 }

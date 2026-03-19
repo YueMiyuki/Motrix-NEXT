@@ -4,7 +4,7 @@ import { LOGIN_SETTING_OPTIONS } from '@shared/constants'
 
 export default class AutoLaunchManager {
   [key: string]: any
-  enable () {
+  enable() {
     return new Promise<void>((resolve, reject) => {
       const enabled = app.getLoginItemSettings(LOGIN_SETTING_OPTIONS).openAtLogin
       if (enabled) {
@@ -13,20 +13,20 @@ export default class AutoLaunchManager {
 
       app.setLoginItemSettings({
         ...LOGIN_SETTING_OPTIONS,
-        openAtLogin: true
+        openAtLogin: true,
       })
       resolve()
     })
   }
 
-  disable () {
+  disable() {
     return new Promise<void>((resolve, reject) => {
       app.setLoginItemSettings({ openAtLogin: false })
       resolve()
     })
   }
 
-  isEnabled () {
+  isEnabled() {
     return new Promise<boolean>((resolve, reject) => {
       const enabled = app.getLoginItemSettings(LOGIN_SETTING_OPTIONS).openAtLogin
       resolve(enabled)

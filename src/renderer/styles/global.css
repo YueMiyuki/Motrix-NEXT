@@ -1,0 +1,343 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'normalize.css/normalize.css';
+@source "../../renderer/**/*.{vue,ts,tsx,js,jsx}";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-primary: #5b5bfa;
+  --color-primary-light-1: color-mix(in srgb, #fff 10%, #5b5bfa);
+  --color-primary-light-2: color-mix(in srgb, #fff 20%, #5b5bfa);
+  --color-primary-light-3: color-mix(in srgb, #fff 30%, #5b5bfa);
+  --color-primary-light-4: color-mix(in srgb, #fff 40%, #5b5bfa);
+  --color-primary-light-5: color-mix(in srgb, #fff 50%, #5b5bfa);
+  --color-primary-light-6: color-mix(in srgb, #fff 60%, #5b5bfa);
+  --color-primary-light-7: color-mix(in srgb, #fff 70%, #5b5bfa);
+  --color-primary-light-8: color-mix(in srgb, #fff 80%, #5b5bfa);
+  --color-primary-light-9: color-mix(in srgb, #fff 90%, #5b5bfa);
+  --color-success: #67c23a;
+  --color-warning: #e6a23c;
+  --color-danger: #f56c6c;
+  --color-info: #909399;
+  --ease-spring: var(--ease-spring);
+  --ease-decelerate: var(--ease-decelerate);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ---- Light theme variables ---- */
+:root {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  --primary: #5b5bfa;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #171717;
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
+  --accent: #f5f5f5;
+  --accent-foreground: #171717;
+  --destructive: #ef4444;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #5b5bfa;
+  --radius: 0.5rem;
+  --mo-bg-app: transparent;
+  --mo-titlebar-actions-color: #1f1f1f;
+  --mo-titlebar-actions-active-bg: #eee;
+  --mo-titlebar-close-active-color: #fff;
+  --mo-titlebar-close-active-bg: #fd0007;
+  --mo-app-logo-color: #4d515a;
+  --mo-app-version-color: #606266;
+  --mo-app-engine-title-color: #606266;
+  --mo-app-engine-info-color: #909399;
+  --mo-app-copyright-color: #606266;
+  --mo-bg-aside: #343434;
+  --mo-aside-text-color: #fff;
+  --mo-bg-subnav: #f6f6f6;
+  --mo-subnav-title-color: #1f2937;
+  --mo-subnav-action-color: #374151;
+  --mo-subnav-text-color: #9ca3af;
+  --mo-subnav-active-text-color: #5b5bfa;
+  --mo-subnav-active-bg: #ebeef3;
+  --mo-subnav-border-color: #e5e7eb;
+  --mo-subnav-icon-bg: rgba(0, 0, 0, 0.07);
+  --mo-subnav-icon-color: #6b7280;
+  --mo-subnav-icon-active-bg: rgba(91, 91, 250, 0.12);
+  --mo-subnav-active-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --mo-bg-main: #fff;
+  --mo-bg-panel: #fff;
+  --mo-panel-title-color: #303133;
+  --mo-panel-border-color: rgba(0, 0, 0, 0.1);
+  --mo-task-action-color: #4d515a;
+  --mo-task-action-hover-color: #5b5bfa;
+  --mo-task-action-disabled-color: rgba(77, 81, 90, 0.5);
+  --mo-task-item-bg: #fff;
+  --mo-task-item-border-color: rgba(0, 0, 0, 0.08);
+  --mo-task-item-hover-border-color: #5b5bfa;
+  --mo-task-item-text-color: #505753;
+  --mo-task-item-action-bg: rgba(255, 255, 255, 0.95);
+  --mo-task-item-action-hover-bg: #5b5bfa;
+  --mo-task-item-action-border-color: rgba(0, 0, 0, 0.06);
+  --mo-task-item-action-hover-border-color: #5b5bfa;
+  --mo-task-item-action-color: #9b9b9b;
+  --mo-task-item-action-hover-color: #fff;
+  --mo-no-task-color: #eee;
+  --mo-task-detail-box-border: #ebeef5;
+  --mo-task-item-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --mo-task-item-hover-shadow: 0 4px 12px rgba(91, 91, 250, 0.15), 0 2px 4px rgba(0, 0, 0, 0.08);
+  --mo-task-item-active-shadow: 0 8px 24px rgba(91, 91, 250, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+  --mo-speedometer-bg: #fff;
+  --mo-speedometer-border-color: #ccc;
+  --mo-speedometer-hover-border-color: #9b9b9b;
+  --mo-speedometer-primary-color: #5b5bfa;
+  --mo-speedometer-text-color: #9b9b9b;
+  --mo-graphic-box-bg: transparent;
+  --mo-graphic-atom-outline-color: rgba(27, 31, 35, 0.06);
+  --mo-graphic-atom-color-0: #ebedf0;
+  --mo-graphic-atom-color-1: #9be9a8;
+  --mo-graphic-atom-color-2: #40c463;
+  --mo-graphic-atom-color-3: #30a14e;
+  --mo-graphic-atom-color-4: #39d353;
+  --mo-scrollbar-thumb: rgba(0, 0, 0, 0.2);
+  --mo-scrollbar-thumb-hover: rgba(0, 0, 0, 0.35);
+  --mo-scrollbar-thumb-active: rgba(0, 0, 0, 0.5);
+  --mo-scrollbar-thumb-inactive: rgba(0, 0, 0, 0.15);
+  --mo-input-number-btn-bg: #f5f5f5;
+  --mo-input-number-btn-hover-bg: #e8e8e8;
+  --mo-input-number-btn-color: inherit;
+  --mo-input-number-btn-hover-color: #333;
+  --mo-form-static-value-color: #606266;
+  --mo-link-color: color-mix(in srgb, #fff 20%, #5b5bfa);
+}
+
+/* ---- Dark theme variables ---- */
+.dark {
+  --background: #343434;
+  --foreground: #eeeeee;
+  --card: #2d2d2d;
+  --card-foreground: #eeeeee;
+  --popover: #3d3d3d;
+  --popover-foreground: #eeeeee;
+  --primary: #5b5bfa;
+  --primary-foreground: #ffffff;
+  --secondary: #3d3d3d;
+  --secondary-foreground: #eeeeee;
+  --muted: #3d3d3d;
+  --muted-foreground: #a2a3a4;
+  --accent: #3d3d3d;
+  --accent-foreground: #eeeeee;
+  --destructive: #dc2626;
+  --border: #5f5f5f;
+  --input: #5f5f5f;
+  --ring: #5b5bfa;
+  --mo-titlebar-actions-color: #eee;
+  --mo-titlebar-actions-active-bg: rgba(0, 0, 0, 0.9);
+  --mo-titlebar-close-active-color: #fff;
+  --mo-titlebar-close-active-bg: #fd0007;
+  --mo-app-logo-color: #eee;
+  --mo-app-version-color: #a2a3a4;
+  --mo-app-engine-title-color: #a2a3a4;
+  --mo-app-engine-info-color: #777;
+  --mo-app-copyright-color: #a2a3a4;
+  --mo-bg-aside: #2a2929;
+  --mo-aside-text-color: #fff;
+  --mo-bg-subnav: #2f2f2f;
+  --mo-subnav-title-color: #fff;
+  --mo-subnav-action-color: #fff;
+  --mo-subnav-text-color: #aaa;
+  --mo-subnav-active-text-color: #fff;
+  --mo-subnav-active-bg: #444;
+  --mo-subnav-border-color: #ccc;
+  --mo-subnav-icon-bg: rgba(255, 255, 255, 0.06);
+  --mo-subnav-icon-color: #9ca3af;
+  --mo-subnav-icon-active-bg: rgba(91, 91, 250, 0.2);
+  --mo-subnav-active-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --mo-bg-main: #343434;
+  --mo-bg-panel: #343434;
+  --mo-panel-title-color: #fff;
+  --mo-panel-border-color: rgba(255, 255, 255, 0.08);
+  --mo-task-action-color: #eee;
+  --mo-task-action-hover-color: #5b5bfa;
+  --mo-task-action-disabled-color: rgba(238, 238, 238, 0.5);
+  --mo-task-item-bg: #2d2d2d;
+  --mo-task-item-border-color: rgba(255, 255, 255, 0.08);
+  --mo-task-item-hover-border-color: #5b5bfa;
+  --mo-task-item-text-color: #eee;
+  --mo-task-item-action-bg: rgba(74, 74, 74, 0.95);
+  --mo-task-item-action-hover-bg: #5b5bfa;
+  --mo-task-item-action-border-color: rgba(255, 255, 255, 0.1);
+  --mo-task-item-action-hover-border-color: #5b5bfa;
+  --mo-task-item-action-color: #eee;
+  --mo-task-item-action-hover-color: #fff;
+  --mo-no-task-color: #aaa;
+  --mo-task-detail-box-border: #565656;
+  --mo-task-item-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --mo-task-item-hover-shadow: 0 4px 12px rgba(91, 91, 250, 0.25), 0 2px 4px rgba(0, 0, 0, 0.2);
+  --mo-task-item-active-shadow: 0 8px 24px rgba(91, 91, 250, 0.3), 0 4px 8px rgba(0, 0, 0, 0.25);
+  --mo-speedometer-bg: #333;
+  --mo-speedometer-border-color: #5f5f5f;
+  --mo-speedometer-hover-border-color: #9b9b9b;
+  --mo-speedometer-primary-color: #5b5bfa;
+  --mo-speedometer-text-color: #9b9b9b;
+  --mo-graphic-box-bg: #3f3f3f;
+  --mo-graphic-atom-outline-color: rgba(255, 255, 255, 0.06);
+  --mo-graphic-atom-color-0: #161b22;
+  --mo-graphic-atom-color-1: #0e4429;
+  --mo-graphic-atom-color-2: #006d32;
+  --mo-graphic-atom-color-3: #26a641;
+  --mo-graphic-atom-color-4: #39d353;
+  --mo-scrollbar-thumb: rgba(255, 255, 255, 0.15);
+  --mo-scrollbar-thumb-hover: rgba(255, 255, 255, 0.25);
+  --mo-scrollbar-thumb-active: rgba(255, 255, 255, 0.35);
+  --mo-scrollbar-thumb-inactive: rgba(255, 255, 255, 0.1);
+  --mo-input-number-btn-bg: #4a4a4a;
+  --mo-input-number-btn-hover-bg: #555555;
+  --mo-input-number-btn-color: #d0d0d0;
+  --mo-input-number-btn-hover-color: #fff;
+  --mo-form-static-value-color: #e7e7e7;
+  --mo-link-color: color-mix(in srgb, #fff 20%, #5b5bfa);
+}
+
+/* ---- Shared layout primitives ---- */
+@layer components {
+  #app,
+  #container {
+    height: 100%;
+    background-color: var(--mo-bg-app);
+  }
+  .layout-root,
+  .panel-layout {
+    display: flex;
+    min-height: 0;
+  }
+  .layout-root {
+    height: 100%;
+  }
+  .layout-root > .main,
+  .layout-root > .page-view {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .layout-root > .page-view {
+    animation: page-enter 0.5s ease;
+  }
+  .panel-layout--h {
+    flex-direction: row;
+  }
+  .panel-layout--h > .content {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .panel-layout--v {
+    flex-direction: column;
+  }
+  .subnav-pane {
+    width: 200px;
+    flex: 0 0 200px;
+  }
+  .panel-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+  }
+  .draggable {
+    -webkit-app-region: drag;
+    user-select: none;
+  }
+  .non-draggable {
+    -webkit-app-region: no-drag;
+  }
+  .content {
+    padding: 0;
+  }
+  .main {
+    background-color: var(--mo-bg-main);
+  }
+  .main.panel-layout--h {
+    overflow: hidden;
+  }
+  .main.panel-layout--h > .subnav-pane {
+    overflow: hidden;
+  }
+  .main.panel-layout--h > .content.panel-layout--v {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+  }
+  .main.panel-layout--h > .pref-form-view {
+    animation: page-enter 0.35s ease;
+  }
+  .main.panel-layout--h > .content.panel-layout--v > .panel-content {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .rounded-md {
+    border-radius: calc(var(--radius) - 2px);
+  }
+  .ui-button {
+    border-radius: calc(var(--radius) - 2px);
+    min-height: 34px;
+    padding: 0 16px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition:
+      background-color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+      border-color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+      color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+      transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  .ui-button:hover {
+    transform: translateY(-1px);
+  }
+  .ui-button:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.12s;
+  }
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+.dark .ui-button--default {
+  color: #ececf0;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+.dark .ui-button--default:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.22);
+}

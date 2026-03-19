@@ -1,7 +1,7 @@
 export default {
-  'active': 'Загрузки',
-  'waiting': 'Ожидание',
-  'stopped': 'Остановлено',
+  active: 'Загрузки',
+  waiting: 'Ожидание',
+  stopped: 'Остановлено',
   'new-task': 'Новое задание',
   'new-bt-task': 'Новое BT задание',
   'open-file': 'Открыть Torrent файл...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'Тип файла',
   'file-size': 'Размер',
   'file-completed-size': 'Завершенный',
-  'selected-files-sum': 'Выбрано: {{selectedFilesCount}} файлов, общий размер {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Выбрано: {{selectedFilesCount}} файлов, общий размер {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Пожалуйста, выберите хотя бы один файл',
   'task-gid': 'GID',
   'task-name': 'Имя загрузки',
@@ -54,7 +55,8 @@ export default {
   'navigate-to-downloading': 'Перейти к загрузке',
   'show-advanced-options': 'Расширенные опции',
   'copyright-warning': 'Предупреждение об авторских правах',
-  'copyright-warning-message': 'Файл, который вы пытаетесь загрузить, имеет запись об авторских правах на видео или аудио контент, пожалуйста проверьте, имеете ли вы права на загрузку этого файла.',
+  'copyright-warning-message':
+    'Файл, который вы пытаетесь загрузить, имеет запись об авторских правах на видео или аудио контент, пожалуйста проверьте, имеете ли вы права на загрузку этого файла.',
   'copyright-yes': 'Да, у меня есть права',
   'copyright-no': 'Нет, у меня нет прав',
   'copyright-error-message': 'Ошибка при добавлении задачи из-за проблем с авторскими правами',
@@ -66,12 +68,15 @@ export default {
   'delete-task': 'Удалить задание',
   'delete-selected-tasks': 'Удалить выбранные задания',
   'delete-task-confirm': 'Вы уверены, что хотите удалить задание "{{taskName}}"?',
-  'batch-delete-task-confirm': 'Вы уверены, что хотите удалить {{count}} задач загрузки в пакетном режиме?',
+  'batch-delete-task-confirm':
+    'Вы уверены, что хотите удалить {{count}} задач загрузки в пакетном режиме?',
   'delete-task-label': 'Удалить вместе с файлами',
   'delete-task-success': 'Успешно удалено задание "{{taskName}}"',
   'delete-task-fail': 'Ошибка во время удаления задания "{{taskName}}"',
-  'remove-task-file-fail': 'Ошибка во время удаления файла(ов) задания. Пожалуйста, удалите его (их) самостоятельно',
-  'remove-task-config-file-fail': 'Ошибка при удалении файла конфигурации задания. Пожалуйста, удалите его самостоятельно',
+  'remove-task-file-fail':
+    'Ошибка во время удаления файла(ов) задания. Пожалуйста, удалите его (их) самостоятельно',
+  'remove-task-config-file-fail':
+    'Ошибка при удалении файла конфигурации задания. Пожалуйста, удалите его самостоятельно',
   'move-task-up': 'Переместить задание вверх',
   'move-task-down': 'Переместить задание вниз',
   'pause-all-task': 'Приостановить все задания',
@@ -113,7 +118,8 @@ export default {
   'bt-download-complete-message': 'Завершена загрузка {{taskName}}, раздача',
   'bt-download-complete-notify': 'BT Загрузка завершена, раздача...',
   'bt-download-complete-tips': 'Совет: Вы можете остановить задачу, чтобы остановить раздачу',
-  'bt-stopping-seeding-tip': 'Остановка посева, потребуется некоторое время, чтобы отключиться, пожалуйста, подождите...',
+  'bt-stopping-seeding-tip':
+    'Остановка посева, потребуется некоторое время, чтобы отключиться, пожалуйста, подождите...',
   'download-fail-message': 'Не удалось загрузить {{taskName}}',
-  'download-fail-notify': 'Ошибка загрузки'
+  'download-fail-notify': 'Ошибка загрузки',
 }

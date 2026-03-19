@@ -7,7 +7,7 @@ import {
   getConfigBasePath,
   getDhtPath,
   getMaxConnectionPerServer,
-  getUserDownloadsPath
+  getUserDownloadsPath,
 } from '../utils/index'
 import {
   APP_RUN_MODE,
@@ -19,7 +19,7 @@ import {
   NGOSANG_TRACKERS_BEST_IP_URL_CDN,
   NGOSANG_TRACKERS_BEST_URL_CDN,
   PROXY_SCOPES,
-  PROXY_SCOPE_OPTIONS
+  PROXY_SCOPE_OPTIONS,
 } from '@shared/constants'
 import { CHROME_UA } from '@shared/ua'
 import { separateConfig } from '@shared/utils'
@@ -27,14 +27,14 @@ import { reduceTrackerString } from '@shared/utils/tracker'
 
 export default class ConfigManager {
   [key: string]: any
-  constructor () {
+  constructor() {
     this.systemConfig = {}
     this.userConfig = {}
 
     this.init()
   }
 
-  init () {
+  init() {
     this.initUserConfig()
     this.initSystemConfig()
   }
@@ -45,7 +45,7 @@ export default class ConfigManager {
    * https://aria2.github.io/manual/en/html/aria2c.html
    *
    */
-  initSystemConfig () {
+  initSystemConfig() {
     this.systemConfig = new Store({
       name: 'system',
       cwd: getConfigBasePath(),
@@ -59,11 +59,11 @@ export default class ConfigManager {
         'bt-load-saved-metadata': true,
         'bt-save-metadata': true,
         'bt-tracker': EMPTY_STRING,
-        'continue': true,
+        continue: true,
         'dht-file-path': getDhtPath(IP_VERSION.V4),
         'dht-file-path6': getDhtPath(IP_VERSION.V6),
         'dht-listen-port': 26701,
-        'dir': getUserDownloadsPath(),
+        dir: getUserDownloadsPath(),
         'enable-dht': true,
         'enable-dht6': true,
         'enable-peer-exchange': true,
@@ -77,14 +77,14 @@ export default class ConfigManager {
         'max-overall-upload-limit': 0,
         'no-proxy': EMPTY_STRING,
         'pause-metadata': false,
-        'pause': true,
+        pause: true,
         'rpc-listen-port': ENGINE_RPC_PORT,
         'rpc-secret': EMPTY_STRING,
         'seed-ratio': 2,
         'seed-time': 2880,
-        'split': getMaxConnectionPerServer(),
-        'user-agent': CHROME_UA
-      }
+        split: getMaxConnectionPerServer(),
+        'user-agent': CHROME_UA,
+      },
     })
     if (this.systemConfig.events) {
       setMaxListeners(64, this.systemConfig.events)
@@ -92,7 +92,7 @@ export default class ConfigManager {
     this.fixSystemConfig()
   }
 
-  initUserConfig () {
+  initUserConfig() {
     this.userConfig = new Store({
       name: 'user',
       cwd: getConfigBasePath(),
@@ -110,32 +110,29 @@ export default class ConfigManager {
         'keep-window-state': false,
         'last-check-update-time': 0,
         'last-sync-tracker-time': 0,
-        'locale': app.getLocale(),
+        locale: app.getLocale(),
         'log-level': 'warn',
         'new-task-show-downloading': true,
         'no-confirm-before-delete-task': false,
         'open-at-login': false,
-        'protocols': { 'magnet': true, 'thunder': false },
-        'proxy': {
-          'enable': false,
-          'server': EMPTY_STRING,
-          'bypass': EMPTY_STRING,
-          'scope': PROXY_SCOPE_OPTIONS
+        protocols: { magnet: true, thunder: false },
+        proxy: {
+          enable: false,
+          server: EMPTY_STRING,
+          bypass: EMPTY_STRING,
+          scope: PROXY_SCOPE_OPTIONS,
         },
         'resume-all-when-app-launched': false,
         'run-mode': APP_RUN_MODE.STANDARD,
         'show-progress-bar': true,
         'task-notification': true,
-        'theme': APP_THEME.AUTO,
-        'tracker-source': [
-          NGOSANG_TRACKERS_BEST_IP_URL_CDN,
-          NGOSANG_TRACKERS_BEST_URL_CDN
-        ],
+        theme: APP_THEME.AUTO,
+        'tracker-source': [NGOSANG_TRACKERS_BEST_IP_URL_CDN, NGOSANG_TRACKERS_BEST_URL_CDN],
         'tray-theme': APP_THEME.AUTO,
         'tray-speedometer': is.macOS(),
         'update-channel': 'latest',
-        'window-state': {}
-      }
+        'window-state': {},
+      },
     })
     if (this.userConfig.events) {
       setMaxListeners(64, this.userConfig.events)
@@ -143,11 +140,11 @@ export default class ConfigManager {
     this.fixUserConfig()
   }
 
-  fixSystemConfig () {
+  fixSystemConfig() {
     // Remove aria2c unrecognized options
     const { others } = separateConfig(this.systemConfig.store)
     if (others && Object.keys(others).length > 0) {
-      Object.keys(others).forEach(key => {
+      Object.keys(others).forEach((key) => {
         this.systemConfig.delete(key)
       })
     }
@@ -164,7 +161,7 @@ export default class ConfigManager {
     this.setSystemConfig('bt-tracker', tracker)
   }
 
-  fixUserConfig () {
+  fixUserConfig() {
     // Fix the value of open-at-login when the user delete
     // the Motrix self-starting item through startup management.
     const openAtLogin = app.getLoginItemSettings(LOGIN_SETTING_OPTIONS).openAtLogin
@@ -175,42 +172,40 @@ export default class ConfigManager {
     if (this.getUserConfig('tracker-source').length === 0) {
       this.setUserConfig('tracker-source', [
         NGOSANG_TRACKERS_BEST_IP_URL_CDN,
-        NGOSANG_TRACKERS_BEST_URL_CDN
+        NGOSANG_TRACKERS_BEST_URL_CDN,
       ])
     }
   }
 
-  getSystemConfig (key?: string, defaultValue?: any) {
-    if (typeof key === 'undefined' &&
-        typeof defaultValue === 'undefined') {
+  getSystemConfig(key?: string, defaultValue?: any) {
+    if (typeof key === 'undefined' && typeof defaultValue === 'undefined') {
       return this.systemConfig.store
     }
 
     return this.systemConfig.get(key, defaultValue)
   }
 
-  getUserConfig (key?: string, defaultValue?: any) {
-    if (typeof key === 'undefined' &&
-        typeof defaultValue === 'undefined') {
+  getUserConfig(key?: string, defaultValue?: any) {
+    if (typeof key === 'undefined' && typeof defaultValue === 'undefined') {
       return this.userConfig.store
     }
 
     return this.userConfig.get(key, defaultValue)
   }
 
-  getLocale () {
+  getLocale() {
     return this.getUserConfig('locale') || app.getLocale()
   }
 
-  setSystemConfig (...args: any[]) {
-    this.systemConfig.set(...args as [any, any])
+  setSystemConfig(...args: any[]) {
+    this.systemConfig.set(...(args as [any, any]))
   }
 
-  setUserConfig (...args: any[]) {
-    this.userConfig.set(...args as [any, any])
+  setUserConfig(...args: any[]) {
+    this.userConfig.set(...(args as [any, any]))
   }
 
-  reset () {
+  reset() {
     this.systemConfig.clear()
     this.userConfig.clear()
   }

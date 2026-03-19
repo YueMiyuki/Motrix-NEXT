@@ -8,112 +8,112 @@
 export const availableLanguages = [
   {
     value: 'ar',
-    label: 'عربي'
+    label: 'عربي',
   },
   {
     value: 'bg',
-    label: 'Българският език'
+    label: 'Българският език',
   },
   {
     value: 'ca',
-    label: 'Català'
+    label: 'Català',
   },
   {
     value: 'de',
-    label: 'Deutsch'
+    label: 'Deutsch',
   },
   {
     value: 'el',
-    label: 'Ελληνικά'
+    label: 'Ελληνικά',
   },
   {
     value: 'en-US',
-    label: 'English'
+    label: 'English',
   },
   {
     value: 'es',
-    label: 'Español'
+    label: 'Español',
   },
   {
     value: 'fa',
-    label: 'فارسی'
+    label: 'فارسی',
   },
   {
     value: 'fr',
-    label: 'Français'
+    label: 'Français',
   },
   {
     value: 'hu',
-    label: 'Hungarian'
+    label: 'Hungarian',
   },
   {
     value: 'id',
-    label: 'Indonesia'
+    label: 'Indonesia',
   },
   {
     value: 'it',
-    label: 'Italiano'
+    label: 'Italiano',
   },
   {
     value: 'ja',
-    label: '日本語'
+    label: '日本語',
   },
   {
     value: 'ko',
-    label: '한국어'
+    label: '한국어',
   },
   {
     value: 'nb',
-    label: 'Norsk Bokmål'
+    label: 'Norsk Bokmål',
   },
   {
     value: 'nl',
-    label: 'Nederlands'
+    label: 'Nederlands',
   },
   {
     value: 'pl',
-    label: 'Polski'
+    label: 'Polski',
   },
   {
     value: 'pt-BR',
-    label: 'Português (Brasil)'
+    label: 'Português (Brasil)',
   },
   {
     value: 'ro',
-    label: 'Română'
+    label: 'Română',
   },
   {
     value: 'ru',
-    label: 'Русский'
+    label: 'Русский',
   },
   {
     value: 'th',
-    label: 'แบบไทย'
+    label: 'แบบไทย',
   },
   {
     value: 'tr',
-    label: 'Türkçe'
+    label: 'Türkçe',
   },
   {
     value: 'uk',
-    label: 'Українська'
+    label: 'Українська',
   },
   {
     value: 'vi',
-    label: 'Tiếng Việt'
+    label: 'Tiếng Việt',
   },
   {
     value: 'zh-CN',
-    label: '简体中文'
+    label: '简体中文',
   },
   {
     value: 'zh-TW',
-    label: '繁體中文'
-  }
+    label: '繁體中文',
+  },
 ]
 
 const checkLngIsAvailable = (locale) => {
-  return availableLanguages.some(lng => lng.value === locale)
+  return availableLanguages.some((lng) => lng.value === locale)
 }
 
 /**
@@ -134,6 +134,10 @@ const checkLngIsAvailable = (locale) => {
  * zh, zh-CN, zh-HK, zh-TW
  */
 export const getLanguage = (locale = 'en-US') => {
+  if (typeof locale !== 'string' || !locale) {
+    return 'en-US'
+  }
+
   if (checkLngIsAvailable(locale)) {
     return locale
   }
@@ -175,4 +179,6 @@ export const getLanguage = (locale = 'en-US') => {
   if (locale.startsWith('zh')) {
     return 'zh-CN'
   }
+
+  return 'en-US'
 }

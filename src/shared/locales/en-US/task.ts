@@ -1,7 +1,7 @@
 export default {
-  'active': 'Downloading',
-  'waiting': 'Waiting',
-  'stopped': 'Stopped',
+  active: 'Downloading',
+  waiting: 'Waiting',
+  stopped: 'Stopped',
   'new-task': 'New Task',
   'new-bt-task': 'New BT Task',
   'open-file': 'Open Torrent File...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'Extension',
   'file-size': 'Size',
   'file-completed-size': 'Completed',
-  'selected-files-sum': 'Selected: {{selectedFilesCount}} files, total size {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Selected: {{selectedFilesCount}} files, total size {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Please select at least one file',
   'task-gid': 'GID',
   'task-name': 'Task Name',
@@ -54,9 +55,10 @@ export default {
   'navigate-to-downloading': 'Navigate to Downloading',
   'show-advanced-options': 'Advanced Options',
   'copyright-warning': 'Copyright Warning',
-  'copyright-warning-message': 'The file you want to download may be copyrighted audio or video, please ensure that you have permission to access to it.',
+  'copyright-warning-message':
+    'The file you want to download may be copyrighted audio or video, please ensure that you have permission to access to it.',
   'copyright-yes': 'Yes, I have permission',
-  'copyright-no': 'No, I don\'t have permission',
+  'copyright-no': "No, I don't have permission",
   'copyright-error-message': 'Failed to add task due to copyright issue',
   'pause-task-success': 'Successfully paused task "{{taskName}}"',
   'pause-task-fail': 'Failed to pause task "{{taskName}}"',
@@ -80,6 +82,12 @@ export default {
   'resume-all-task': 'Resume All Tasks',
   'resume-all-task-success': 'Successfully resumed all tasks',
   'resume-all-task-fail': 'Failed to resume all tasks',
+  'pause-selected-tasks': 'Pause Selected Tasks',
+  'pause-selected-tasks-success': 'Successfully paused selected tasks',
+  'pause-selected-tasks-fail': 'Failed to pause selected tasks',
+  'resume-selected-tasks': 'Resume Selected Tasks',
+  'resume-selected-tasks-success': 'Successfully resumed selected tasks',
+  'resume-selected-tasks-fail': 'Failed to resume selected tasks',
   'select-all-task': 'Select All Tasks',
   'clear-recent-tasks': 'Clear Recent Tasks',
   'purge-record': 'Purge Task Record',
@@ -114,7 +122,9 @@ export default {
   'bt-download-complete-message': 'Completed downloading {{taskName}}, seeding',
   'bt-download-complete-notify': 'BT Download Completed, seeding...',
   'bt-download-complete-tips': 'Tips: You can stop a task to end its seeding',
-  'bt-stopping-seeding-tip': 'Stopping seeding, it will take some time to disconnect, please wait patiently',
+  'bt-stopping-seeding-tip':
+    'Stopping seeding, it will take some time to disconnect, please wait patiently',
   'download-fail-message': 'Failed to download {{taskName}}',
-  'download-fail-notify': 'Download Failed'
+  'download-fail-notify': 'Download Failed',
+  'no-peers': 'No peers connected',
 }

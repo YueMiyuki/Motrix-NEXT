@@ -1,21 +1,23 @@
 export default {
-  'active': 'In corso',
-  'waiting': 'In Pausa',
-  'stopped': 'Terminate',
+  active: 'In corso',
+  waiting: 'In Pausa',
+  stopped: 'Terminate',
   'new-task': 'Nuova attività',
   'new-bt-task': 'Nuova attività BT',
   'open-file': 'Apri un file Torrent...',
   'uri-task': 'URL',
   'torrent-task': 'Torrent',
   'uri-task-tips': 'Un url per linea (supporta magnet)',
-  'thunder-link-tips': 'Nota: I Thunder links potrebbero non essere più scaricabili dopo il decoding',
+  'thunder-link-tips':
+    'Nota: I Thunder links potrebbero non essere più scaricabili dopo il decoding',
   'new-task-uris-required': 'Per favore, inserisci almeno un url risorsa valido',
   'new-task-torrent-required': 'Per favore, inserisci un file torrent',
   'file-name': 'Nome',
   'file-extension': 'Estensione',
   'file-size': 'Dimensione',
   'file-completed-size': 'Completato',
-  'selected-files-sum': 'Selezionati: {{selectedFilesCount}} files, dimensione totale {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Selezionati: {{selectedFilesCount}} files, dimensione totale {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Seleziona almeno un file',
   'task-gid': 'GID',
   'task-name': 'Nome attività',
@@ -54,7 +56,8 @@ export default {
   'navigate-to-downloading': 'Naviga per scaricare',
   'show-advanced-options': 'Opzioni avanzate',
   'copyright-warning': 'Avviso sul Copyright',
-  'copyright-warning-message': 'Il file che stai cercando di scaricare potrebbe esssere un audio o video soggetto a Copyright, per favore, assicurati che tu abbia il permesso per accedervi.',
+  'copyright-warning-message':
+    'Il file che stai cercando di scaricare potrebbe esssere un audio o video soggetto a Copyright, per favore, assicurati che tu abbia il permesso per accedervi.',
   'copyright-yes': 'Si, ho il permesso',
   'copyright-no': 'No, non ho il permesso',
   'copyright-error-message': 'Impossibile scaricare il file a causa di un problema di Copyright',
@@ -70,10 +73,12 @@ export default {
   'delete-task-label': 'Elimina con i file',
   'delete-task-success': 'attività "{{taskName}}" eliminata con successo',
   'delete-task-fail': 'Impossibile eliminare l\'attività "{{taskName}}"',
-  'remove-task-file-fail': 'Imossibile eliminare i file(s) delle attività, per favore, eliminali manualmente',
-  'remove-task-config-file-fail': 'Impossibile eliminare i file di configutazine delle attività, per favore, eliminali manualmente',
-  'move-task-up': 'Muovi l\'attività più in alto',
-  'move-task-down': 'Muovi l\'attività più in basso',
+  'remove-task-file-fail':
+    'Imossibile eliminare i file(s) delle attività, per favore, eliminali manualmente',
+  'remove-task-config-file-fail':
+    'Impossibile eliminare i file di configutazine delle attività, per favore, eliminali manualmente',
+  'move-task-up': "Muovi l'attività più in alto",
+  'move-task-down': "Muovi l'attività più in basso",
   'pause-all-task': 'Metti in pausa tutte le attività',
   'pause-all-task-success': 'Tutte le attività messe in pausa con successo',
   'pause-all-task-fail': 'Impossibile mettere in pausa tutte le attività',
@@ -92,7 +97,8 @@ export default {
   'copy-link': 'Copia link',
   'copy-link-success': 'Link copiato con successo',
   'remove-record': 'Rimuovi cronologia delle attività',
-  'remove-record-confirm': 'Sei sicuro di voler eliminare la cronologia di download di "{{taskName}}"?',
+  'remove-record-confirm':
+    'Sei sicuro di voler eliminare la cronologia di download di "{{taskName}}"?',
   'remove-record-label': 'Elimina con i file',
   'remove-record-success': 'cronologia dell\'attività "{{taskName}}" eliminata con successo',
   'remove-record-fail': 'Imposibile eliminare la cronologia dell\'attività "{{taskName}}"',
@@ -112,8 +118,10 @@ export default {
   'download-complete-notify': 'Download completato',
   'bt-download-complete-message': 'Completed downloading {{taskName}}, seeding',
   'bt-download-complete-notify': 'Dowload BT completato, seeding...',
-  'bt-download-complete-tips': 'Suggerimento: È possibile interrompere un\'attività per fermare il seeding',
-  'bt-stopping-seeding-tip': 'Seeding fermato, ci vorrà un po\' di tempo per disconnettersi, per favore, aspetta...',
+  'bt-download-complete-tips':
+    "Suggerimento: È possibile interrompere un'attività per fermare il seeding",
+  'bt-stopping-seeding-tip':
+    "Seeding fermato, ci vorrà un po' di tempo per disconnettersi, per favore, aspetta...",
   'download-fail-message': 'Impossibile scaricare {{taskName}}',
-  'download-fail-notify': 'Download Fallito'
+  'download-fail-notify': 'Download Fallito',
 }

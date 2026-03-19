@@ -1,7 +1,7 @@
 export default {
-  'active': 'Pobieranie',
-  'waiting': 'Wstrzymane',
-  'stopped': 'Zatrzymane',
+  active: 'Pobieranie',
+  waiting: 'Wstrzymane',
+  stopped: 'Zatrzymane',
   'new-task': 'Nowe zadanie',
   'new-bt-task': 'Nowe zadanie Torrent',
   'open-file': 'Otwórz plik torrent...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'Rozbudowa',
   'file-size': 'Rozmiar',
   'file-completed-size': 'Pobrano',
-  'selected-files-sum': 'Wybrano: {{selectedFilesCount}} plików, Wspólny rozmiar {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Wybrano: {{selectedFilesCount}} plików, Wspólny rozmiar {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Wybierz co najmniej jeden plik',
   'task-gid': 'GID',
   'task-name': 'Nazwa zadania',
@@ -54,7 +55,8 @@ export default {
   'navigate-to-downloading': 'Automatycznie uruchom pobieranie',
   'show-advanced-options': 'Opcje zaawansowane',
   'copyright-warning': 'Ostrzeżenie dt. praw autorskich',
-  'copyright-warning-message': 'Plik który chcesz pobrać może być chroniony prawami autorskimi, proszę upewnij się że masz prawo go pobierać/używać',
+  'copyright-warning-message':
+    'Plik który chcesz pobrać może być chroniony prawami autorskimi, proszę upewnij się że masz prawo go pobierać/używać',
   'copyright-yes': 'Tak, mam prawo',
   'copyright-no': 'Nie, nie mam prawa',
   'copyright-error-message': 'Nie można było dodać zadania z powodu praw autorskich',
@@ -70,8 +72,10 @@ export default {
   'delete-task-label': 'Usuń z plikami',
   'delete-task-success': 'Pomyślnie usunięto "{{taskName}}"',
   'delete-task-fail': 'Nie udało sie usunąć "{{taskName}}"',
-  'remove-task-file-fail': 'Nie udało się usunąć plików pochodzących z zadań, proszę, usuń je manualnie.',
-  'remove-task-config-file-fail': 'Nie udało się usunąć pliku konfiguracyjnego zadanie, proszę, usuń je manualnie',
+  'remove-task-file-fail':
+    'Nie udało się usunąć plików pochodzących z zadań, proszę, usuń je manualnie.',
+  'remove-task-config-file-fail':
+    'Nie udało się usunąć pliku konfiguracyjnego zadanie, proszę, usuń je manualnie',
   'move-task-up': 'Przenieś zadanie do góry',
   'move-task-down': 'Przenieś zadanie do dołu',
   'pause-all-task': 'Wstrzymaj wszystkie zadania',
@@ -113,7 +117,8 @@ export default {
   'bt-download-complete-message': 'Ukończono pobieranie {{taskName}}, seedowanie',
   'bt-download-complete-notify': 'Ukończono pobieranie pliku torrent, seedowanie...',
   'bt-download-complete-tips': 'Wskazówka: Możesz zatrzymań zadanie aby wyłączyć seedowanie',
-  'bt-stopping-seeding-tip': 'Zatrzymywane seedowania, zajmie chwilę rozłączanie się od klientów, proszę czekać...',
+  'bt-stopping-seeding-tip':
+    'Zatrzymywane seedowania, zajmie chwilę rozłączanie się od klientów, proszę czekać...',
   'download-fail-message': 'Nie udało się pobrać {{taskName}}',
-  'download-fail-notify': 'Nie udało się pobrać'
+  'download-fail-notify': 'Nie udało się pobrać',
 }

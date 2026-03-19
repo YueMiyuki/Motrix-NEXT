@@ -20,14 +20,14 @@ export default createRouter({
           alias: '/',
           component: TaskIndex,
           props: {
-            status: 'active'
-          }
+            status: 'active',
+          },
         },
         {
           path: '/task/:status',
           name: 'task',
           component: TaskIndex,
-          props: true
+          props: true,
         },
         {
           path: '/preference',
@@ -40,39 +40,39 @@ export default createRouter({
               alias: '',
               components: {
                 subnav: PreferenceSubnav,
-                form: PreferenceBasic
+                form: PreferenceBasic,
               },
               props: {
-                subnav: { current: 'basic' }
-              }
+                subnav: { current: 'basic' },
+              },
             },
             {
               path: 'advanced',
               components: {
                 subnav: PreferenceSubnav,
-                form: PreferenceAdvanced
+                form: PreferenceAdvanced,
               },
               props: {
-                subnav: { current: 'advanced' }
-              }
+                subnav: { current: 'advanced' },
+              },
             },
             {
               path: 'lab',
               components: {
                 subnav: PreferenceSubnav,
-                form: PreferenceLab
+                form: PreferenceLab,
               },
               props: {
-                subnav: { current: 'lab' }
-              }
-            }
-          ]
-        }
-      ]
+                subnav: { current: 'lab' },
+              },
+            },
+          ],
+        },
+      ],
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/'
-    }
-  ]
+      redirect: '/',
+    },
+  ],
 })

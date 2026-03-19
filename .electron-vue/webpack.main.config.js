@@ -13,7 +13,7 @@ const bundledRuntimeDeps = new Set(['cross-fetch', 'node-fetch'])
 
 let mainConfig = {
   entry: {
-    main: path.join(__dirname, '../src/main/index.ts')
+    main: path.join(__dirname, '../src/main/index.ts'),
   },
   externals: Object.keys(dependencies || {}).filter((dep) => !bundledRuntimeDeps.has(dep)),
   module: {
@@ -21,35 +21,35 @@ let mainConfig = {
       {
         test: /\.[jt]s$/,
         use: 'babel-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.node$/,
-        use: 'node-loader'
-      }
-    ]
+        use: 'node-loader',
+      },
+    ],
   },
   node: {
     __dirname: devMode,
-    __filename: devMode
+    __filename: devMode,
   },
   output: {
     filename: '[name].js',
     libraryTarget: 'commonjs2',
-    path: path.join(__dirname, '../dist/electron')
+    path: path.join(__dirname, '../dist/electron'),
   },
   plugins: [
     new Webpack.NoEmitOnErrorsPlugin(),
     new ESLintPlugin({
-      formatter: require('eslint-friendly-formatter')
-    })
+      formatter: require('eslint-friendly-formatter'),
+    }),
   ],
   resolve: {
     alias: {
       '@': path.join(__dirname, '../src/main'),
-      '@shared': path.join(__dirname, '../src/shared')
+      '@shared': path.join(__dirname, '../src/shared'),
     },
-    extensions: ['.ts', '.js', '.json', '.node']
+    extensions: ['.ts', '.js', '.json', '.node'],
   },
   target: 'electron-main',
   optimization: {
@@ -57,7 +57,7 @@ let mainConfig = {
     minimizer: [
       new TerserPlugin({
         extractComments: false,
-      })
+      }),
     ],
   },
 }
@@ -68,9 +68,9 @@ let mainConfig = {
 if (devMode) {
   mainConfig.plugins.push(
     new Webpack.DefinePlugin({
-      '__static': `"${path.join(__dirname, '../static').replace(/\\/g, '\\\\')}"`,
-      'appId': `"${appId}"`
-    })
+      __static: `"${path.join(__dirname, '../static').replace(/\\/g, '\\\\')}"`,
+      appId: `"${appId}"`,
+    }),
   )
 }
 
@@ -81,8 +81,8 @@ if (!devMode) {
   mainConfig.plugins.push(
     new Webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"',
-      'appId': `"${appId}"`
-    })
+      appId: `"${appId}"`,
+    }),
   )
 }
 

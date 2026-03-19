@@ -13,19 +13,22 @@ let viteServer = null
 let manualRestart = false
 let chalk
 
-function logStats (proc, data) {
+function logStats(proc, data) {
   let log = ''
 
-  log += chalk.yellow.bold(`┏ ${proc} Process ${new Array((19 - proc.length) + 1).join('-')}`)
+  log += chalk.yellow.bold(`┏ ${proc} Process ${new Array(19 - proc.length + 1).join('-')}`)
   log += '\n\n'
 
   if (typeof data === 'object') {
-    data.toString({
-      colors: true,
-      chunks: false
-    }).split(/\r?\n/).forEach(line => {
-      log += '  ' + line + '\n'
-    })
+    data
+      .toString({
+        colors: true,
+        chunks: false,
+      })
+      .split(/\r?\n/)
+      .forEach((line) => {
+        log += '  ' + line + '\n'
+      })
   } else {
     log += `  ${data}\n`
   }
@@ -35,19 +38,21 @@ function logStats (proc, data) {
   console.log(log)
 }
 
-async function startRenderer () {
+async function startRenderer() {
   const { createServer } = await import('vite')
   viteServer = await createServer({
     configFile: path.join(__dirname, '../vite.renderer.config.ts'),
-    mode: 'development'
+    mode: 'development',
   })
   await viteServer.listen()
   logStats('Renderer', chalk.white.bold('vite dev server started: http://localhost:9080'))
 }
 
-function startMain () {
+function startMain() {
   return new Promise((resolve, reject) => {
-    mainConfig.entry.main = [path.join(__dirname, '../src/main/index.dev.ts')].concat(mainConfig.entry.main)
+    mainConfig.entry.main = [path.join(__dirname, '../src/main/index.dev.ts')].concat(
+      mainConfig.entry.main,
+    )
     mainConfig.mode = 'development'
     const compiler = Webpack(mainConfig)
 
@@ -81,13 +86,16 @@ function startMain () {
   })
 }
 
-async function startElectron () {
-  electronProcess = spawn(electron, ['--inspect=5858', path.join(__dirname, '../dist/electron/main.js')])
+async function startElectron() {
+  electronProcess = spawn(electron, [
+    '--inspect=5858',
+    path.join(__dirname, '../dist/electron/main.js'),
+  ])
 
-  electronProcess.stdout.on('data', data => {
+  electronProcess.stdout.on('data', (data) => {
     electronLog(data, 'blue')
   })
-  electronProcess.stderr.on('data', data => {
+  electronProcess.stderr.on('data', (data) => {
     electronLog(data, 'red')
   })
 
@@ -101,24 +109,24 @@ async function startElectron () {
   })
 }
 
-function electronLog (data, color) {
+function electronLog(data, color) {
   let log = ''
   data = data.toString().split(/\r?\n/)
-  data.forEach(line => {
+  data.forEach((line) => {
     log += `  ${line}\n`
   })
   if (/[0-9A-z]+/.test(log)) {
     console.log(
       chalk[color].bold('┏ Electron -------------------') +
-      '\n\n' +
-      log +
-      chalk[color].bold('┗ ----------------------------') +
-      '\n'
+        '\n\n' +
+        log +
+        chalk[color].bold('┗ ----------------------------') +
+        '\n',
     )
   }
 }
 
-function greeting () {
+function greeting() {
   const cols = process.stdout.columns
   let text = ''
 
@@ -134,14 +142,14 @@ function greeting () {
     say(text, {
       colors: ['magentaBright'],
       font: 'simple3d',
-      space: false
+      space: false,
     })
   } else console.log(chalk.magentaBright.bold('\n  motrix-dev'))
   console.log(chalk.blue('  getting ready...') + '\n')
 }
 
-async function init () {
-  ({ default: chalk } = await import('chalk'))
+async function init() {
+  ;({ default: chalk } = await import('chalk'))
   greeting()
 
   try {
@@ -152,7 +160,7 @@ async function init () {
   }
 }
 
-init().catch(err => {
+init().catch((err) => {
   console.error(err)
   process.exit(1)
 })

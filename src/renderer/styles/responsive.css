@@ -1,0 +1,104 @@
+/* Responsive breakpoints and visibility utilities */
+@media (max-width: 567px) {
+  .ui-col--xs-24 {
+    width: 100%;
+    flex: 0 0 100%;
+  }
+}
+@media (min-width: 568px) and (max-width: 791px) {
+  .ui-col--sm-8 {
+    width: 33.33333%;
+    flex: 0 0 33.33333%;
+  }
+  .ui-col--sm-16 {
+    width: 66.66667%;
+    flex: 0 0 66.66667%;
+  }
+  .ui-col--sm-24 {
+    width: 100%;
+    flex: 0 0 100%;
+  }
+}
+@media (min-width: 792px) and (max-width: 991px) {
+  .ui-col--md-8 {
+    width: 33.33333%;
+    flex: 0 0 33.33333%;
+  }
+  .ui-col--md-16 {
+    width: 66.66667%;
+    flex: 0 0 66.66667%;
+  }
+  .ui-col--md-24 {
+    width: 100%;
+    flex: 0 0 100%;
+  }
+}
+@media (min-width: 992px) {
+  .ui-col--lg-8 {
+    width: 33.33333%;
+    flex: 0 0 33.33333%;
+  }
+  .ui-col--lg-16 {
+    width: 66.66667%;
+    flex: 0 0 66.66667%;
+  }
+  .ui-col--lg-24 {
+    width: 100%;
+    flex: 0 0 100%;
+  }
+}
+@media only screen and (max-width: 567px) {
+  .hidden-xs-only {
+    display: none !important;
+  }
+}
+@media only screen and (min-width: 568px) {
+  .panel .panel-header {
+    margin-left: 36px;
+    margin-right: 36px;
+  }
+  .task-list {
+    padding-left: 36px;
+    padding-right: 36px;
+  }
+  .form-preference {
+    padding-left: 36px;
+  }
+  .form-actions {
+    padding: 24px 36px;
+  }
+  .mo-speedometer {
+    right: 36px;
+  }
+  .hidden-sm-and-up {
+    display: none !important;
+  }
+}
+@media only screen and (max-width: 791px) {
+  .hidden-sm-and-down {
+    display: none !important;
+  }
+}
+@media only screen and (max-width: 791px) {
+  .form-preference {
+    padding: 16px 16px 100px;
+  }
+  .settings-section-content {
+    padding-left: 0;
+  }
+  .settings-select-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .settings-select-group .settings-select-item {
+    width: 100%;
+  }
+  .version-indicator {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .form-actions {
+    margin: 0 -16px;
+    padding: 16px 16px;
+  }
+}

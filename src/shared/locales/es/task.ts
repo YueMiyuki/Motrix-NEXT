@@ -1,21 +1,23 @@
 export default {
-  'active': 'Descargando',
-  'waiting': 'Esperando',
-  'stopped': 'Detenida',
+  active: 'Descargando',
+  waiting: 'Esperando',
+  stopped: 'Detenida',
   'new-task': 'Nueva Tarea',
   'new-bt-task': 'Nueva Tarea BT',
   'open-file': 'Abrir archivo de Torrent...',
   'uri-task': 'URL',
   'torrent-task': 'Torrent',
   'uri-task-tips': 'Una url de tarea por línea (soporta magnet)',
-  'thunder-link-tips': 'Tip: Es posible que los enlaces Thunder no se puedan descargar después de la decodificación.',
+  'thunder-link-tips':
+    'Tip: Es posible que los enlaces Thunder no se puedan descargar después de la decodificación.',
   'new-task-uris-required': 'Por favor, introduzca al menos una url de recurso válida',
   'new-task-torrent-required': 'Seleccione un archivo torrent',
   'file-name': 'Nombre',
   'file-extension': 'Extensión',
   'file-size': 'Tamaño',
   'file-completed-size': 'Terminado',
-  'selected-files-sum': 'Seleccionado: {{selectedFilesCount}} archivos, tamaño total {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Seleccionado: {{selectedFilesCount}} archivos, tamaño total {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Seleccione al menos un archivo',
   'task-gid': 'GID',
   'task-name': 'Nombre de la tarea',
@@ -54,10 +56,12 @@ export default {
   'navigate-to-downloading': 'Navegar a Descargas',
   'show-advanced-options': 'Opciones avanzadas',
   'copyright-warning': 'Advertencia sobre derechos de autor',
-  'copyright-warning-message': 'El archivo que desea descargar puede tener derechos de autor de audio o video, por favor asegúrese de que tiene permiso para acceder a él.',
+  'copyright-warning-message':
+    'El archivo que desea descargar puede tener derechos de autor de audio o video, por favor asegúrese de que tiene permiso para acceder a él.',
   'copyright-yes': 'Sí, tengo permiso',
   'copyright-no': 'No, no tengo permiso.',
-  'copyright-error-message': 'No se pudo agregar una tarea debido a un problema de derechos de autor',
+  'copyright-error-message':
+    'No se pudo agregar una tarea debido a un problema de derechos de autor',
   'pause-task-success': 'Se ha pausado la tarea "{{taskName}}"',
   'pause-task-fail': 'Hubo un fallo al pausar la tarea "{{taskName}}"',
   'resume-task': 'Resumir tarea',
@@ -66,12 +70,15 @@ export default {
   'delete-task': 'Eliminar tarea',
   'delete-selected-tasks': 'Eliminar tareas seleccionadas',
   'delete-task-confirm': '¿Está seguro que desea eliminar la tarea "{{taskName}}"?',
-  'batch-delete-task-confirm': '¿Está seguro de que desea eliminar {{count}} tareas de descarga en lote?',
+  'batch-delete-task-confirm':
+    '¿Está seguro de que desea eliminar {{count}} tareas de descarga en lote?',
   'delete-task-label': 'Eliminar con archivos',
   'delete-task-success': 'Tarea eliminada exitosamente "{{taskName}}"',
   'delete-task-fail': 'Hubo un error al eliminar la tarea "{{taskName}}"',
-  'remove-task-file-fail': 'No se han eliminado los archivos de tareas, por favor, elimínelos manualmente.',
-  'remove-task-config-file-fail': 'No se ha podido eliminar el archivo de configuración de la tarea, por favor, elimínelo manualmente.',
+  'remove-task-file-fail':
+    'No se han eliminado los archivos de tareas, por favor, elimínelos manualmente.',
+  'remove-task-config-file-fail':
+    'No se ha podido eliminar el archivo de configuración de la tarea, por favor, elimínelo manualmente.',
   'move-task-up': 'Desplazar tarea hacia arriba',
   'move-task-down': 'Desplazar tarea hacia abajo',
   'pause-all-task': 'Pausar todas las tareas',
@@ -113,7 +120,8 @@ export default {
   'bt-download-complete-message': 'Descarga completada {{taskName}}, compartiendo',
   'bt-download-complete-notify': 'Descarga BT completa, compartiendo...',
   'bt-download-complete-tips': 'Consejo: Puede detener una tarea para dejar de compartir',
-  'bt-stopping-seeding-tip': 'Deteniendo la siembra, tomará un tiempo desconectarse, por favor espere...',
+  'bt-stopping-seeding-tip':
+    'Deteniendo la siembra, tomará un tiempo desconectarse, por favor espere...',
   'download-fail-message': 'No se pudo descargar {{taskName}}',
-  'download-fail-notify': 'Descarga fallida'
+  'download-fail-notify': 'Descarga fallida',
 }

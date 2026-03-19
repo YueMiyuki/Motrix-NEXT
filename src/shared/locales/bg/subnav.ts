@@ -1,4 +1,4 @@
 export default {
-  'task-list':'Задачи',
-  'preferences':'Настройки'
+  'task-list': 'Задачи',
+  preferences: 'Настройки',
 }

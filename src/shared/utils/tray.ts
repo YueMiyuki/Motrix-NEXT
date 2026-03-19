@@ -1,24 +1,19 @@
 import { APP_THEME, TRAY_CANVAS_CONFIG } from '@shared/constants'
 
-// Temp Fix: Cannot find module 'lodash'
-// import { bytesToSize } from '@shared/utils'
 const bytesToSize = (bytes) => {
   const b = parseInt(bytes, 10)
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-  if (b === 0) { return '0 KB' }
+  if (b === 0) {
+    return '0 KB'
+  }
   const i = Math.trunc(Math.floor(Math.log(b) / Math.log(1024)))
-  if (i === 0) { return `${b} ${sizes[i]}` }
-  return `${(b / (1024 ** i)).toFixed(1)} ${sizes[i]}`
+  if (i === 0) {
+    return `${b} ${sizes[i]}`
+  }
+  return `${(b / 1024 ** i).toFixed(1)} ${sizes[i]}`
 }
 
-const lightTextColor = '#000'
-const darkTextColor = '#fff'
-const baseWidth = TRAY_CANVAS_CONFIG.WIDTH
-const baseHeight = TRAY_CANVAS_CONFIG.HEIGHT
-const baseIconWidth = TRAY_CANVAS_CONFIG.ICON_WIDTH
-const baseIconHeight = TRAY_CANVAS_CONFIG.ICON_HEIGHT
-const baseTextWidth = TRAY_CANVAS_CONFIG.TEXT_WIDTH
-const baseFontSize = TRAY_CANVAS_CONFIG.TEXT_FONT_SIZE
+const { WIDTH, HEIGHT, ICON_WIDTH, ICON_HEIGHT, TEXT_WIDTH, TEXT_FONT_SIZE } = TRAY_CANVAS_CONFIG
 const fontFamily = 'Arial'
 
 export const draw = async ({
@@ -28,20 +23,19 @@ export const draw = async ({
   uploadSpeed,
   downloadSpeed,
   scale,
-  resultType
+  resultType,
 }) => {
   if (!canvas) {
     throw new Error('canvas is required')
   }
 
-  const width = baseWidth * scale
-  const height = baseHeight * scale
-  const textColor = (theme === APP_THEME.LIGHT) ? lightTextColor : darkTextColor
-  const fontSize = (baseFontSize * scale) + 1
-  const textFont = `${fontSize}px "${fontFamily}"`
-  const iconWidth = baseIconWidth * scale
-  const iconHeight = baseIconHeight * scale
-  const textWidth = baseTextWidth * scale
+  const width = WIDTH * scale
+  const height = HEIGHT * scale
+  const textColor = theme === APP_THEME.LIGHT ? '#000' : '#fff'
+  const fontSize = TEXT_FONT_SIZE * scale + 1
+  const iconWidth = ICON_WIDTH * scale
+  const iconHeight = ICON_HEIGHT * scale
+  const textWidth = TEXT_WIDTH * scale
 
   if (canvas.width !== width) {
     canvas.width = width
@@ -58,33 +52,26 @@ export const draw = async ({
     ctx.drawImage(icon, 0, 0, iconWidth, iconHeight)
   }
 
-  ctx.font = textFont
+  ctx.font = `${fontSize}px "${fontFamily}"`
   ctx.textBaseline = 'top'
   ctx.textAlign = 'right'
   ctx.fillStyle = textColor
 
-  const uploadText = `${bytesToSize(uploadSpeed)}/s`
-  const uploadTextY = 0
-  ctx.fillText(uploadText, width, uploadTextY, textWidth)
+  ctx.fillText(`${bytesToSize(uploadSpeed)}/s`, width, 0, textWidth)
+  ctx.fillText(`${bytesToSize(downloadSpeed)}/s`, width, TEXT_FONT_SIZE * scale + 0.5, textWidth)
 
-  const downloadText = `${bytesToSize(downloadSpeed)}/s`
-  const downloadTextY = baseFontSize * scale + 0.5
-  ctx.fillText(downloadText, width, downloadTextY, textWidth)
-
-  const result = transferCanvasTo(canvas, resultType)
-
-  return result
+  return transferCanvasTo(canvas, resultType)
 }
 
-export const transferCanvasTo = (canvas, type) => {
+const transferCanvasTo = (canvas, type) => {
   switch (type) {
-  case 'DATA_URL':
-    return canvas.toDataURL()
-  case 'BLOB':
-    return canvas.convertToBlob()
-  case 'BITMAP':
-    return canvas.transferToImageBitmap()
-  default:
-    return canvas.convertToBlob()
+    case 'DATA_URL':
+      return canvas.toDataURL()
+    case 'BLOB':
+      return canvas.convertToBlob()
+    case 'BITMAP':
+      return canvas.transferToImageBitmap()
+    default:
+      return canvas.convertToBlob()
   }
 }

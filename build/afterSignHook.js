@@ -16,9 +16,7 @@ exports.default = async function (context) {
   }
 
   const hasNotarizeCredentials =
-    !!process.env.TEAM_ID &&
-    !!process.env.APPLE_ID &&
-    !!process.env.APPLE_APP_SPECIFIC_PASSWORD
+    !!process.env.TEAM_ID && !!process.env.APPLE_ID && !!process.env.APPLE_APP_SPECIFIC_PASSWORD
   if (!hasNotarizeCredentials) {
     console.log('Skipping notarize: missing TEAM_ID / APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD')
     return
@@ -35,7 +33,7 @@ exports.default = async function (context) {
       appPath,
       teamId: process.env.TEAM_ID,
       appleId: process.env.APPLE_ID,
-      appleIdPassword: process.env.APPLE_APP_SPECIFIC_PASSWORD
+      appleIdPassword: process.env.APPLE_APP_SPECIFIC_PASSWORD,
     })
   } catch (error) {
     console.error(error)

@@ -1,7 +1,7 @@
 export default {
-  'active': 'Đang tải về',
-  'waiting': 'Đang chờ',
-  'stopped': 'Ngừng',
+  active: 'Đang tải về',
+  waiting: 'Đang chờ',
+  stopped: 'Ngừng',
   'new-task': 'Tác vụ mới',
   'new-bt-task': 'Tác vụ BT mới',
   'open-file': 'Mở tệp Torrent...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'Loại',
   'file-size': 'Kích thước',
   'file-completed-size': 'Đã hoàn thành',
-  'selected-files-sum': 'Đã chọn: {{selectedFilesCount}} tập tin, tổng kích thước {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Đã chọn: {{selectedFilesCount}} tập tin, tổng kích thước {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Vui lòng chọn ít nhất một tệp',
   'task-gid': 'GID',
   'task-name': 'Tên tác vụ',
@@ -54,7 +55,8 @@ export default {
   'navigate-to-downloading': 'Điều hướng tải xuống',
   'show-advanced-options': 'Lựa chọn Nâng cao',
   'copyright-warning': 'Cảnh báo Bản quyền',
-  'copyright-warning-message': 'Tập tin bạn muốn tải xuống có thể là âm thanh hoặc video có bản quyền, vui lòng đảm bảo rằng bạn có quyền truy cập vào nó.',
+  'copyright-warning-message':
+    'Tập tin bạn muốn tải xuống có thể là âm thanh hoặc video có bản quyền, vui lòng đảm bảo rằng bạn có quyền truy cập vào nó.',
   'copyright-yes': 'Đúng, tôi được cấp phép',
   'copyright-no': 'Không, tôi không được cấp phép',
   'copyright-error-message': 'Không thể thêm Tác vụ vì vấn đề bản quyền',
@@ -70,8 +72,10 @@ export default {
   'delete-task-label': 'Xóa kèm tập tin',
   'delete-task-success': 'Xóa tác vụ thành công "{{taskName}}"',
   'delete-task-fail': 'Xóa tác vụ thất bại "{{taskName}}"',
-  'remove-task-file-fail': 'Không thể xóa (các) tập tin trong tác vụ, vui lòng xóa chúng theo cách thủ công',
-  'remove-task-config-file-fail': 'Không thể xóa tập tin cấu hình tác vụ, vui lòng xóa chúng theo cách thủ công',
+  'remove-task-file-fail':
+    'Không thể xóa (các) tập tin trong tác vụ, vui lòng xóa chúng theo cách thủ công',
+  'remove-task-config-file-fail':
+    'Không thể xóa tập tin cấu hình tác vụ, vui lòng xóa chúng theo cách thủ công',
   'move-task-up': 'Đưa tác vụ lên',
   'move-task-down': 'Đưa tác vụ xuống',
   'pause-all-task': 'Dừng Tất cả Tác vụ',
@@ -116,5 +120,5 @@ export default {
   'bt-download-complete-tips': 'Mẹo: Bạn có thể dừng một tác vụ để kết thúc việc seed',
   'bt-stopping-seeding-tip': 'Ngừng seed, sẽ mất một thời gian để ngắt kết nối, vui lòng đợi...',
   'download-fail-message': 'Không thể tải xuống {{taskName}}',
-  'download-fail-notify': 'Tải xuống thất bại'
+  'download-fail-notify': 'Tải xuống thất bại',
 }

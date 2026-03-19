@@ -4,7 +4,6 @@ about: 你期望 Motrix 未来添加的新功能
 title: ''
 labels: enhancement ✨
 assignees: ''
-
 ---
 
 <!--

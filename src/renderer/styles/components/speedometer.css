@@ -1,0 +1,112 @@
+/* Speedometer widget */
+@layer components {
+  .mo-speedometer {
+    font-size: 12px;
+    position: fixed;
+    right: 16px;
+    bottom: 24px;
+    z-index: 20;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    min-width: 160px;
+    height: 44px;
+    padding: 6px 12px 6px 8px;
+    border-radius: calc(var(--radius) - 2px);
+    border: 1px solid var(--mo-speedometer-border-color);
+    background: var(--mo-speedometer-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(8px);
+    transition:
+      width 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+      padding 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+      border-color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+      box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+      transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+  }
+  .mo-speedometer:hover {
+    border-color: var(--mo-speedometer-hover-border-color);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--primary) 15%, transparent);
+    transform: translateY(-1px);
+  }
+  .mo-speedometer:hover .mode i {
+    animation: icon-pulse 0.6s ease;
+  }
+  .mo-speedometer:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.12s;
+  }
+  .mo-speedometer.stopped {
+    min-width: unset;
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  .mo-speedometer.stopped .mode em {
+    display: none;
+  }
+  .mo-speedometer em {
+    font-style: normal;
+  }
+  .mo-speedometer .mode {
+    font-size: 0;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .mo-speedometer .mode i {
+    font-size: 20px;
+    font-style: normal;
+    line-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 28px;
+    height: 28px;
+    padding: 2px;
+    text-align: center;
+    vertical-align: top;
+    color: var(--mo-speedometer-primary-color);
+    transition: color 0.2s ease;
+  }
+  .mo-speedometer .mode em {
+    display: inline-block;
+    margin-left: 2px;
+    font-size: 9px;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--mo-speedometer-primary-color);
+  }
+  .mo-speedometer .value {
+    font-size: 0;
+    text-align: right;
+    white-space: nowrap;
+    animation: value-fade-in 0.3s ease;
+    margin-left: auto;
+    padding-left: 8px;
+  }
+  .mo-speedometer .value em {
+    font-size: 10px;
+    line-height: 12px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    color: var(--mo-speedometer-text-color);
+    transition: color 0.2s ease;
+  }
+  .mo-speedometer .value span {
+    font-size: 10px;
+    line-height: 14px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-top: 2px;
+    color: var(--mo-speedometer-primary-color);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    transition: color 0.2s ease;
+  }
+}

@@ -6,36 +6,21 @@ Before you start contributing, make sure you already understand [GitHub flow](ht
 
 First you need to determine the English abbreviation of a language as **locale**, such as en-US, this locale value should strictly refer to the [Electron's Documentation](https://www.electronjs.org/docs/api/app#appgetlocale) and [Chromium Source Code](https://source.chromium.org/chromium/chromium/src/+/main:ui/base/l10n/l10n_util.cc).
 
-The internationalization of Motrix is divided into two parts:
+Motrix uses the [i18next](https://www.i18next.com/overview/getting-started) library for internationalization, so you may want a quick look at how to use it.
 
-- Element UI
-- Menu & Main Interface
+The locale files are organized by language under `src/shared/locales`, e.g. `src/shared/locales/en-US` and `src/shared/locales/zh-CN`.
 
-### Element UI
+Each locale directory contains TypeScript files split by feature area:
 
-The internationalization of Element UI is provided by the [Element community](http://element.eleme.io/#/en-US/component/i18n), then find the language pack file corresponding to **locale** (both locale naming may be inconsistent), which is import in `src/shared/locales/all.js`, such as
+- about.ts
+- app.ts
+- edit.ts
+- help.ts
+- index.ts
+- menu.ts
+- preferences.ts
+- subnav.ts
+- task.ts
+- window.ts
 
-```javascript
-import eleLocaleEn from 'element-ui/lib/locale/lang/en'
-import eleLocaleZhCN from 'element-ui/lib/locale/lang/zh-CN'
-```
-
-### Menu & Main Interface
-
-Motrix uses the [i18next](https://www.i18next.com/overview/getting-started) library for internationalization, so you need a quick look at how to use it.
-The configuration files are divided by **locale**: `src/shared/locales`, such as `src/shared/locales/en-US` and `src/shared/locales/zh-CN`.
-
-There are language files in the directory according to the business module.
-
-After the menu module is refactored, the internationalization of the menu has been dispersed into the following files, and there is no need to copy the configuration in `src/main/menus`.
-
-- about.js
-- app.js
-- edit.js
-- help.js
-- index.js
-- menu.js
-- preferences.js
-- subnav.js
-- task.js
-- window.js
+Menu translations live in these same files (not in `src/main/menus`).

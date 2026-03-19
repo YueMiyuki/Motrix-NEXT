@@ -1,0 +1,272 @@
+/* Task detail drawer and tabs */
+@layer components {
+  .task-detail-drawer {
+    min-width: 478px;
+    width: 61.8% !important;
+    max-width: none !important;
+  }
+  .task-detail-drawer [data-slot='sheet-header'] {
+    padding-top: 2rem;
+    margin-bottom: 0;
+  }
+  .task-detail-drawer .task-detail-actions {
+    position: sticky;
+    left: 0;
+    bottom: 1rem;
+    z-index: inherit;
+    width: 100%;
+    text-align: center;
+    font-size: 0;
+    padding: 0 1.25rem;
+    display: flex;
+    align-content: space-between;
+    justify-content: space-between;
+  }
+  .task-detail-drawer .task-detail-actions .task-item-actions {
+    display: inline-block;
+  }
+  .task-detail-drawer .task-detail-actions .task-item-actions > .task-item-action {
+    margin: 0 0.5rem;
+  }
+  .task-detail-drawer .action-wrapper {
+    flex: 1;
+  }
+  .task-detail-drawer .action-wrapper-left {
+    text-align: left;
+  }
+  .task-detail-drawer .action-wrapper-center {
+    padding: 1px 0;
+  }
+  .task-detail-drawer .action-wrapper-center > .task-item-actions {
+    margin: 0 auto;
+  }
+  .task-detail-drawer .action-wrapper-right {
+    text-align: right;
+  }
+  .task-detail-tab {
+    height: 100%;
+    padding: 0.5rem 1.25rem 3.125rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .task-detail-tab .task-detail-tab-label {
+    padding: 0 0.75rem;
+  }
+  .task-detail-tab [data-slot='tabs-content'] {
+    position: relative;
+    height: 100%;
+    padding-top: 0.75rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    animation: tab-fade-in 0.2s ease;
+  }
+  .mo-task-activity .graphic-box {
+    margin-bottom: 1rem;
+  }
+  .activity-progress {
+    margin-bottom: 1.25rem;
+  }
+  .activity-progress-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .activity-progress-percent {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+  }
+  .activity-progress-size {
+    color: var(--muted-foreground);
+  }
+  .activity-progress-remaining {
+    margin-left: auto;
+    color: var(--muted-foreground);
+    font-size: 12px;
+  }
+  .activity-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 2px);
+    overflow: hidden;
+    background-color: var(--border);
+  }
+  .activity-stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    background-color: var(--card);
+  }
+  .activity-stat-label {
+    font-size: 11px;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+  }
+  .activity-stat-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+  }
+  .files-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    gap: 8px;
+  }
+  .files-toolbar-filters {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .files-toolbar-filters button {
+    font-size: 0;
+  }
+  .files-toolbar-summary {
+    text-align: right;
+    font-size: 13px;
+    color: var(--muted-foreground);
+    line-height: 1.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .general-card {
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 2px);
+    overflow: hidden;
+  }
+  .general-card-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    border-bottom: 1px solid var(--border);
+  }
+  .general-card-row:last-child {
+    border-bottom: none;
+  }
+  .general-card-label {
+    flex-shrink: 0;
+    width: 80px;
+    color: var(--muted-foreground);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .general-card-value {
+    flex: 1;
+    min-width: 0;
+    word-break: break-all;
+  }
+  .general-card-value.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+  }
+  .general-card-value--dir {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .general-card-value--dir .dir-text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .general-card-value--error {
+    color: var(--destructive);
+  }
+  .general-section-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px 0 8px;
+    color: var(--muted-foreground);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .copy-link {
+    cursor: pointer;
+    color: var(--muted-foreground);
+    transition: color 0.15s;
+  }
+  .copy-link:hover {
+    color: var(--primary);
+  }
+  .tracker-list {
+    padding: 0;
+    margin: 0;
+    font-size: 13px;
+  }
+  .tracker-list textarea {
+    line-height: 2;
+    field-sizing: content;
+    border-radius: calc(var(--radius) - 2px);
+  }
+  .peers-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--muted-foreground);
+    font-size: 13px;
+  }
+  .peers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .peer-card {
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 2px);
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .peer-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .peer-card-host {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+  }
+  .peer-card-progress {
+    font-size: 12px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--primary);
+  }
+  .peer-card-client {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-bottom: 6px;
+  }
+  .peer-card-speeds {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .peer-speed {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .peer-speed-arrow {
+    color: var(--muted-foreground);
+    font-size: 11px;
+  }
+}

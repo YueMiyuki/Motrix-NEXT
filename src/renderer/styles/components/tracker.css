@@ -1,0 +1,143 @@
+/* BT tracker source selector */
+@layer components {
+  .bt-tracker {
+    position: relative;
+  }
+  .bt-tracker-source-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .tracker-multi-select-trigger {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 2px);
+    background: transparent;
+    cursor: pointer;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+    text-align: left;
+  }
+  .tracker-multi-select-trigger:focus-visible {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 50%, transparent);
+  }
+  .tracker-multi-select-tags {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-width: 0;
+  }
+  .tracker-multi-select-placeholder {
+    color: var(--muted-foreground);
+    font-size: 13px;
+  }
+  .tracker-multi-select-chevron {
+    color: var(--muted-foreground);
+    flex-shrink: 0;
+    transition: transform 0.15s;
+  }
+  .tracker-multi-select-trigger[aria-expanded='true'] .tracker-multi-select-chevron {
+    transform: rotate(180deg);
+  }
+  .tracker-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 24px;
+    padding: 0 6px 0 8px;
+    border-radius: calc(var(--radius) - 2px);
+    background: var(--muted);
+    color: var(--foreground);
+    font-size: 12px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .tracker-tag-remove {
+    cursor: pointer;
+    color: var(--muted-foreground);
+    flex-shrink: 0;
+    border-radius: calc(var(--radius) - 2px);
+    transition: color 0.12s;
+  }
+  .tracker-tag-remove:hover {
+    color: var(--foreground);
+  }
+  .tracker-source-popover {
+    width: 320px;
+    padding: 6px 0 !important;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .tracker-source-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .tracker-source-group-label {
+    padding: 6px 12px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    user-select: none;
+  }
+  .tracker-source-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    color: var(--foreground);
+    cursor: pointer;
+    transition: background 0.1s;
+    user-select: none;
+  }
+  .tracker-source-option:hover {
+    background: var(--accent);
+  }
+  .tracker-source-option.is-selected {
+    color: var(--primary);
+    font-weight: 500;
+  }
+  .tracker-source-option-label {
+    flex: 1;
+    min-width: 0;
+  }
+  .tracker-source-check {
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+  .bt-tracker .sync-tracker-btn {
+    line-height: 0;
+    height: auto;
+    min-height: 38px;
+    padding: 0 12px;
+    align-self: stretch;
+  }
+  .tracker-cdn-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: calc(var(--radius) - 2px);
+    font-size: 10px;
+    font-weight: 600;
+    color: #1f7a39;
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+  }
+  .dark .tracker-cdn-badge {
+    color: #9de7b2;
+    background: rgba(34, 197, 94, 0.22);
+    border-color: rgba(34, 197, 94, 0.45);
+  }
+}

@@ -1,231 +1,232 @@
 <template>
   <div class="mo-task-files" v-if="files">
     <div class="mo-table-wrapper">
-      <el-table
-        stripe
-        ref="torrentTable"
-        :height="height"
-        :data="files"
-        tooltip-effect="dark"
-        style="width: 100%"
-        @row-dblclick="handleRowDbClick"
-        @selection-change="handleSelectionChange">
-        <el-table-column
-          type="selection"
-          width="42">
-        </el-table-column>
-        <el-table-column
-          :label="$t('task.file-name')"
-          min-width="200"
-          show-overflow-tooltip>
-          <template #default="{ row }">{{ row.name }}</template>
-        </el-table-column>
-        <el-table-column
-          :label="$t('task.file-extension')"
-          width="80">
-          <template #default="{ row }">{{ formatExtension(row.extension) }}</template>
-        </el-table-column>
-        <el-table-column
-          v-if="mode === 'DETAIL'"
-          :label="`%`"
-          align="right"
-          width="50">
-          <template #default="{ row }">{{ calcProgress(row.length, row.completedLength, 1) }}</template>
-        </el-table-column>
-        <el-table-column
-          v-if="mode === 'DETAIL'"
-          :label="`✓`"
-          align="right"
-          width="85">
-          <template #default="{ row }">{{ formatBytes(row.completedLength) }}</template>
-        </el-table-column>
-        <el-table-column
-          :label="$t('task.file-size')"
-          align="right"
-          width="85">
-          <template #default="{ row }">{{ formatBytes(row.length) }}</template>
-        </el-table-column>
-      </el-table>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead class="w-[42px]">
+              <Checkbox :checked="allSelected" @update:checked="toggleAll" />
+            </TableHead>
+            <TableHead class="min-w-[200px]">{{
+              $t("task.file-name")
+            }}</TableHead>
+            <TableHead class="w-[80px]">{{
+              $t("task.file-extension")
+            }}</TableHead>
+            <TableHead v-if="mode === 'DETAIL'" class="w-[50px] text-right"
+              >%</TableHead
+            >
+            <TableHead v-if="mode === 'DETAIL'" class="w-[85px] text-right">{{
+              $t("task.file-completed-size")
+            }}</TableHead>
+            <TableHead class="w-[85px] text-right">{{
+              $t("task.file-size")
+            }}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow
+            v-for="row in files"
+            :key="row.idx"
+            @dblclick="handleRowDbClick(row)"
+            :class="{ 'bg-muted/50': isSelected(row) }"
+          >
+            <TableCell>
+              <Checkbox
+                :checked="isSelected(row)"
+                @update:checked="(val: boolean) => toggleRow(row, val)"
+              />
+            </TableCell>
+            <TableCell class="truncate max-w-[200px]">{{ row.name }}</TableCell>
+            <TableCell>{{ formatExtension(row.extension) }}</TableCell>
+            <TableCell v-if="mode === 'DETAIL'" class="text-right">{{
+              calcProgress(row.length, row.completedLength, 1)
+            }}</TableCell>
+            <TableCell v-if="mode === 'DETAIL'" class="text-right">{{
+              formatBytes(row.completedLength)
+            }}</TableCell>
+            <TableCell class="text-right">{{
+              formatBytes(row.length)
+            }}</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
     </div>
-    <el-row class="file-filters" :gutter="12">
-      <el-col
-        class="quick-filters"
-        :xs="24"
-        :sm="8"
-        :md="8"
-        :lg="8"
-      >
-        <el-button-group>
-          <el-button @click="toggleVideoSelection()">
-            <mo-icon name="video" width="12" height="12" />
-          </el-button>
-          <el-button @click="toggleAudioSelection()">
-            <mo-icon name="audio" width="12" height="12" />
-          </el-button>
-          <el-button @click="toggleImageSelection()">
-            <mo-icon name="image" width="12" height="12" />
-          </el-button>
-          <el-button @click="toggleDocumentSelection()">
-            <mo-icon name="document" width="12" height="12" />
-          </el-button>
-        </el-button-group>
-      </el-col>
-      <el-col
-        class="files-summary"
-        :xs="24"
-        :sm="16"
-        :md="16"
-        :lg="16"
-      >
-        {{ $t('task.selected-files-sum', { selectedFilesCount, selectedFilesTotalSize }) }}
-      </el-col>
-    </el-row>
+    <div class="files-toolbar">
+      <div class="files-toolbar-filters">
+        <ui-button size="sm" variant="outline" @click="toggleVideoSelection()"
+          ><Video :size="12"
+        /></ui-button>
+        <ui-button size="sm" variant="outline" @click="toggleAudioSelection()"
+          ><Headphones :size="12"
+        /></ui-button>
+        <ui-button size="sm" variant="outline" @click="toggleImageSelection()"
+          ><Image :size="12"
+        /></ui-button>
+        <ui-button
+          size="sm"
+          variant="outline"
+          @click="toggleDocumentSelection()"
+          ><FileText :size="12"
+        /></ui-button>
+      </div>
+      <div class="files-toolbar-summary">
+        {{
+          $t("task.selected-files-sum", {
+            selectedFilesCount,
+            selectedFilesTotalSize,
+          })
+        }}
+      </div>
+    </div>
   </div>
 </template>
-
 <script lang="ts">
-  import { isEmpty } from 'lodash'
-  import '@/components/Icons/video'
-  import '@/components/Icons/audio'
-  import '@/components/Icons/image'
-  import '@/components/Icons/document'
-  import {
-    NONE_SELECTED_FILES,
-    SELECTED_ALL_FILES
-  } from '@shared/constants'
-  import {
-    bytesToSize,
+import { isEmpty } from "lodash";
+import UiButton from "@/components/ui/compat/UiButton.vue";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Video, Headphones, Image, FileText } from "lucide-vue-next";
+import { NONE_SELECTED_FILES, SELECTED_ALL_FILES } from "@shared/constants";
+import {
+  bytesToSize,
+  calcProgress,
+  filterAudioFiles,
+  filterDocumentFiles,
+  filterImageFiles,
+  filterVideoFiles,
+  removeExtensionDot,
+} from "@shared/utils";
+
+export default {
+  name: "mo-task-files",
+  components: {
+    [UiButton.name]: UiButton,
+    Checkbox,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+    Video,
+    Headphones,
+    Image,
+    FileText,
+  },
+  props: {
+    mode: {
+      type: String,
+      default: "ADD",
+      validator: (value: string) => ["ADD", "DETAIL"].includes(value),
+    },
+    height: { type: [Number, String] },
+    files: { type: Array, default: () => [] },
+  },
+  data() {
+    return { selectedIndices: new Set<number>() };
+  },
+  computed: {
+    allSelected() {
+      return (
+        this.files?.length > 0 &&
+        this.selectedIndices.size === this.files.length
+      );
+    },
+    selectedFiles() {
+      return (this.files as any[]).filter((f) =>
+        this.selectedIndices.has(f.idx),
+      );
+    },
+    selectedFilesCount() {
+      return this.selectedIndices.size;
+    },
+    selectedFilesTotalSize() {
+      const total = this.selectedFiles.reduce(
+        (acc: number, cur: any) => acc + parseInt(cur.length, 10),
+        0,
+      );
+      return bytesToSize(total);
+    },
+    selectedFileIndex() {
+      const { files, selectedIndices } = this;
+      if ((files as any[]).length === 0 || selectedIndices.size === 0)
+        return NONE_SELECTED_FILES;
+      if ((files as any[]).length === selectedIndices.size)
+        return SELECTED_ALL_FILES;
+      const arr = Array.from(selectedIndices) as number[];
+      arr.sort((a, b) => a - b);
+      return arr.join(",");
+    },
+  },
+  watch: {
+    selectedFileIndex() {
+      this.$emit("selection-change", this.selectedFileIndex);
+    },
+  },
+  methods: {
     calcProgress,
-    filterAudioFiles,
-    filterDocumentFiles,
-    filterImageFiles,
-    filterVideoFiles,
-    removeExtensionDot
-  } from '@shared/utils'
-
-  export default {
-    name: 'mo-task-files',
-    props: {
-      mode: {
-        type: String,
-        default: 'ADD',
-        validator: function (value: string) {
-          return ['ADD', 'DETAIL'].indexOf(value) !== -1
-        }
-      },
-      height: {
-        type: [Number, String]
-      },
-      files: {
-        type: Array,
-        default: function () {
-          return []
-        }
-      }
+    formatBytes(value: any) {
+      return bytesToSize(value);
     },
-    data () {
-      return {
-        selectedFiles: []
-      }
+    formatExtension(value: any) {
+      return removeExtensionDot(value);
     },
-    computed: {
-      selectedFilesCount () {
-        return this.selectedFiles.length
-      },
-      selectedFilesTotalSize () {
-        const result = this.selectedFiles.reduce((acc, cur) => {
-          return acc + parseInt(cur.length, 10)
-        }, 0)
-        return bytesToSize(result)
-      },
-      selectedFileIndex () {
-        const { files, selectedFiles } = this
-        if (files.length === 0 || selectedFiles.length === 0) {
-          return NONE_SELECTED_FILES
-        }
-        if (files.length === selectedFiles.length) {
-          return SELECTED_ALL_FILES
-        }
-        const indexArr = this.selectedFiles.map((item) => item.idx)
-        const result = indexArr.join(',')
-        return result
-      }
+    isSelected(row: any) {
+      return this.selectedIndices.has(row.idx);
     },
-    watch: {
-      selectedFileIndex () {
-        const { selectedFileIndex } = this
-        this.$emit('selection-change', selectedFileIndex)
-      }
+    toggleAll(checked: boolean) {
+      this.selectedIndices = checked
+        ? new Set((this.files as any[]).map((f) => f.idx))
+        : new Set();
     },
-    methods: {
-      calcProgress,
-      formatBytes (value) {
-        return bytesToSize(value)
-      },
-      formatExtension (value) {
-        return removeExtensionDot(value)
-      },
-      toggleAllSelection () {
-        if (!this.$refs.torrentTable) {
-          return
-        }
-        this.$refs.torrentTable.toggleAllSelection()
-      },
-      clearSelection () {
-        if (!this.$refs.torrentTable) {
-          return
-        }
-        this.$refs.torrentTable.clearSelection()
-      },
-      toggleSelection (rows) {
-        if (isEmpty(rows)) {
-          this.$refs.torrentTable.clearSelection()
-        } else {
-          this.$refs.torrentTable.clearSelection()
-          rows.forEach(row => {
-            this.$refs.torrentTable.toggleRowSelection(row, true)
-          })
-        }
-      },
-      toggleVideoSelection () {
-        const filtered = filterVideoFiles(this.files)
-        this.toggleSelection(filtered)
-      },
-      toggleAudioSelection () {
-        const filtered = filterAudioFiles(this.files)
-        this.toggleSelection(filtered)
-      },
-      toggleImageSelection () {
-        const filtered = filterImageFiles(this.files)
-        this.toggleSelection(filtered)
-      },
-      toggleDocumentSelection () {
-        const filtered = filterDocumentFiles(this.files)
-        this.toggleSelection(filtered)
-      },
-      handleRowDbClick (row, column, event) {
-        this.$refs.torrentTable.toggleRowSelection(row)
-      },
-      handleSelectionChange (val) {
-        this.selectedFiles = val
+    toggleRow(row: any, selected: boolean) {
+      const next = new Set(this.selectedIndices);
+      selected ? next.add(row.idx) : next.delete(row.idx);
+      this.selectedIndices = next;
+    },
+    toggleAllSelection() {
+      this.selectedIndices = new Set((this.files as any[]).map((f) => f.idx));
+    },
+    clearSelection() {
+      this.selectedIndices = new Set();
+    },
+    toggleRowSelection(row: any, selected?: boolean) {
+      const next = new Set(this.selectedIndices);
+      if (selected === undefined) {
+        next.has(row.idx) ? next.delete(row.idx) : next.add(row.idx);
+      } else {
+        selected ? next.add(row.idx) : next.delete(row.idx);
       }
-    }
-  }
+      this.selectedIndices = next;
+    },
+    toggleSelection(rows: any[]) {
+      this.selectedIndices = isEmpty(rows)
+        ? new Set()
+        : new Set(rows.map((r) => r.idx));
+    },
+    toggleVideoSelection() {
+      this.toggleSelection(filterVideoFiles(this.files));
+    },
+    toggleAudioSelection() {
+      this.toggleSelection(filterAudioFiles(this.files));
+    },
+    toggleImageSelection() {
+      this.toggleSelection(filterImageFiles(this.files));
+    },
+    toggleDocumentSelection() {
+      this.toggleSelection(filterDocumentFiles(this.files));
+    },
+    handleRowDbClick(row: any) {
+      this.toggleRowSelection(row);
+    },
+  },
+};
 </script>
-
-<style lang="scss">
-.file-filters {
-  margin-top: 0.5rem;
-  .quick-filters {
-    button {
-      font-size: 0;
-    }
-  }
-  .files-summary {
-    text-align: right;
-    font-size: $--font-size-base;
-    color: $--color-text-regular;
-    line-height: 1.75rem;
-  }
-}
-</style>

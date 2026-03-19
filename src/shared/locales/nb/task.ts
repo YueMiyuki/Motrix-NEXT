@@ -1,7 +1,7 @@
 export default {
-  'active': 'Laster ned',
-  'waiting': 'Venter',
-  'stopped': 'Stoppet',
+  active: 'Laster ned',
+  waiting: 'Venter',
+  stopped: 'Stoppet',
   'new-task': 'Ny oppgave',
   'new-bt-task': 'Ny BT-oppgave',
   'open-file': 'Åpne torrentfil...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'Filetternavn',
   'file-size': 'Størrelse',
   'file-completed-size': 'Fullført',
-  'selected-files-sum': 'Valgt: {{selectedFilesCount}} filer, total størrelse {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Valgt: {{selectedFilesCount}} filer, total størrelse {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Velg minst én fil',
   'task-gid': 'GID',
   'task-name': 'Oppgavenavn',
@@ -54,7 +55,8 @@ export default {
   'navigate-to-downloading': 'Naviger til Nedlasting',
   'show-advanced-options': 'Avanserte instillinger',
   'copyright-warning': 'Copyright Advarsel',
-  'copyright-warning-message': 'Filen du vil laste ned kan være lydbeskyttet eller beskyttet av copyright, vær sikker på at du har tillatelse til å få tilgang til den.',
+  'copyright-warning-message':
+    'Filen du vil laste ned kan være lydbeskyttet eller beskyttet av copyright, vær sikker på at du har tillatelse til å få tilgang til den.',
   'copyright-yes': 'Ja, jeg har tillatelse',
   'copyright-no': 'Nei, jeg har ikke tillatelse',
   'copyright-error-message': 'Kunne ikke legge til oppgave på grunn av problem med opphavsrett',
@@ -66,7 +68,8 @@ export default {
   'delete-task': 'Slett oppgave',
   'delete-selected-tasks': 'Slett valgte oppgaver',
   'delete-task-confirm': 'Er du sikker på at du vil fjerne nedlastingsoppgaven "{{taskName}}"?',
-  'batch-delete-task-confirm': 'Er du sikker på at du vil fjerne {{count}} nedlastingsoppgaver i batch?',
+  'batch-delete-task-confirm':
+    'Er du sikker på at du vil fjerne {{count}} nedlastingsoppgaver i batch?',
   'delete-task-label': 'Slett med filer',
   'delete-task-success': 'Oppgave "{{taskName}}" er slettet',
   'delete-task-fail': 'Kunne ikke slette oppgaven "{{taskName}}"',
@@ -116,5 +119,5 @@ export default {
   'bt-download-complete-tips': 'Tips: Du kan stoppe en oppgave for å avslutte seedingen',
   'bt-stopping-seeding-tip': 'Når du stopper seedingen, vil det ta litt tid å koble fra, vent...',
   'download-fail-message': 'Kunne ikke laste ned {{taskName}}',
-  'download-fail-notify': 'Nedlasting feilet'
+  'download-fail-notify': 'Nedlasting feilet',
 }

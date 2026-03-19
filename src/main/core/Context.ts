@@ -1,40 +1,35 @@
 import logger from './Logger'
-import {
-  getEnginePath,
-  getAria2BinPath,
-  getAria2ConfPath,
-  getSessionPath
-} from '../utils'
+import { getEnginePath, getAria2BinPath, getAria2ConfPath, getSessionPath } from '../utils'
 
 const { platform, arch } = process
 
 export default class Context {
   [key: string]: any
-  constructor () {
+  constructor() {
     this.init()
   }
 
-  getLogPath () {
+  getLogPath() {
     const { path } = logger.transports.file.getFile()
     return path
   }
 
-  init () {
+  init() {
     // The key of Context cannot be the same as that of userConfig and systemConfig.
     this.context = {
-      platform: platform,
-      arch: arch,
+      platform,
+      arch,
       'log-path': this.getLogPath(),
       'session-path': getSessionPath(),
       'engine-path': getEnginePath(platform, arch),
       'aria2-bin-path': getAria2BinPath(platform, arch),
-      'aria2-conf-path': getAria2ConfPath(platform, arch)
+      'aria2-conf-path': getAria2ConfPath(platform, arch),
     }
 
     logger.info('[Motrix] Context.init===>', this.context)
   }
 
-  get (key) {
+  get(key) {
     if (typeof key === 'undefined') {
       return this.context
     }

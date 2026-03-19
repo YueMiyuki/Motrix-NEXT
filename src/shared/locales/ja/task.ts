@@ -1,13 +1,14 @@
 export default {
-  'active': 'ダウンロード中',
-  'waiting': '待機中',
-  'stopped': '一時停止中',
+  active: 'ダウンロード中',
+  waiting: '待機中',
+  stopped: '一時停止中',
   'new-task': '新規タスク',
   'new-bt-task': '新規torrentタスク',
   'open-file': 'torrentファイルを開く...',
   'uri-task': 'URLタスク',
   'torrent-task': 'torrentタスク',
-  'uri-task-tips': 'URLを複数追加したとき、一行につき一つのリンクとなります(マグネットリンクをサポート)',
+  'uri-task-tips':
+    'URLを複数追加したとき、一行につき一つのリンクとなります(マグネットリンクをサポート)',
   'thunder-link-tips': '注意：Thunder(Xunlei)リンク解析後、ダウンロードできるかは保証できません',
   'new-task-uris-required': '少なくとも1つの有効なリソースURLを入力してください',
   'new-task-torrent-required': 'トレントファイルを選択してください',
@@ -53,7 +54,8 @@ export default {
   'navigate-to-downloading': 'タスク画面に進む',
   'show-advanced-options': '詳細設定',
   'copyright-warning': '著作権警告',
-  'copyright-warning-message': 'あなたがダウンロードしようとしているファイルは著作権のある音声・動画の可能性があります。著作権があるかどうか確認してください',
+  'copyright-warning-message':
+    'あなたがダウンロードしようとしているファイルは著作権のある音声・動画の可能性があります。著作権があるかどうか確認してください',
   'copyright-yes': 'はい、著作権があります',
   'copyright-no': 'いいえ',
   'copyright-error-message': '著作権の問題で、タスク追加に失敗',
@@ -66,7 +68,8 @@ export default {
   'delete-task': 'タスクを削除',
   'delete-selected-tasks': '選択中のタスクを削除',
   'delete-task-confirm': '本当にタスク "{{taskName}}" を削除しますか?',
-  'batch-delete-task-confirm': '{{count}}つのダウンロードタスクをバッチで削除してもよろしいですか？',
+  'batch-delete-task-confirm':
+    '{{count}}つのダウンロードタスクをバッチで削除してもよろしいですか？',
   'delete-task-label': '同時にタスクを削除',
   'delete-task-success': 'タスク "{{taskName}}" の削除に成功',
   'delete-task-fail': 'タスク "{{taskName}}" の削除に失敗',
@@ -113,7 +116,8 @@ export default {
   'bt-download-complete-message': '{{taskName}} のダウンロードに成功、seedを作成中...',
   'bt-download-complete-notify': 'torrentタスクのダウンロードに成功，seedを作成中...',
   'bt-download-complete-tips': 'ヒント：タスクを停止しseedの作成を終了することができます',
-  'bt-stopping-seeding-tip': 'シードを停止しています。切断するにはしばらく時間がかかります。お待ちください...',
+  'bt-stopping-seeding-tip':
+    'シードを停止しています。切断するにはしばらく時間がかかります。お待ちください...',
   'download-fail-message': '{{taskName}} のダウンロードに失敗',
-  'download-fail-notify': 'ダウンロード失敗'
+  'download-fail-notify': 'ダウンロード失敗',
 }

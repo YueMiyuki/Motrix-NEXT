@@ -1,67 +1,66 @@
 <template>
-  <el-dialog
-    custom-class="app-about-dialog"
-    width="61.8vw"
-    :visible="visible"
-    @open="handleOpen"
-    :before-close="handleClose"
-    @closed="handleClosed">
-    <mo-app-info :version="version" :engine="engineInfo" />
-    <template #footer>
-      <mo-copyright />
-    </template>
-  </el-dialog>
+  <Dialog :open="visible" @update:open="handleDialogOpenChange">
+    <DialogContent class="app-about-dialog" :show-close-button="true">
+      <mo-app-info :version="version" :engine="engineInfo" />
+      <DialogFooter>
+        <mo-copyright />
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <script lang="ts">
-  import { mapState } from 'vuex'
-  import AppInfo from '@/components/About/AppInfo.vue'
-  import Copyright from '@/components/About/Copyright.vue'
-  import { app } from '@electron/remote'
+import { useAppStore } from "@/store/app";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import AppInfo from "@/components/About/AppInfo.vue";
+import Copyright from "@/components/About/Copyright.vue";
+import { app } from "@electron/remote";
 
-  export default {
-    name: 'mo-about-panel',
-    components: {
-      [AppInfo.name]: AppInfo,
-      [Copyright.name]: Copyright
+export default {
+  name: "mo-about-panel",
+  components: {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    [AppInfo.name]: AppInfo,
+    [Copyright.name]: Copyright,
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
     },
-    props: {
-      visible: {
-        type: Boolean,
-        default: false
+  },
+  data() {
+    const version = app.getVersion();
+    return {
+      version,
+    };
+  },
+  computed: {
+    engineInfo() {
+      return useAppStore().engineInfo;
+    },
+  },
+  watch: {
+    visible(val) {
+      if (val) {
+        this.handleOpen();
       }
     },
-    data () {
-      const version = app.getVersion()
-      return {
-        version
+  },
+  methods: {
+    handleOpen() {
+      useAppStore().fetchEngineInfo();
+    },
+    handleDialogOpenChange(open) {
+      if (!open) {
+        this.handleClose();
       }
     },
-    computed: {
-      ...(mapState as any)('app', {
-        engineInfo: (state: any) => state.engineInfo
-      })
+    handleClose() {
+      useAppStore().hideAboutPanel();
     },
-    methods: {
-      handleOpen () {
-        this.$store.dispatch('app/fetchEngineInfo')
-      },
-      handleClose (done) {
-        this.$store.dispatch('app/hideAboutPanel')
-      },
-      handleClosed () {
-      }
-    }
-  }
+  },
+};
 </script>
-
-<style lang="scss">
-.app-about-dialog {
-  max-width: 632px;
-  min-width: 380px;
-  .el-dialog__header {
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-}
-</style>

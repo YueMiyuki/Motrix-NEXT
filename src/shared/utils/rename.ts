@@ -3,21 +3,21 @@ const PLUS = '+'
 const MINUS = '-'
 const OPERATORS = [PLUS, MINUS]
 
-export const getRuleString = (out) => {
+const getRuleString = (out) => {
   const rule = out.match(RULE_REGEX)
   const result = rule && rule[1]
 
   return result
 }
 
-export const buildRule = (rule) => {
+const buildRule = (rule) => {
   let ruleArr
   let operator = PLUS
   let init = 1
   let step = 1
   let len = 1
 
-  OPERATORS.some(OPT => {
+  OPERATORS.some((OPT) => {
     if (rule.includes(OPT)) {
       ruleArr = rule.split(OPT)
       operator = OPT
@@ -38,7 +38,7 @@ export const buildRule = (rule) => {
   return {
     init,
     step,
-    len
+    len,
   }
 }
 

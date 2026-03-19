@@ -1,7 +1,7 @@
 export default {
-  'active': 'Actief',
-  'waiting': 'Wachten',
-  'stopped': 'Gestopt',
+  active: 'Actief',
+  waiting: 'Wachten',
+  stopped: 'Gestopt',
   'new-task': 'Nieuwe taak',
   'new-bt-task': 'Nieuwe BT taak',
   'open-file': 'Torrentbestand openen...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'Bestandstype',
   'file-size': 'Bestandsgrootte',
   'file-completed-size': 'Gedownload',
-  'selected-files-sum': 'Geselecteerd: {{selectedFilesCount}} bestanden, totale grootte {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Geselecteerd: {{selectedFilesCount}} bestanden, totale grootte {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Kies a.u.b. ten minste 1 bestand',
   'task-gid': 'GID',
   'task-name': 'Taak naam',
@@ -54,7 +55,8 @@ export default {
   'navigate-to-downloading': 'Navigeer naar downloaden',
   'show-advanced-options': 'Geavanceerde opties',
   'copyright-warning': 'Copyright waarschuwing',
-  'copyright-warning-message': 'Het bestand dat u wilt te downloaden kan onder het auteursrecht vallen. Controleer of u in het bezit bent van de benodigde licentie',
+  'copyright-warning-message':
+    'Het bestand dat u wilt te downloaden kan onder het auteursrecht vallen. Controleer of u in het bezit bent van de benodigde licentie',
   'copyright-yes': 'Ja, ik heb toestemming',
   'copyright-no': 'Nee, ik heb geen toestemming',
   'copyright-error-message': 'Kon taak niet toevoegen vanwege copyright probleem',
@@ -71,7 +73,8 @@ export default {
   'delete-task-success': 'Taak "{{taskName}}" succesvol verwijderd',
   'delete-task-fail': 'Taak "{{taskName}}" verwijderen mislukt',
   'remove-task-file-fail': 'Bestand verwijderen mislukt, gelieve handmatig verwijderen',
-  'remove-task-config-file-fail': 'Taakconfiguratiebestand verwijderen mislukt, gelieve handmatig verwijderenn',
+  'remove-task-config-file-fail':
+    'Taakconfiguratiebestand verwijderen mislukt, gelieve handmatig verwijderenn',
   'move-task-up': 'Taak naar boven verplaatsen',
   'move-task-down': 'Taak naar beneden verplaatsen',
   'pause-all-task': 'Alle taken pauzeren',
@@ -92,7 +95,8 @@ export default {
   'copy-link': 'Link kopiëren',
   'copy-link-success': 'Link succesvol gekopieerd',
   'remove-record': 'Verwijder taak record',
-  'remove-record-confirm': 'Weet u zeker dat u het downloadrecord wilt verwijderen voor "{{taskName}}"?',
+  'remove-record-confirm':
+    'Weet u zeker dat u het downloadrecord wilt verwijderen voor "{{taskName}}"?',
   'remove-record-label': 'Bestand ook verwijderen',
   'remove-record-success': 'Taakrecord voor "{{taskName}}" succesvol verwijderd',
   'remove-record-fail': 'Taakrecord voor "{{taskName}}" kon niet verwijderd worden',
@@ -113,7 +117,8 @@ export default {
   'bt-download-complete-message': 'Download van {{taskName}} voltooid, seeden...',
   'bt-download-complete-notify': 'BT Download voltooid, seeden...',
   'bt-download-complete-tips': 'Tip: U kunt een taak stoppen om het seeden de beëindigen',
-  'bt-stopping-seeding-tip': 'Seeden stoppen. Het duurt even voor de verbindingen zijn verbroken, even geduld...',
+  'bt-stopping-seeding-tip':
+    'Seeden stoppen. Het duurt even voor de verbindingen zijn verbroken, even geduld...',
   'download-fail-message': 'Download van {{taskName}} mislukt',
-  'download-fail-notify': 'Download mislukt'
+  'download-fail-notify': 'Download mislukt',
 }

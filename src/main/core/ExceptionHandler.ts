@@ -4,20 +4,20 @@ import is from 'electron-is'
 import logger from './Logger'
 
 const defaults = {
-  showDialog: !is.dev()
+  showDialog: !is.dev(),
 }
 export default class ExceptionHandler {
   [key: string]: any
-  constructor (options: any = {}) {
+  constructor(options: any = {}) {
     this.options = {
       ...defaults,
-      ...options
+      ...options,
     }
 
     this.setup()
   }
 
-  setup () {
+  setup() {
     if (is.dev()) {
       return
     }

@@ -29,6 +29,7 @@ It is recommended to install Motrix using the installation package (Motrix-Setup
 If you use package management tools to manage applications on Windows, such as [Chocolatey](https://chocolatey.org), [scoop](https://github.com/lukesampson/scoop). You can use them to install Motrix.
 
 #### Chocolatey
+
 Thanks to [@Yato](https://github.com/iYato) for continuing to maintain the [Motrix Chocolatey](https://community.chocolatey.org/packages/motrix) package. To install motrix, run the following command from the `command line` or from `PowerShell`:
 
 ```bash
@@ -40,6 +41,7 @@ choco upgrade motrix
 ```
 
 #### scoop
+
 If you prefer the portable version, you can use [scoop](https://github.com/lukesampson/scoop) (need Windows 7+) to install Motrix.
 
 ```bash
@@ -74,6 +76,7 @@ Motrix may need to run with `sudo` for the first time in Linux because there is 
 If you want to build from source code, please read the **Build** section.
 
 #### AppImage
+
 The latest version of Motrix AppImage requires you to manually perform desktop integration. Please check the documentation of [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher) .
 
 > Desktop Integration
@@ -89,6 +92,7 @@ sudo apt --fix-broken install
 ```
 
 #### Snap
+
 Motrix has been listed on [Snapcraft](https://snapcraft.io/motrix) , Ubuntu users recommend downloading from the Snap Store.
 
 Tips for v1.5.10
@@ -100,6 +104,7 @@ Please unchecked Preferences--Basic Settings--Hide App Menu (Windows & Linux Onl
 Please update to v1.5.12 and above, you can use the keyboard shortcut <kbd>Ctrl</kbd> + <kbd>q</kbd> to quickly exit the application.
 
 #### AUR
+
 For Arch Linux users, Motrix is available in [aur](https://aur.archlinux.org/packages/motrix/), thanks to the maintainer [@weearc](https://github.com/weearc).
 
 Run the following command to install:
@@ -109,6 +114,7 @@ yay -S motrix
 ```
 
 #### Flatpak
+
 Thanks to the [PR](https://github.com/flathub/flathub/pull/2334) of [@proletarius101](https://github.com/proletarius101), Motrix has been listed [Flathub](https://flathub.org/apps/details/net.agalwood.Motrix), Linux users who like the Flatpak can try it.
 
 ```bash
@@ -153,9 +159,11 @@ git clone git@github.com:agalwood/Motrix.git
 
 ### Install Dependencies
 
+Requires Node.js >= 22.
+
 ```bash
 cd Motrix
-yarn
+pnpm install
 ```
 
 > Error: Electron failed to install correctly, please delete node_modules/electron and try installing again
@@ -165,18 +173,19 @@ yarn
 ### Dev Mode
 
 ```bash
-yarn run dev
+pnpm run dev
 ```
 
 ### Build Release
 
 ```bash
-yarn run build
+pnpm run build
 ```
+
 #### Build for Apple Silicon
 
 ```bash
-yarn run build:applesilicon
+pnpm run build:applesilicon
 ```
 
 After building, the application will be found in the project's `release` directory.
@@ -184,7 +193,9 @@ After building, the application will be found in the project's `release` directo
 ## 🛠 Technology Stack
 
 - [Electron](https://electronjs.org/)
-- [Vue](https://vuejs.org/) + [VueX](https://vuex.vuejs.org/) + [Element](https://element.eleme.io)
+- [Vue 3](https://vuejs.org/) + [Pinia](https://pinia.vuejs.org/) + [shadcn-vue](https://www.shadcn-vue.com/)
+- [Vite](https://vite.dev/) (renderer) + [webpack](https://webpack.js.org/) (main)
+- [TypeScript](https://www.typescriptlang.org/)
 - [Aria2](https://aria2.github.io/)
 
 ## ☑️ TODO
@@ -199,35 +210,41 @@ If you are interested in participating in joint development, PR and Forks are we
 
 Translations into versions for other languages are welcome 🧐! Please read the [translation guide](./docs/CONTRIBUTING.md#-translation-guide) before starting translations.
 
-| Key   | Name                | Status       |
-|-------|:--------------------|:-------------|
+| Key   | Name                | Status                                                                                                      |
+| ----- | :------------------ | :---------------------------------------------------------------------------------------------------------- |
 | ar    | Arabic              | ✔️ [@hadialqattan](https://github.com/hadialqattan), [@AhmedElTabarani](https://github.com/AhmedElTabarani) |
-| bg    | Българският език    | ✔️ [@null-none](https://github.com/null-none) |
-| ca    | Català              | ✔️ [@marcizhu](https://github.com/marcizhu) |
-| de    | Deutsch             | ✔️ [@Schloemicher](https://github.com/Schloemicher) |
-| el    | Ελληνικά            | ✔️ [@Likecinema](https://github.com/Likecinema) |
-| en-US | English             | ✔️           |
-| es    | Español             | ✔️ [@Chofito](https://github.com/Chofito)|
-| fa    | فارسی               | ✔️ [@Nima-Ra](https://github.com/Nima-Ra) |
-| fr    | Français            | ✔️ [@gpatarin](https://github.com/gpatarin) |
-| hu    | Hungarian           | ✔️ [@zalnaRs](https://github.com/zalnaRs) |
-| id    | Indonesia           | ✔️ [@aarestu](https://github.com/aarestu) |
-| it    | Italiano            | ✔️ [@blackcat-917](https://github.com/blackcat-917) |
-| ja    | 日本語               | ✔️ [@hbkrkzk](https://github.com/hbkrkzk) |
-| ko    | 한국어                | ✔️ [@KOZ39](https://github.com/KOZ39) |
-| nb    | Norsk Bokmål        | ✔️ [@rubjo](https://github.com/rubjo) |
-| nl    | Nederlands          | ✔️ [@nickbouwhuis](https://github.com/nickbouwhuis) |
-| pl    | Polski              | ✔️ [@KanarekLife](https://github.com/KanarekLife) |
-| pt-BR | Portuguese (Brazil) | ✔️ [@andrenoberto](https://github.com/andrenoberto) |
-| ro    | Română              | ✔️ [@alyn3d](https://github.com/alyn3d) |
-| ru    | Русский             | ✔️ [@bladeaweb](https://github.com/bladeaweb) |
-| th    | แบบไทย              | ✔️ [@nxanywhere](https://github.com/nxanywhere) |
-| tr    | Türkçe              | ✔️ [@abdullah](https://github.com/abdullah) |
-| uk    | Українська          | ✔️ [@bladeaweb](https://github.com/bladeaweb) |
-| vi    | Tiếng Việt          | ✔️ [@duythanhvn](https://github.com/duythanhvn) |
-| zh-CN | 简体中文             | ✔️           |
-| zh-TW | 繁體中文             | ✔️ [@Yukaii](https://github.com/Yukaii) [@5idereal](https://github.com/5idereal) |
+| bg    | Българският език    | ✔️ [@null-none](https://github.com/null-none)                                                               |
+| ca    | Català              | ✔️ [@marcizhu](https://github.com/marcizhu)                                                                 |
+| de    | Deutsch             | ✔️ [@Schloemicher](https://github.com/Schloemicher)                                                         |
+| el    | Ελληνικά            | ✔️ [@Likecinema](https://github.com/Likecinema)                                                             |
+| en-US | English             | ✔️                                                                                                          |
+| es    | Español             | ✔️ [@Chofito](https://github.com/Chofito)                                                                   |
+| fa    | فارسی               | ✔️ [@Nima-Ra](https://github.com/Nima-Ra)                                                                   |
+| fr    | Français            | ✔️ [@gpatarin](https://github.com/gpatarin)                                                                 |
+| hu    | Hungarian           | ✔️ [@zalnaRs](https://github.com/zalnaRs)                                                                   |
+| id    | Indonesia           | ✔️ [@aarestu](https://github.com/aarestu)                                                                   |
+| it    | Italiano            | ✔️ [@blackcat-917](https://github.com/blackcat-917)                                                         |
+| ja    | 日本語              | ✔️ [@hbkrkzk](https://github.com/hbkrkzk)                                                                   |
+| ko    | 한국어              | ✔️ [@KOZ39](https://github.com/KOZ39)                                                                       |
+| nb    | Norsk Bokmål        | ✔️ [@rubjo](https://github.com/rubjo)                                                                       |
+| nl    | Nederlands          | ✔️ [@nickbouwhuis](https://github.com/nickbouwhuis)                                                         |
+| pl    | Polski              | ✔️ [@KanarekLife](https://github.com/KanarekLife)                                                           |
+| pt-BR | Portuguese (Brazil) | ✔️ [@andrenoberto](https://github.com/andrenoberto)                                                         |
+| ro    | Română              | ✔️ [@alyn3d](https://github.com/alyn3d)                                                                     |
+| ru    | Русский             | ✔️ [@bladeaweb](https://github.com/bladeaweb)                                                               |
+| th    | แบบไทย              | ✔️ [@nxanywhere](https://github.com/nxanywhere)                                                             |
+| tr    | Türkçe              | ✔️ [@abdullah](https://github.com/abdullah)                                                                 |
+| uk    | Українська          | ✔️ [@bladeaweb](https://github.com/bladeaweb)                                                               |
+| vi    | Tiếng Việt          | ✔️ [@duythanhvn](https://github.com/duythanhvn)                                                             |
+| zh-CN | 简体中文            | ✔️                                                                                                          |
+| zh-TW | 繁體中文            | ✔️ [@Yukaii](https://github.com/Yukaii) [@5idereal](https://github.com/5idereal)                            |
 
 ## 📜 License
 
-[MIT](https://opensource.org/licenses/MIT) Copyright (c) 2018-present Dr_rOot
+[MIT](https://opensource.org/licenses/MIT) Copyright (c) 2026-present YueMiyuki
+
+Original project from [agalwood](https://github.com/agalwood/Motrix)  
+Last update of the original project is already 3yrs ago, and I am a heavy user of Motrix  
+Thanks to that bro for open sourcing this great project  
+Wherever bro is, whatever bro is doing, I just hope bros doing well
+:D

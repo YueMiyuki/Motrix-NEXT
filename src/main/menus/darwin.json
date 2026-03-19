@@ -3,10 +3,17 @@
     {
       "id": "menu.app",
       "submenu": [
-        { "id": "app.about", "command": "application:about", "command-before": "application:show?page=index" },
+        {
+          "id": "app.about",
+          "command": "application:about",
+          "command-before": "application:show?page=index"
+        },
         { "type": "separator" },
         { "id": "app.preferences", "command": "application:preferences" },
-        { "id": "app.check-for-updates", "command": "application:check-for-updates" },
+        {
+          "id": "app.check-for-updates",
+          "command": "application:check-for-updates"
+        },
         { "id": "app.hide", "role": "hide" },
         { "id": "app.hide-others", "role": "hideothers" },
         { "id": "app.unhide", "role": "unhide" },
@@ -17,22 +24,49 @@
     {
       "id": "menu.task",
       "submenu": [
-        { "id": "task.new-task", "command": "application:new-task", "command-after": "application:show?page=index" },
-        { "id": "task.new-bt-task", "command": "application:new-bt-task", "command-after": "application:show?page=index" },
-        { "id": "task.open-file", "command": "application:open-file", "command-before": "application:show?page=index" },
+        {
+          "id": "task.new-task",
+          "command": "application:new-task",
+          "command-after": "application:show?page=index"
+        },
+        {
+          "id": "task.new-bt-task",
+          "command": "application:new-bt-task",
+          "command-after": "application:show?page=index"
+        },
+        {
+          "id": "task.open-file",
+          "command": "application:open-file",
+          "command-before": "application:show?page=index"
+        },
         { "type": "separator" },
         { "id": "app.task-list", "command": "application:task-list" },
         { "id": "task.pause-task", "command": "application:pause-task" },
         { "id": "task.resume-task", "command": "application:resume-task" },
         { "id": "task.delete-task", "command": "application:delete-task" },
         { "id": "task.move-task-up", "command": "application:move-task-up" },
-        { "id": "task.move-task-down", "command": "application:move-task-down" },
+        {
+          "id": "task.move-task-down",
+          "command": "application:move-task-down"
+        },
         { "type": "separator" },
-        { "id": "task.pause-all-task", "command": "application:pause-all-task" },
-        { "id": "task.resume-all-task", "command": "application:resume-all-task" },
-        { "id": "task.select-all-task", "command": "application:select-all-task" },
+        {
+          "id": "task.pause-all-task",
+          "command": "application:pause-all-task"
+        },
+        {
+          "id": "task.resume-all-task",
+          "command": "application:resume-all-task"
+        },
+        {
+          "id": "task.select-all-task",
+          "command": "application:select-all-task"
+        },
         { "type": "separator" },
-        { "id": "task.clear-recent-tasks", "command": "application:clear-recent-tasks" }
+        {
+          "id": "task.clear-recent-tasks",
+          "command": "application:clear-recent-tasks"
+        }
       ]
     },
     {

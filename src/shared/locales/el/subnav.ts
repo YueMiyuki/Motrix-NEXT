@@ -1,4 +1,4 @@
 export default {
   'task-list': 'Εργασίες',
-  'preferences': 'Προτιμήσεις'
+  preferences: 'Προτιμήσεις',
 }

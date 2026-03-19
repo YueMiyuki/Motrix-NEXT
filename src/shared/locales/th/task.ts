@@ -1,7 +1,7 @@
 export default {
-  'active': 'การดาวน์โหลด',
-  'waiting': 'กำลังรอ',
-  'stopped': 'หยุดแล้ว',
+  active: 'การดาวน์โหลด',
+  waiting: 'กำลังรอ',
+  stopped: 'หยุดแล้ว',
   'new-task': 'งานใหม่',
   'new-bt-task': 'งาน BT ใหม่',
   'open-file': 'เปิดไฟล์ทอร์เรนต์...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'นามสกุลไฟล์',
   'file-size': 'ขนาด',
   'file-completed-size': 'สำเร็จ',
-  'selected-files-sum': 'เลือกแล้ว: {{selectedFilesCount}} ไฟล์, ขนามรวม {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'เลือกแล้ว: {{selectedFilesCount}} ไฟล์, ขนามรวม {{selectedFilesTotalSize}}',
   'select-at-least-one': 'โปรดเลือกอย่างน้อยหนึ่งไฟล์',
   'task-gid': 'GID',
   'task-name': 'ชื่องาน',
@@ -54,7 +55,8 @@ export default {
   'navigate-to-downloading': 'นำทางไปยังการดาวน์โหลด',
   'show-advanced-options': 'ตัวเลือกขั้นสูง',
   'copyright-warning': 'คำเตือนเรื่องลิขสิทธิ์',
-  'copyright-warning-message': 'ไฟล์ที่คุณต้องการดาวน์โหลดอาจเป็นไฟล์เสียงหรือวิดีโอที่มีลิขสิทธิ์ โปรดตรวจสอบให้แน่ใจว่าคุณมีสิทธิ์ในการเข้าถึงไฟล์ดังกล่าว',
+  'copyright-warning-message':
+    'ไฟล์ที่คุณต้องการดาวน์โหลดอาจเป็นไฟล์เสียงหรือวิดีโอที่มีลิขสิทธิ์ โปรดตรวจสอบให้แน่ใจว่าคุณมีสิทธิ์ในการเข้าถึงไฟล์ดังกล่าว',
   'copyright-yes': 'ใช่ ขออนุญาติแล้ว',
   'copyright-no': 'ไม่ ฉันไม่ได้รับอนุญาต',
   'copyright-error-message': 'ไม่สามารถเพิ่มงานเนื่องจากปัญหาลิขสิทธิ์',
@@ -114,7 +116,8 @@ export default {
   'bt-download-complete-message': 'ดาวน์โหลดเสร็จแล้ว {{taskName}}, กำลัง seed',
   'bt-download-complete-notify': 'BT ดาวน์โหลดเสร็จแล้ว, กำลัง seed...',
   'bt-download-complete-tips': 'เคล็ดลับ: คุณสามารถหยุดงานเพื่อสิ้นสุดการ seed ได้',
-  'bt-stopping-seeding-tip': 'กำลังหยุดการ seed จะใช้เวลาสักพักในการตัดการเชื่อมต่อ โปรดรอสักครู่...',
+  'bt-stopping-seeding-tip':
+    'กำลังหยุดการ seed จะใช้เวลาสักพักในการตัดการเชื่อมต่อ โปรดรอสักครู่...',
   'download-fail-message': 'ไม่สามารถดาวน์โหลด {{taskName}}',
-  'download-fail-notify': 'ดาวน์โหลดล้มเหลว'
+  'download-fail-notify': 'ดาวน์โหลดล้มเหลว',
 }

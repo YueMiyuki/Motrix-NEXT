@@ -27,7 +27,7 @@ const userKeys = [
   'task-notification',
   'theme',
   'tracker-source',
-  'tray-speedometer'
+  'tray-speedometer',
 ]
 
 const systemKeys = [
@@ -153,7 +153,7 @@ const systemKeys = [
   'timeout',
   'uri-selector',
   'use-head',
-  'user-agent'
+  'user-agent',
 ]
 
 const needRestartKeys = [
@@ -161,11 +161,18 @@ const needRestartKeys = [
   'hide-app-menu',
   'listen-port',
   'rpc-listen-port',
-  'rpc-secret'
+  'rpc-secret',
 ]
 
-export {
-  userKeys,
-  systemKeys,
-  needRestartKeys
-}
+// Keys that aria2 does NOT accept via changeGlobalOption (startup-only)
+const startupOnlyKeys = [
+  'dht-file-path',
+  'dht-file-path6',
+  'dht-listen-port',
+  'listen-port',
+  'rpc-listen-port',
+  'rpc-secret',
+  'pause',
+]
+
+export { userKeys, systemKeys, needRestartKeys, startupOnlyKeys }

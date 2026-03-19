@@ -6,36 +6,21 @@
 
 首先你要确定一个语言的英文简写作为 **locale**，如 en-US，这个 locale 值请严格参考 [Electron 的 Locales 文档](https://www.electronjs.org/docs/api/app#appgetlocale) 和 [Chromium 源代码](https://source.chromium.org/chromium/chromium/src/+/main:ui/base/l10n/l10n_util.cc)。
 
-Motrix 的国际化分两部分：
+Motrix 使用 [i18next](https://www.i18next.com/overview/getting-started) 作为翻译支持库，所以你可能需要简单了解一下它的使用方法。
 
-- Element UI
-- 菜单和主界面
-
-### Element UI
-
-Element UI 的国际化由 [Element 社区](http://element.eleme.io/#/en-US/component/i18n)提供，找到 **locale** 对应的语言包文件「两者 locale 命名可能不一致」，在 `src/shared/locales/all.js` 中引入，如
-
-```javascript
-import eleLocaleEn from 'element-ui/lib/locale/lang/en'
-import eleLocaleZhCN from 'element-ui/lib/locale/lang/zh-CN'
-```
-
-### 菜单和主界面
-
-Motrix 使用 i18next 作为翻译支持库，所以你可能需要简单了解一下它的[使用方法](https://www.i18next.com/overview/getting-started)。
 配置文件按照语言 (**locale**) 划分目录：`src/shared/locales`，如：`src/shared/locales/en-US` 和 `src/shared/locales/zh-CN`。
 
-目录里面有按业务模块划分的语言文件
+每个语言目录下按功能模块划分 TypeScript 文件：
 
-菜单模块经过重构之后，国际化已经打散到了以下文件里了，不再需要再复制 `src/main/menus` 里的配置。
+- about.ts
+- app.ts
+- edit.ts
+- help.ts
+- index.ts
+- menu.ts
+- preferences.ts
+- subnav.ts
+- task.ts
+- window.ts
 
-- about.js
-- app.js
-- edit.js
-- help.js
-- index.js
-- menu.js
-- preferences.js
-- subnav.js
-- task.js
-- window.js
+菜单的国际化已经打散到了以上文件里，不再需要复制 `src/main/menus` 里的配置。

@@ -1,858 +1,1151 @@
 <template>
-  <el-container class="content panel" direction="vertical">
-    <el-header class="panel-header" height="84">
+  <div class="content panel panel-layout panel-layout--v">
+    <header class="panel-header">
       <h4 class="hidden-xs-only">{{ title }}</h4>
       <mo-subnav-switcher
         :title="title"
         :subnavs="subnavs"
         class="hidden-sm-and-up"
       />
-    </el-header>
-    <el-main class="panel-content">
-      <el-form
-        class="form-preference"
-        ref="advancedForm"
-        label-position="right"
-        size="mini"
-        :model="form"
-        :rules="rules"
-      >
-        <el-form-item
-          :label="`${$t('preferences.auto-update')}: `"
-          :label-width="formLabelWidth"
-        >
-          <el-col class="form-item-sub" :span="24">
-            <el-checkbox v-model="form.autoCheckUpdate">
-              {{ $t('preferences.auto-check-update') }}
-            </el-checkbox>
-            <div
-              class="el-form-item__info"
-              style="margin-top: 8px;"
-              v-if="form.lastCheckUpdateTime !== 0"
-            >
-              {{
-                $t('preferences.last-check-update-time') + ': ' +
-                (
-                  form.lastCheckUpdateTime !== 0 ?
-                    new Date(form.lastCheckUpdateTime).toLocaleString() :
-                    new Date().toLocaleString()
-                )
-              }}
-              <span class="action-link" @click.prevent="onCheckUpdateClick">
-                {{ $t('app.check-updates-now') }}
-              </span>
+    </header>
+    <main class="panel-content">
+      <form class="form-preference" ref="advancedForm" @submit.prevent>
+        <!-- Auto Update Section -->
+        <div class="settings-section">
+          <div class="settings-section-header">
+            <div class="section-icon"><RefreshCw :size="16" /></div>
+            <div class="section-title">
+              <h3>{{ $t("preferences.auto-update") }}</h3>
             </div>
-          </el-col>
-        </el-form-item>
-        <el-form-item
-          :label="`${$t('preferences.proxy')}: `"
-          :label-width="formLabelWidth"
-        >
-          <el-switch
-            v-model="form.proxy.enable"
-            :active-text="$t('preferences.enable-proxy')"
-            @change="onProxyEnableChange"
-            >
-          </el-switch>
-        </el-form-item>
-        <el-form-item
-          :label-width="formLabelWidth"
-          v-if="form.proxy.enable"
-          style="margin-top: -16px;"
-        >
-          <el-col
-            class="form-item-sub"
-            :xs="24"
-            :sm="20"
-            :md="16"
-            :lg="16"
-          >
-            <el-input
-              placeholder="[http://][USER:PASSWORD@]HOST[:PORT]"
-              @change="onProxyServerChange"
-              v-model="form.proxy.server">
-            </el-input>
-          </el-col>
-          <el-col
-            class="form-item-sub"
-            :xs="24"
-            :sm="24"
-            :md="20"
-            :lg="20"
-          >
-            <el-input
-              type="textarea"
-              rows="2"
-              auto-complete="off"
-              @change="handleProxyBypassChange"
-              :placeholder="`${$t('preferences.proxy-bypass-input-tips')}`"
-              v-model="form.proxy.bypass">
-            </el-input>
-          </el-col>
-          <el-col
-            class="form-item-sub"
-            :xs="24"
-            :sm="24"
-            :md="20"
-            :lg="20"
-          >
-            <el-select
-              class="proxy-scope"
-              v-model="form.proxy.scope"
-              multiple
-            >
-              <el-option
-                v-for="item in proxyScopeOptions"
-                :key="item"
-                :label="$t(`preferences.proxy-scope-${item}`)"
-                :value="item"
-              />
-            </el-select>
-            <div class="el-form-item__info" style="margin-top: 8px;">
-              <a target="_blank" href="https://github.com/agalwood/Motrix/wiki/Proxy" rel="noopener noreferrer">
-                {{ $t('preferences.proxy-tips') }}
-                <mo-icon name="link" width="12" height="12" />
-              </a>
-            </div>
-          </el-col>
-        </el-form-item>
-        <el-form-item
-          :label="`${$t('preferences.bt-tracker')}: `"
-          :label-width="formLabelWidth"
-        >
-          <div class="form-item-sub bt-tracker">
-            <el-row :gutter="10" style="line-height: 0;">
-              <el-col :span="20">
-                <div class="track-source">
-                  <el-select
-                    class="select-track-source"
-                    v-model="form.trackerSource"
-                    allow-create
-                    filterable
-                    multiple
+          </div>
+          <div class="settings-section-content">
+            <div class="settings-row">
+              <div class="settings-row-content">
+                <div class="settings-row-title">
+                  {{ $t("preferences.auto-check-update") }}
+                </div>
+                <div
+                  class="settings-row-description"
+                  v-if="form.lastCheckUpdateTime !== 0"
+                >
+                  {{ $t("preferences.last-check-update-time") }}:
+                  {{ new Date(form.lastCheckUpdateTime).toLocaleString() }}
+                  <span
+                    class="action-link"
+                    @click.prevent="onCheckUpdateClick"
+                    style="margin-left: 8px"
                   >
-                    <el-option-group
-                      v-for="group in trackerSourceOptions"
-                      :key="group.label"
-                      :label="group.label"
+                    {{ $t("app.check-updates-now") }}
+                  </span>
+                </div>
+              </div>
+              <div class="settings-row-action">
+                <ui-checkbox v-model="form.autoCheckUpdate" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Proxy Section -->
+        <div class="settings-section">
+          <div class="settings-section-header">
+            <div class="section-icon"><Globe :size="16" /></div>
+            <div class="section-title">
+              <h3>{{ $t("preferences.proxy") }}</h3>
+            </div>
+          </div>
+          <div class="settings-section-content">
+            <div class="settings-row">
+              <div class="settings-row-content">
+                <div class="settings-row-title">
+                  {{ $t("preferences.enable-proxy") }}
+                </div>
+              </div>
+              <div class="settings-row-action">
+                <ui-checkbox
+                  :model-value="form.proxy.enable"
+                  @change="onProxyEnableChange"
+                />
+              </div>
+            </div>
+            <div v-if="form.proxy.enable" style="margin-top: 14px">
+              <div class="form-item-sub" style="margin-bottom: 10px">
+                <Input
+                  placeholder="[http://][USER:PASSWORD@]HOST[:PORT]"
+                  v-model="form.proxy.server"
+                />
+              </div>
+              <div class="form-item-sub" style="margin-bottom: 10px">
+                <Textarea
+                  :rows="2"
+                  autocomplete="off"
+                  :placeholder="`${$t('preferences.proxy-bypass-input-tips')}`"
+                  v-model="form.proxy.bypass"
+                />
+              </div>
+              <div class="form-item-sub proxy-scope-group">
+                <label class="settings-select-item-label">{{
+                  $t("preferences.proxy-scope-label")
+                }}</label>
+                <div
+                  v-for="item in proxyScopeOptions"
+                  :key="item"
+                  class="proxy-scope-item"
+                >
+                  <ui-checkbox
+                    :model-value="form.proxy.scope.includes(item)"
+                    @change="(val) => onProxyScopeToggle(item, val)"
+                  >
+                    {{ $t(`preferences.proxy-scope-${item}`) }}
+                  </ui-checkbox>
+                  <div class="proxy-scope-desc">
+                    {{ $t(`preferences.proxy-scope-${item}-desc`) }}
+                  </div>
+                </div>
+                <div class="form-info" style="margin-top: 8px">
+                  <a
+                    target="_blank"
+                    href="https://github.com/agalwood/Motrix/wiki/Proxy"
+                    rel="noopener noreferrer"
+                  >
+                    {{ $t("preferences.proxy-tips") }}
+                    <ExternalLink :size="12" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BT Tracker Section -->
+        <div class="settings-section">
+          <div class="settings-section-header">
+            <div class="section-icon"><Radio :size="16" /></div>
+            <div class="section-title">
+              <h3>{{ $t("preferences.bt-tracker") }}</h3>
+            </div>
+          </div>
+          <div class="settings-section-content">
+            <div class="bt-tracker">
+              <label
+                class="settings-select-item-label"
+                style="margin-bottom: 6px"
+                >{{ $t("preferences.bt-tracker") }} Source</label
+              >
+              <div class="bt-tracker-source-row">
+                <Popover v-model:open="trackerSourceOpen">
+                  <PopoverTrigger as-child>
+                    <button
+                      type="button"
+                      class="tracker-multi-select-trigger"
+                      role="combobox"
+                      :aria-expanded="trackerSourceOpen"
                     >
-                      <el-option
-                        v-for="item in group.options"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      >
-                        <span style="float: left">{{ item.label }}</span>
-                        <span style="float: right; margin-right: 24px">
-                          <el-tag
-                            type="success"
-                            size="mini"
-                            v-if="item.cdn"
-                          >
-                            CDN
-                          </el-tag>
+                      <div class="tracker-multi-select-tags">
+                        <span
+                          v-for="val in form.trackerSource"
+                          :key="val"
+                          class="tracker-tag"
+                        >
+                          {{ getTrackerLabel(val) }}
+                          <X
+                            :size="12"
+                            class="tracker-tag-remove"
+                            @click.stop="removeTrackerSource(val)"
+                          />
                         </span>
-                      </el-option>
-                    </el-option-group>
-                  </el-select>
-                </div>
-              </el-col>
-              <el-col :span="3">
-                <div class="sync-tracker">
-                  <el-tooltip
-                    class="item"
-                    effect="dark"
-                    :content="$t('preferences.sync-tracker-tips')"
-                    placement="bottom"
-                  >
-                    <el-button
-                      @click="syncTrackerFromSource"
-                      class="sync-tracker-btn"
-                    >
-                      <mo-icon
-                        name="refresh"
-                        width="12"
-                        height="12"
-                        :spin="true"
-                        v-if="trackerSyncing"
+                        <span
+                          v-if="form.trackerSource.length === 0"
+                          class="tracker-multi-select-placeholder"
+                          >Select sources...</span
+                        >
+                      </div>
+                      <ChevronDown
+                        :size="16"
+                        class="tracker-multi-select-chevron"
                       />
-                      <mo-icon name="sync" width="12" height="12" v-else />
-                    </el-button>
-                  </el-tooltip>
-                </div>
-              </el-col>
-            </el-row>
-            <el-input
-              type="textarea"
-              rows="3"
-              auto-complete="off"
-              :placeholder="`${$t('preferences.bt-tracker-input-tips')}`"
-              v-model="form.btTracker">
-            </el-input>
-            <div class="el-form-item__info" style="margin-top: 8px;">
-              {{ $t('preferences.bt-tracker-tips') }}
-              <a target="_blank" href="https://github.com/ngosang/trackerslist" rel="noopener noreferrer">
-                ngosang/trackerslist
-                <mo-icon name="link" width="12" height="12" />
-              </a>
-              <a target="_blank" href="https://github.com/XIU2/TrackersListCollection" rel="noopener noreferrer">
-                XIU2/TrackersListCollection
-                <mo-icon name="link" width="12" height="12" />
-              </a>
-            </div>
-          </div>
-          <div class="form-item-sub">
-            <el-checkbox v-model="form.autoSyncTracker">
-              {{ $t('preferences.auto-sync-tracker') }}
-            </el-checkbox>
-            <div class="el-form-item__info" style="margin-top: 8px;" v-if="form.lastSyncTrackerTime > 0">
-              {{ new Date(form.lastSyncTrackerTime).toLocaleString() }}
-            </div>
-          </div>
-          <div class="form-item-sub">
-            <el-checkbox v-model="form.idleBtNetworkGuard">
-              {{ $t('preferences.idle-bt-network-guard') }}
-            </el-checkbox>
-            <div class="el-form-item__info" style="margin-top: 8px;">
-              {{ $t('preferences.idle-bt-network-guard-tips') }}
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item
-          :label="`${$t('preferences.rpc')}: `"
-          :label-width="formLabelWidth"
-        >
-          <el-row style="margin-bottom: 8px;">
-            <el-col
-              class="form-item-sub"
-              :xs="24"
-              :sm="18"
-              :md="10"
-              :lg="10"
-            >
-              {{ $t('preferences.rpc-listen-port') }}
-              <el-input
-                :placeholder="rpcDefaultPort"
-                :maxlength="8"
-                v-model="form.rpcListenPort"
-                @change="onRpcListenPortChange"
-              >
-                <template #append>
-                  <i @click.prevent="onRpcPortDiceClick">
-                    <mo-icon name="dice" width="12" height="12" />
-                  </i>
-                </template>
-              </el-input>
-            </el-col>
-          </el-row>
-          <el-row style="margin-bottom: 8px;">
-            <el-col
-              class="form-item-sub"
-              :xs="24"
-              :sm="18"
-              :md="18"
-              :lg="18"
-            >
-              {{ $t('preferences.rpc-secret') }}
-              <el-input
-                :show-password="hideRpcSecret"
-                placeholder="RPC Secret"
-                :maxlength="64"
-                v-model="form.rpcSecret"
-              >
-                <template #append>
-                  <i @click.prevent="onRpcSecretDiceClick">
-                    <mo-icon name="dice" width="12" height="12" />
-                  </i>
-                </template>
-              </el-input>
-              <div class="el-form-item__info" style="margin-top: 8px;">
-                <a target="_blank" href="https://github.com/agalwood/Motrix/wiki/RPC" rel="noopener noreferrer">
-                  {{ $t('preferences.rpc-secret-tips') }}
-                  <mo-icon name="link" width="12" height="12" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    class="tracker-source-popover"
+                    align="start"
+                    :side-offset="4"
+                  >
+                    <div class="tracker-source-list">
+                      <template
+                        v-for="group in trackerSourceOptions"
+                        :key="group.label"
+                      >
+                        <div class="tracker-source-group-label">
+                          {{ group.label }}
+                        </div>
+                        <div
+                          v-for="item in group.options"
+                          :key="item.value"
+                          class="tracker-source-option"
+                          :class="{
+                            'is-selected': form.trackerSource.includes(
+                              item.value,
+                            ),
+                          }"
+                          @click="toggleTrackerSource(item.value)"
+                        >
+                          <span class="tracker-source-option-label">{{
+                            item.label
+                          }}</span>
+                          <span v-if="item.cdn" class="tracker-cdn-badge"
+                            >CDN</span
+                          >
+                          <Check
+                            v-if="form.trackerSource.includes(item.value)"
+                            :size="14"
+                            class="tracker-source-check"
+                          />
+                        </div>
+                      </template>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                <ui-tooltip :content="$t('preferences.sync-tracker-tips')">
+                  <ui-button
+                    variant="outline"
+                    size="sm"
+                    @click="syncTrackerFromSource"
+                    class="sync-tracker-btn"
+                  >
+                    <RefreshCw
+                      :size="12"
+                      class="animate-spin"
+                      v-if="trackerSyncing"
+                    />
+                    <RefreshCcw width="12" height="12" v-else />
+                  </ui-button>
+                </ui-tooltip>
+              </div>
+              <Textarea
+                :rows="3"
+                autocomplete="off"
+                :placeholder="`${$t('preferences.bt-tracker-input-tips')}`"
+                v-model="form.btTracker"
+                style="margin-top: 10px; max-height: 5lh"
+              />
+              <div class="form-info" style="margin-top: 8px">
+                {{ $t("preferences.bt-tracker-tips") }}
+                <a
+                  target="_blank"
+                  href="https://github.com/ngosang/trackerslist"
+                  rel="noopener noreferrer"
+                >
+                  ngosang/trackerslist
+                  <ExternalLink :size="12" />
+                </a>
+                <a
+                  target="_blank"
+                  href="https://github.com/XIU2/TrackersListCollection"
+                  rel="noopener noreferrer"
+                >
+                  XIU2/TrackersListCollection
+                  <ExternalLink :size="12" />
                 </a>
               </div>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item
-          :label="`${$t('preferences.port')}: `"
-          :label-width="formLabelWidth"
-        >
-          <el-row style="margin-bottom: 8px;">
-            <el-col
-              class="form-item-sub"
-              :xs="24"
-              :sm="18"
-              :md="12"
-              :lg="12"
-            >
-              <el-switch
-                v-model="form.enableUpnp"
-                active-text="UPnP/NAT-PMP"
+            </div>
+            <div class="settings-row" style="margin-top: 8px">
+              <div class="settings-row-content">
+                <div class="settings-row-title">
+                  {{ $t("preferences.auto-sync-tracker") }}
+                </div>
+                <div
+                  class="settings-row-description"
+                  v-if="form.lastSyncTrackerTime > 0"
                 >
-              </el-switch>
-            </el-col>
-          </el-row>
-          <el-row style="margin-bottom: 8px;">
-            <el-col class="form-item-sub"
-              :xs="24"
-              :sm="18"
-              :md="10"
-              :lg="10"
-            >
-              {{ $t('preferences.bt-port') }}
-              <el-input
-                placeholder="BT Port"
-                :maxlength="8"
-                v-model="form.listenPort"
+                  {{ new Date(form.lastSyncTrackerTime).toLocaleString() }}
+                </div>
+              </div>
+              <div class="settings-row-action">
+                <ui-checkbox v-model="form.autoSyncTracker" />
+              </div>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-content">
+                <div class="settings-row-title">
+                  {{ $t("preferences.idle-bt-network-guard") }}
+                </div>
+                <div class="settings-row-description">
+                  {{ $t("preferences.idle-bt-network-guard-tips") }}
+                </div>
+              </div>
+              <div class="settings-row-action">
+                <ui-checkbox v-model="form.idleBtNetworkGuard" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RPC Section -->
+        <div class="settings-section">
+          <div class="settings-section-header">
+            <div class="section-icon"><Cable :size="16" /></div>
+            <div class="section-title">
+              <h3>{{ $t("preferences.rpc") }}</h3>
+            </div>
+          </div>
+          <div class="settings-section-content">
+            <div class="settings-select-group">
+              <div class="settings-select-item">
+                <label class="settings-select-item-label">{{
+                  $t("preferences.rpc-listen-port")
+                }}</label>
+                <div class="mo-input-group">
+                  <Input
+                    :placeholder="String(rpcDefaultPort)"
+                    :maxlength="8"
+                    v-model="form.rpcListenPort"
+                    @blur="onRpcListenPortBlur"
+                  />
+                  <span class="mo-input-append">
+                    <i
+                      @click.prevent="onRpcPortDiceClick"
+                      style="cursor: pointer"
+                    >
+                      <Dices :size="12" />
+                    </i>
+                  </span>
+                </div>
+              </div>
+              <div class="settings-select-item">
+                <label class="settings-select-item-label">{{
+                  $t("preferences.rpc-secret")
+                }}</label>
+                <div class="mo-input-group">
+                  <Input
+                    :type="hideRpcSecret ? 'password' : 'text'"
+                    placeholder="RPC Secret"
+                    :maxlength="64"
+                    v-model="form.rpcSecret"
+                  />
+                  <span class="mo-input-append">
+                    <i
+                      @click.prevent="onRpcSecretDiceClick"
+                      style="cursor: pointer"
+                    >
+                      <Dices :size="12" />
+                    </i>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="form-info" style="margin-top: 8px">
+              <a
+                target="_blank"
+                href="https://github.com/agalwood/Motrix/wiki/RPC"
+                rel="noopener noreferrer"
               >
-                <template #append>
-                  <i @click.prevent="onBtPortDiceClick">
-                    <mo-icon name="dice" width="12" height="12" />
-                  </i>
-                </template>
-              </el-input>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col
-              class="form-item-sub"
-              :xs="24"
-              :sm="18"
-              :md="10"
-              :lg="10"
-            >
-              {{ $t('preferences.dht-port') }}
-              <el-input
-                placeholder="DHT Port"
-                :maxlength="8"
-                v-model="form.dhtListenPort"
-              >
-                <template #append>
-                  <i @click.prevent="onDhtPortDiceClick">
-                    <mo-icon name="dice" width="12" height="12" />
-                  </i>
-                </template>
-              </el-input>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item
-          :label="`${$t('preferences.download-protocol')}: `"
-          :label-width="formLabelWidth"
-        >
-          {{ $t('preferences.protocols-default-client') }}
-          <el-col class="form-item-sub" :span="24">
-            <el-switch
-              v-model="form.protocols.magnet"
-              :active-text="$t('preferences.protocols-magnet')"
-              @change="(val) => onProtocolsChange('magnet', val)"
-              >
-            </el-switch>
-          </el-col>
-          <el-col class="form-item-sub" :span="24">
-            <el-switch
-              v-model="form.protocols.thunder"
-              :active-text="$t('preferences.protocols-thunder')"
-              @change="(val) => onProtocolsChange('thunder', val)"
-              >
-            </el-switch>
-          </el-col>
-        </el-form-item>
-        <el-form-item
-          :label="`${$t('preferences.user-agent')}: `"
-          :label-width="formLabelWidth"
-        >
-          <el-col class="form-item-sub" :span="24">
-            {{ $t('preferences.mock-user-agent') }}
-            <el-input
-              type="textarea"
-              rows="2"
-              auto-complete="off"
+                {{ $t("preferences.rpc-secret-tips") }}
+                <ExternalLink :size="12" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ports Section -->
+        <div class="settings-section">
+          <div class="settings-section-header">
+            <div class="section-icon"><Network :size="16" /></div>
+            <div class="section-title">
+              <h3>{{ $t("preferences.port") }}</h3>
+            </div>
+          </div>
+          <div class="settings-section-content">
+            <div class="settings-row">
+              <div class="settings-row-content">
+                <div class="settings-row-title">UPnP/NAT-PMP</div>
+              </div>
+              <div class="settings-row-action">
+                <ui-checkbox v-model="form.enableUpnp" />
+              </div>
+            </div>
+            <div class="settings-select-group" style="margin-top: 14px">
+              <div class="settings-select-item">
+                <label class="settings-select-item-label">{{
+                  $t("preferences.bt-port")
+                }}</label>
+                <div class="mo-input-group">
+                  <Input
+                    placeholder="BT Port"
+                    :maxlength="8"
+                    v-model="form.listenPort"
+                  />
+                  <span class="mo-input-append">
+                    <i
+                      @click.prevent="onBtPortDiceClick"
+                      style="cursor: pointer"
+                    >
+                      <Dices :size="12" />
+                    </i>
+                  </span>
+                </div>
+              </div>
+              <div class="settings-select-item">
+                <label class="settings-select-item-label">{{
+                  $t("preferences.dht-port")
+                }}</label>
+                <div class="mo-input-group">
+                  <Input
+                    placeholder="DHT Port"
+                    :maxlength="8"
+                    v-model="form.dhtListenPort"
+                  />
+                  <span class="mo-input-append">
+                    <i
+                      @click.prevent="onDhtPortDiceClick"
+                      style="cursor: pointer"
+                    >
+                      <Dices :size="12" />
+                    </i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Protocol Section -->
+        <div class="settings-section">
+          <div class="settings-section-header">
+            <div class="section-icon"><Link :size="16" /></div>
+            <div class="section-title">
+              <h3>{{ $t("preferences.download-protocol") }}</h3>
+              <p>{{ $t("preferences.protocols-default-client") }}</p>
+            </div>
+          </div>
+          <div class="settings-section-content">
+            <div class="settings-row">
+              <div class="settings-row-content">
+                <div class="settings-row-title">
+                  {{ $t("preferences.protocols-magnet") }}
+                </div>
+              </div>
+              <div class="settings-row-action">
+                <ui-checkbox
+                  v-model="form.protocols.magnet"
+                  @change="(val) => onProtocolsChange('magnet', val)"
+                />
+              </div>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-content">
+                <div class="settings-row-title">
+                  {{ $t("preferences.protocols-thunder") }}
+                </div>
+              </div>
+              <div class="settings-row-action">
+                <ui-checkbox
+                  v-model="form.protocols.thunder"
+                  @change="(val) => onProtocolsChange('thunder', val)"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Agent Section -->
+        <div class="settings-section">
+          <div class="settings-section-header">
+            <div class="section-icon"><UserCircle :size="16" /></div>
+            <div class="section-title">
+              <h3>{{ $t("preferences.user-agent") }}</h3>
+              <p>{{ $t("preferences.mock-user-agent") }}</p>
+            </div>
+          </div>
+          <div class="settings-section-content">
+            <Textarea
+              :rows="2"
+              autocomplete="off"
               placeholder="User-Agent"
-              v-model="form.userAgent">
-            </el-input>
-            <el-button-group class="ua-group">
-              <el-button @click="() => changeUA('aria2')">Aria2</el-button>
-              <el-button @click="() => changeUA('transmission')">Transmission</el-button>
-              <el-button @click="() => changeUA('chrome')">Chrome</el-button>
-              <el-button @click="() => changeUA('du')">du</el-button>
-            </el-button-group>
-          </el-col>
-        </el-form-item>
-        <el-form-item
-          :label="`${$t('preferences.developer')}: `"
-          :label-width="formLabelWidth"
-        >
-          <el-col class="form-item-sub" :span="24">
-            {{ $t('preferences.aria2-conf-path') }}
-            <el-input placeholder="" disabled v-model="aria2ConfPath">
-              <template #append>
-                <mo-show-in-folder
-                  v-if="isRenderer"
-                  :path="aria2ConfPath"
-                />
-              </template>
-            </el-input>
-          </el-col>
-          <el-col class="form-item-sub" :span="24">
-            {{ $t('preferences.download-session-path') }}
-            <el-input placeholder="" disabled v-model="sessionPath">
-              <template #append>
-                <mo-show-in-folder
-                  v-if="isRenderer"
-                  :path="sessionPath"
-                />
-              </template>
-            </el-input>
-          </el-col>
-          <el-col class="form-item-sub" :span="24">
-            {{ $t('preferences.app-log-path') }}
-            <el-row :gutter="16">
-              <el-col :span="18">
-                <el-input placeholder="" disabled v-model="logPath">
-                  <template #append>
-                    <mo-show-in-folder
-                      v-if="isRenderer"
-                      :path="logPath"
+              v-model="form.userAgent"
+            />
+            <div class="ua-group">
+              <ui-button
+                size="sm"
+                variant="outline"
+                @click="() => changeUA('aria2')"
+                >Aria2</ui-button
+              >
+              <ui-button
+                size="sm"
+                variant="outline"
+                @click="() => changeUA('transmission')"
+                >Transmission</ui-button
+              >
+              <ui-button
+                size="sm"
+                variant="outline"
+                @click="() => changeUA('chrome')"
+                >Chrome</ui-button
+              >
+              <ui-button
+                size="sm"
+                variant="outline"
+                @click="() => changeUA('du')"
+                >du</ui-button
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Developer Section -->
+        <div class="settings-section">
+          <div class="settings-section-header">
+            <div class="section-icon"><Code :size="16" /></div>
+            <div class="section-title">
+              <h3>{{ $t("preferences.developer") }}</h3>
+            </div>
+          </div>
+          <div class="settings-section-content">
+            <!-- File Paths -->
+            <div class="dev-paths-grid">
+              <div class="dev-path-card">
+                <div class="dev-path-card-header">
+                  <FileText :size="13" class="dev-path-card-icon" />
+                  <span class="dev-path-card-label">{{
+                    $t("preferences.aria2-conf-path")
+                  }}</span>
+                </div>
+                <div class="dev-path-card-body">
+                  <div class="mo-input-group">
+                    <Input
+                      disabled
+                      :model-value="aria2ConfPath"
+                      class="dev-path-input"
                     />
-                  </template>
-                </el-input>
-              </el-col>
-              <el-col :span="6">
-                <el-select v-model="form.logLevel">
-                  <el-option
-                    v-for="item in logLevels"
-                    :key="item"
-                    :label="item"
-                    :value="item">
-                  </el-option>
-                </el-select>
-              </el-col>
-            </el-row>
-          </el-col>
-          <el-col class="form-item-sub" :span="24">
-            <el-button plain type="warning" @click="() => onSessionResetClick()">
-              {{ $t('preferences.session-reset') }}
-            </el-button>
-            <el-button plain type="danger" @click="() => onFactoryResetClick()">
-              {{ $t('preferences.factory-reset') }}
-            </el-button>
-          </el-col>
-        </el-form-item>
-      </el-form>
+                    <span class="mo-input-append">
+                      <mo-show-in-folder
+                        v-if="isRenderer"
+                        :path="aria2ConfPath"
+                      />
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="dev-path-card">
+                <div class="dev-path-card-header">
+                  <Database :size="13" class="dev-path-card-icon" />
+                  <span class="dev-path-card-label">{{
+                    $t("preferences.download-session-path")
+                  }}</span>
+                </div>
+                <div class="dev-path-card-body">
+                  <div class="mo-input-group">
+                    <Input
+                      disabled
+                      :model-value="sessionPath"
+                      class="dev-path-input"
+                    />
+                    <span class="mo-input-append">
+                      <mo-show-in-folder
+                        v-if="isRenderer"
+                        :path="sessionPath"
+                      />
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="dev-path-card">
+                <div class="dev-path-card-header">
+                  <ScrollText :size="13" class="dev-path-card-icon" />
+                  <span class="dev-path-card-label">{{
+                    $t("preferences.app-log-path")
+                  }}</span>
+                </div>
+                <div class="dev-path-card-body">
+                  <div class="mo-input-group">
+                    <Input
+                      disabled
+                      :model-value="logPath"
+                      class="dev-path-input"
+                    />
+                    <span class="mo-input-append">
+                      <mo-show-in-folder v-if="isRenderer" :path="logPath" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="dev-path-card">
+                <div class="dev-path-card-header">
+                  <Settings :size="13" class="dev-path-card-icon" />
+                  <span class="dev-path-card-label">Log Level</span>
+                </div>
+                <div class="dev-path-card-body">
+                  <Select v-model="form.logLevel" class="dev-log-level-select">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        v-for="item in logLevels"
+                        :key="item"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="dev-danger-zone">
+              <div class="dev-danger-zone-label">
+                <AlertTriangle :size="13" />
+                Danger Zone
+              </div>
+              <div class="dev-danger-zone-actions">
+                <div class="dev-danger-action">
+                  <div class="dev-danger-action-info">
+                    <span class="dev-danger-action-title">{{
+                      $t("preferences.session-reset")
+                    }}</span>
+                  </div>
+                  <ui-button
+                    variant="outline"
+                    size="sm"
+                    @click="() => onSessionResetClick()"
+                  >
+                    {{ $t("preferences.session-reset") }}
+                  </ui-button>
+                </div>
+                <div class="dev-danger-action dev-danger-action--destructive">
+                  <div class="dev-danger-action-info">
+                    <span class="dev-danger-action-title">{{
+                      $t("preferences.factory-reset")
+                    }}</span>
+                  </div>
+                  <ui-button
+                    variant="destructive"
+                    size="sm"
+                    @click="() => onFactoryResetClick()"
+                  >
+                    {{ $t("preferences.factory-reset") }}
+                  </ui-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
       <div class="form-actions">
-        <el-button
-          type="primary"
-          @click="submitForm('advancedForm')"
-        >
-          {{ $t('preferences.save') }}
-        </el-button>
-        <el-button
-          @click="resetForm('advancedForm')"
-        >
-          {{ $t('preferences.discard') }}
-        </el-button>
+        <ui-button @click="resetForm('advancedForm')">
+          {{ $t("preferences.discard") }}
+        </ui-button>
+        <ui-button variant="primary" @click="submitForm('advancedForm')">
+          {{ $t("preferences.save") }}
+        </ui-button>
       </div>
-    </el-main>
-  </el-container>
+    </main>
+  </div>
 </template>
 
 <script lang="ts">
-  import is from 'electron-is'
-  import { dialog } from '@electron/remote'
-  import { mapState } from 'vuex'
-  import { cloneDeep, extend, isEmpty } from 'lodash'
-  import randomize from 'randomatic'
-  import ShowInFolder from '@/components/Native/ShowInFolder.vue'
-  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher.vue'
-  import userAgentMap from '@shared/ua'
-  import {
-    EMPTY_STRING,
-    ENGINE_RPC_PORT,
-    LOG_LEVELS,
-    TRACKER_SOURCE_OPTIONS,
-    PROXY_SCOPE_OPTIONS
-  } from '@shared/constants'
-  import {
-    buildRpcUrl,
-    calcFormLabelWidth,
-    changedConfig,
-    checkIsNeedRestart,
-    convertCommaToLine,
-    convertLineToComma,
-    diffConfig,
-    generateRandomInt
-  } from '@shared/utils'
-  import { convertTrackerDataToLine, reduceTrackerString } from '@shared/utils/tracker'
-  import '@/components/Icons/dice'
-  import '@/components/Icons/sync'
-  import '@/components/Icons/refresh'
-  import { getLanguage } from '@shared/locales'
-  import { getLocaleManager } from '@/components/Locale'
+import logger from "@shared/utils/logger";
+import is from "electron-is";
+import { dialog } from "@electron/remote";
+import { cloneDeep, extend, isEmpty } from "lodash";
+import randomize from "randomatic";
+import { useTaskStore } from "@/store/task";
+import { usePreferenceStore } from "@/store/preference";
+import UiButton from "@/components/ui/compat/UiButton.vue";
+import UiTooltip from "@/components/ui/compat/UiTooltip.vue";
+import ShowInFolder from "@/components/Native/ShowInFolder.vue";
+import SubnavSwitcher from "@/components/Subnav/SubnavSwitcher.vue";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  RefreshCw,
+  Globe,
+  Radio,
+  Cable,
+  Network,
+  Link,
+  UserCircle,
+  Code,
+  FileText,
+  Database,
+  ScrollText,
+  AlertTriangle,
+  Settings,
+  X,
+  ChevronDown,
+  Check,
+  RefreshCcw,
+  Dices,
+  ExternalLink,
+} from "lucide-vue-next";
+import userAgentMap from "@shared/ua";
+import {
+  EMPTY_STRING,
+  ENGINE_RPC_PORT,
+  LOG_LEVELS,
+  TRACKER_SOURCE_OPTIONS,
+  PROXY_SCOPE_OPTIONS,
+} from "@shared/constants";
+import {
+  buildRpcUrl,
+  calcFormLabelWidth,
+  changedConfig,
+  convertCommaToLine,
+  convertLineToComma,
+  diffConfig,
+  generateRandomInt,
+} from "@shared/utils";
+import {
+  convertTrackerDataToLine,
+  reduceTrackerString,
+} from "@shared/utils/tracker";
+import { getLanguage } from "@shared/locales";
+import { getLocaleManager } from "@/components/Locale";
 
-  const initForm = (config) => {
-    const {
-      autoCheckUpdate,
-      autoSyncTracker,
-      btTracker,
-      dhtListenPort,
-      enableUpnp,
-      hideAppMenu,
-      idleBtNetworkGuard,
-      lastCheckUpdateTime,
-      lastSyncTrackerTime,
-      listenPort,
-      logLevel,
-      protocols,
-      proxy,
-      rpcListenPort,
-      rpcSecret,
-      trackerSource,
-      useProxy,
-      userAgent
-    } = config
-    const result = {
-      autoCheckUpdate,
-      autoSyncTracker,
-      btTracker: convertCommaToLine(btTracker),
-      dhtListenPort,
-      enableUpnp,
-      hideAppMenu,
-      idleBtNetworkGuard: idleBtNetworkGuard !== false,
-      lastCheckUpdateTime,
-      lastSyncTrackerTime,
-      listenPort,
-      logLevel,
-      proxy: cloneDeep(proxy),
-      protocols: { ...protocols },
-      rpcListenPort,
-      rpcSecret,
-      trackerSource,
-      useProxy,
-      userAgent
-    }
-    return result
-  }
-
-  export default {
-    name: 'mo-preference-advanced',
-    components: {
-      [SubnavSwitcher.name]: SubnavSwitcher,
-      [ShowInFolder.name]: ShowInFolder
+const initForm = (config) => {
+  const {
+    autoCheckUpdate,
+    autoSyncTracker,
+    btTracker,
+    dhtListenPort,
+    enableUpnp,
+    hideAppMenu,
+    idleBtNetworkGuard,
+    lastCheckUpdateTime,
+    lastSyncTrackerTime,
+    listenPort,
+    logLevel,
+    protocols,
+    proxy,
+    rpcListenPort,
+    rpcSecret,
+    trackerSource,
+    userAgent,
+  } = config;
+  const result = {
+    autoCheckUpdate,
+    autoSyncTracker,
+    btTracker: convertCommaToLine(btTracker),
+    dhtListenPort,
+    enableUpnp,
+    hideAppMenu,
+    idleBtNetworkGuard: idleBtNetworkGuard !== false,
+    lastCheckUpdateTime,
+    lastSyncTrackerTime,
+    listenPort,
+    logLevel,
+    proxy: cloneDeep(proxy) || {
+      enable: false,
+      server: "",
+      bypass: "",
+      scope: [],
     },
-    data () {
-      const { locale } = (this.$store as any).state.preference.config
-      const formOriginal = initForm((this.$store as any).state.preference.config)
-      let form = {}
-      form = initForm(extend(form, formOriginal, changedConfig.advanced))
+    protocols: { ...protocols },
+    rpcListenPort,
+    rpcSecret,
+    trackerSource,
+    userAgent,
+  };
+  return result;
+};
 
-      return {
-        form,
-        formLabelWidth: calcFormLabelWidth(locale),
-        formOriginal,
-        hideRpcSecret: true,
-        proxyScopeOptions: PROXY_SCOPE_OPTIONS,
-        rules: {},
-        trackerSourceOptions: TRACKER_SOURCE_OPTIONS,
-        trackerSyncing: false
+export default {
+  name: "mo-preference-advanced",
+  components: {
+    [UiButton.name]: UiButton,
+    "ui-tooltip": UiTooltip,
+    [SubnavSwitcher.name]: SubnavSwitcher,
+    [ShowInFolder.name]: ShowInFolder,
+    Input,
+    Textarea,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+    RefreshCw,
+    Globe,
+    Radio,
+    Cable,
+    Network,
+    Link,
+    UserCircle,
+    Code,
+    FileText,
+    Database,
+    ScrollText,
+    AlertTriangle,
+    Settings,
+    X,
+    ChevronDown,
+    Check,
+    RefreshCcw,
+    Dices,
+    ExternalLink,
+  },
+  data() {
+    const preferenceStore = usePreferenceStore();
+    const locale = ((preferenceStore.config as any) || {}).locale || "en-US";
+    const formOriginal = initForm(preferenceStore.config);
+    let form = {};
+    form = initForm(extend(form, formOriginal, changedConfig.advanced));
+
+    return {
+      form,
+      formLabelWidth: calcFormLabelWidth(locale),
+      formOriginal,
+      hideRpcSecret: true,
+      proxyScopeOptions: PROXY_SCOPE_OPTIONS,
+      rules: {},
+      trackerSourceOptions: TRACKER_SOURCE_OPTIONS,
+      trackerSourceOpen: false,
+      trackerSyncing: false,
+    };
+  },
+  computed: {
+    isRenderer: () => is.renderer(),
+    title() {
+      return this.$t("preferences.advanced");
+    },
+    subnavs() {
+      return [
+        {
+          key: "basic",
+          title: this.$t("preferences.basic"),
+          route: "/preference/basic",
+        },
+        {
+          key: "advanced",
+          title: this.$t("preferences.advanced"),
+          route: "/preference/advanced",
+        },
+        {
+          key: "lab",
+          title: this.$t("preferences.lab"),
+          route: "/preference/lab",
+        },
+      ];
+    },
+    rpcDefaultPort() {
+      return ENGINE_RPC_PORT;
+    },
+    logLevels() {
+      return LOG_LEVELS;
+    },
+    config() {
+      return usePreferenceStore().config;
+    },
+    aria2ConfPath() {
+      return (usePreferenceStore().config as any).aria2ConfPath;
+    },
+    logPath() {
+      return (usePreferenceStore().config as any).logPath;
+    },
+    sessionPath() {
+      return (usePreferenceStore().config as any).sessionPath;
+    },
+  },
+  watch: {
+    "form.rpcListenPort"(val) {
+      const url = buildRpcUrl({
+        port: this.form.rpcListenPort,
+        secret: val,
+      });
+      navigator.clipboard.writeText(url);
+    },
+    "form.rpcSecret"(val) {
+      const url = buildRpcUrl({
+        port: this.form.rpcListenPort,
+        secret: val,
+      });
+      navigator.clipboard.writeText(url);
+    },
+  },
+  methods: {
+    getTrackerLabel(value) {
+      for (const group of this.trackerSourceOptions) {
+        for (const item of group.options) {
+          if (item.value === value) {
+            return item.label;
+          }
+        }
       }
+      return value;
     },
-    computed: {
-      isRenderer: () => is.renderer(),
-      title () {
-        return this.$t('preferences.advanced')
-      },
-      subnavs () {
-        return [
-          {
-            key: 'basic',
-            title: this.$t('preferences.basic'),
-            route: '/preference/basic'
-          },
-          {
-            key: 'advanced',
-            title: this.$t('preferences.advanced'),
-            route: '/preference/advanced'
-          },
-          {
-            key: 'lab',
-            title: this.$t('preferences.lab'),
-            route: '/preference/lab'
-          }
-        ]
-      },
-      rpcDefaultPort () {
-        return ENGINE_RPC_PORT
-      },
-      logLevels () {
-        return LOG_LEVELS
-      },
-      ...(mapState as any)('preference', {
-        config: (state: any) => state.config,
-        aria2ConfPath: (state: any) => state.config.aria2ConfPath,
-        logPath: (state: any) => state.config.logPath,
-        sessionPath: (state: any) => state.config.sessionPath
-      })
-    },
-    watch: {
-      'form.rpcListenPort' (val) {
-        const url = buildRpcUrl({
-          port: this.form.rpcListenPort,
-          secret: val
-        })
-        navigator.clipboard.writeText(url)
-      },
-      'form.rpcSecret' (val) {
-        const url = buildRpcUrl({
-          port: this.form.rpcListenPort,
-          secret: val
-        })
-        navigator.clipboard.writeText(url)
-      }
-    },
-    methods: {
-      handleLocaleChange (locale) {
-        const lng = getLanguage(locale)
-        getLocaleManager().changeLanguage(lng)
-      },
-      onCheckUpdateClick () {
-        this.$electron.ipcRenderer.send('command', 'application:check-for-updates')
-        this.$msg.info(this.$t('app.checking-for-updates'))
-        this.$store.dispatch('preference/fetchPreference')
-          .then((config) => {
-            const { lastCheckUpdateTime } = config
-            this.form.lastCheckUpdateTime = lastCheckUpdateTime
-          })
-      },
-      syncTrackerFromSource () {
-        this.trackerSyncing = true
-        const { trackerSource } = this.form
-        this.$store.dispatch('preference/fetchBtTracker', trackerSource)
-          .then((data) => {
-            const tracker = convertTrackerDataToLine(data)
-            this.form.lastSyncTrackerTime = Date.now()
-            this.form.btTracker = tracker
-            this.trackerSyncing = false
-          })
-          .catch((_) => {
-            this.trackerSyncing = false
-          })
-      },
-      onProtocolsChange (protocol, enabled) {
-        const { protocols } = this.form
-        this.form.protocols = {
-          ...protocols,
-          [protocol]: enabled
-        }
-      },
-      onProxyEnableChange (enable) {
-        this.form.proxy = {
-          ...this.form.proxy,
-          enable
-        }
-      },
-      onProxyServerChange (server) {
-        this.form.proxy = {
-          ...this.form.proxy,
-          server
-        }
-      },
-      handleProxyBypassChange (bypass) {
-        this.form.proxy = {
-          ...this.form.proxy,
-          bypass: convertLineToComma(bypass)
-        }
-      },
-      onProxyScopeChange (scope) {
-        this.form.proxy = {
-          ...this.form.proxy,
-          scope: [...scope]
-        }
-      },
-      changeUA (type) {
-        const ua = userAgentMap[type]
-        if (!ua) {
-          return
-        }
-        this.form.userAgent = ua
-      },
-      onBtPortDiceClick () {
-        const port = generateRandomInt(20000, 24999)
-        this.form.listenPort = port
-      },
-      onDhtPortDiceClick () {
-        const port = generateRandomInt(25000, 29999)
-        this.form.dhtListenPort = port
-      },
-      onRpcListenPortChange (value) {
-        console.log('onRpcListenPortChange===>', value)
-        if (EMPTY_STRING === value) {
-          this.form.rpcListenPort = this.rpcDefaultPort
-        }
-      },
-      onRpcPortDiceClick () {
-        const port = generateRandomInt(ENGINE_RPC_PORT, 20000)
-        this.form.rpcListenPort = port
-      },
-      onRpcSecretDiceClick () {
-        this.hideRpcSecret = false
-        const rpcSecret = randomize('Aa0', 16)
-        this.form.rpcSecret = rpcSecret
-
-        setTimeout(() => {
-          this.hideRpcSecret = true
-        }, 2000)
-      },
-      onSessionResetClick () {
-        dialog.showMessageBox({
-          type: 'warning',
-          title: this.$t('preferences.session-reset'),
-          message: this.$t('preferences.session-reset-confirm'),
-          buttons: [this.$t('app.yes'), this.$t('app.no')],
-          cancelId: 1
-        }).then(({ response }) => {
-          if (response === 0) {
-            this.$store.dispatch('task/purgeTaskRecord')
-            this.$store.dispatch('task/pauseAllTask')
-              .then(() => {
-                this.$electron.ipcRenderer.send('command', 'application:reset-session')
-              })
-          }
-        })
-      },
-      onFactoryResetClick () {
-        dialog.showMessageBox({
-          type: 'warning',
-          title: this.$t('preferences.factory-reset'),
-          message: this.$t('preferences.factory-reset-confirm'),
-          buttons: [this.$t('app.yes'), this.$t('app.no')],
-          cancelId: 1
-        }).then(({ response }) => {
-          if (response === 0) {
-            this.$electron.ipcRenderer.send('command', 'application:factory-reset')
-          }
-        })
-      },
-      syncFormConfig () {
-        this.$store.dispatch('preference/fetchPreference')
-          .then((config) => {
-            this.form = initForm(config)
-            this.formOriginal = cloneDeep(this.form)
-          })
-      },
-      submitForm (formName) {
-        this.$refs[formName].validate((valid) => {
-          if (!valid) {
-            console.error('[Motrix] preference form valid:', valid)
-            return false
-          }
-
-          const data = {
-            ...diffConfig(this.formOriginal, this.form),
-            ...changedConfig.basic
-          }
-
-          const {
-            autoHideWindow,
-            btAutoDownloadContent,
-            btTracker,
-            rpcListenPort
-          } = data
-
-          if ('btAutoDownloadContent' in data) {
-            data.followTorrent = btAutoDownloadContent
-            data.followMetalink = btAutoDownloadContent
-            data.pauseMetadata = !btAutoDownloadContent
-          }
-
-          if (btTracker) {
-            data.btTracker = reduceTrackerString(convertLineToComma(btTracker))
-          }
-
-          if (rpcListenPort === EMPTY_STRING) {
-            data.rpcListenPort = this.rpcDefaultPort
-          }
-
-          console.log('[Motrix] preference changed data:', data)
-
-          this.$store.dispatch('preference/save', data)
-            .then(() => {
-              this.$store.dispatch('app/fetchEngineOptions')
-              this.syncFormConfig()
-              this.$msg.success(this.$t('preferences.save-success-message'))
-            })
-            .catch((e) => {
-              this.$msg.success(this.$t('preferences.save-fail-message'))
-            })
-
-          changedConfig.basic = {}
-          changedConfig.advanced = {}
-
-          if (this.isRenderer) {
-            if ('autoHideWindow' in data) {
-              this.$electron.ipcRenderer.send('command',
-                                              'application:auto-hide-window', autoHideWindow)
-            }
-
-            if (checkIsNeedRestart(data)) {
-              this.$electron.ipcRenderer.send('command', 'application:relaunch')
-            }
-          }
-        })
-      },
-      resetForm (formName) {
-        this.syncFormConfig()
-      }
-    },
-    beforeRouteLeave (to, from, next) {
-      changedConfig.advanced = diffConfig(this.formOriginal, this.form)
-      if (to.path === '/preference/basic') {
-        next()
+    toggleTrackerSource(value) {
+      const idx = this.form.trackerSource.indexOf(value);
+      if (idx >= 0) {
+        this.form.trackerSource.splice(idx, 1);
       } else {
-        if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
-          next()
-        } else {
-          dialog.showMessageBox({
-            type: 'warning',
-            title: this.$t('preferences.not-saved'),
-            message: this.$t('preferences.not-saved-confirm'),
-            buttons: [this.$t('app.yes'), this.$t('app.no')],
-            cancelId: 1
-          }).then(({ response }) => {
-            if (response === 0) {
-              changedConfig.basic = {}
-              changedConfig.advanced = {}
-              next()
-            }
-          })
-        }
+        this.form.trackerSource.push(value);
       }
-    }
-  }
-</script>
+    },
+    removeTrackerSource(value) {
+      const idx = this.form.trackerSource.indexOf(value);
+      if (idx >= 0) {
+        this.form.trackerSource.splice(idx, 1);
+      }
+    },
+    handleLocaleChange(locale) {
+      const lng = getLanguage(locale);
+      getLocaleManager().changeLanguage(lng);
+    },
+    onCheckUpdateClick() {
+      this.$electron.ipcRenderer.send(
+        "command",
+        "application:check-for-updates",
+      );
+      this.$msg.info(this.$t("app.checking-for-updates"));
+      usePreferenceStore()
+        .fetchPreference()
+        .then((config) => {
+          const { lastCheckUpdateTime } = config;
+          this.form.lastCheckUpdateTime = lastCheckUpdateTime;
+        });
+    },
+    syncTrackerFromSource() {
+      this.trackerSyncing = true;
+      const { trackerSource } = this.form;
+      usePreferenceStore()
+        .fetchBtTracker(trackerSource)
+        .then((data) => {
+          const tracker = convertTrackerDataToLine(data);
+          this.form.lastSyncTrackerTime = Date.now();
+          this.form.btTracker = tracker;
+          this.trackerSyncing = false;
+        })
+        .catch((_) => {
+          this.trackerSyncing = false;
+        });
+    },
+    onProtocolsChange(protocol, enabled) {
+      const { protocols } = this.form;
+      this.form.protocols = {
+        ...protocols,
+        [protocol]: enabled,
+      };
+    },
+    onProxyEnableChange(enable) {
+      this.form.proxy = {
+        ...this.form.proxy,
+        enable,
+      };
+    },
+    onProxyServerChange(server) {
+      this.form.proxy = {
+        ...this.form.proxy,
+        server,
+      };
+    },
+    handleProxyBypassChange(bypass) {
+      this.form.proxy = {
+        ...this.form.proxy,
+        bypass: convertLineToComma(bypass),
+      };
+    },
+    onProxyScopeChange(scope) {
+      this.form.proxy = {
+        ...this.form.proxy,
+        scope: [...scope],
+      };
+    },
+    onProxyScopeToggle(item, checked) {
+      const scope = [...this.form.proxy.scope];
+      const idx = scope.indexOf(item);
+      if (checked && idx < 0) {
+        scope.push(item);
+      } else if (!checked && idx >= 0) {
+        scope.splice(idx, 1);
+      }
+      this.form.proxy = {
+        ...this.form.proxy,
+        scope,
+      };
+    },
+    changeUA(type) {
+      const ua = userAgentMap[type];
+      if (!ua) {
+        return;
+      }
+      this.form.userAgent = ua;
+    },
+    onBtPortDiceClick() {
+      const port = generateRandomInt(20000, 24999);
+      this.form.listenPort = port;
+    },
+    onDhtPortDiceClick() {
+      const port = generateRandomInt(25000, 29999);
+      this.form.dhtListenPort = port;
+    },
+    onRpcListenPortBlur() {
+      if (
+        EMPTY_STRING === this.form.rpcListenPort ||
+        !this.form.rpcListenPort
+      ) {
+        this.form.rpcListenPort = this.rpcDefaultPort;
+      }
+    },
+    onRpcPortDiceClick() {
+      const port = generateRandomInt(ENGINE_RPC_PORT, 20000);
+      this.form.rpcListenPort = port;
+    },
+    onRpcSecretDiceClick() {
+      this.hideRpcSecret = false;
+      const rpcSecret = randomize("Aa0", 16);
+      this.form.rpcSecret = rpcSecret;
 
-<style lang="scss">
-.proxy-scope {
-  width: 100%;
-}
-.bt-tracker {
-  position: relative;
-  .sync-tracker-btn {
-    line-height: 0;
-  }
-  .track-source {
-    margin-bottom: 16px;
-    .select-track-source {
-      width: 100%;
+      setTimeout(() => {
+        this.hideRpcSecret = true;
+      }, 2000);
+    },
+    onSessionResetClick() {
+      dialog
+        .showMessageBox({
+          type: "warning",
+          title: this.$t("preferences.session-reset"),
+          message: this.$t("preferences.session-reset-confirm"),
+          buttons: [this.$t("app.yes"), this.$t("app.no")],
+          cancelId: 1,
+        })
+        .then(({ response }) => {
+          if (response === 0) {
+            const taskStore = useTaskStore();
+            taskStore.purgeTaskRecord();
+            taskStore.pauseAllTask().then(() => {
+              this.$electron.ipcRenderer.send(
+                "command",
+                "application:reset-session",
+              );
+            });
+          }
+        });
+    },
+    onFactoryResetClick() {
+      dialog
+        .showMessageBox({
+          type: "warning",
+          title: this.$t("preferences.factory-reset"),
+          message: this.$t("preferences.factory-reset-confirm"),
+          buttons: [this.$t("app.yes"), this.$t("app.no")],
+          cancelId: 1,
+        })
+        .then(({ response }) => {
+          if (response === 0) {
+            this.$electron.ipcRenderer.send(
+              "command",
+              "application:factory-reset",
+            );
+          }
+        });
+    },
+    syncFormConfig() {
+      usePreferenceStore()
+        .fetchPreference()
+        .then((config) => {
+          this.form = initForm(config);
+          this.formOriginal = cloneDeep(this.form);
+        });
+    },
+    submitForm(_formName) {
+      const data = {
+        ...diffConfig(this.formOriginal, this.form),
+        ...changedConfig.basic,
+      };
+
+      const {
+        autoHideWindow,
+        btAutoDownloadContent,
+        btTracker,
+        rpcListenPort,
+      } = data;
+
+      if ("btAutoDownloadContent" in data) {
+        data.followTorrent = btAutoDownloadContent;
+        data.followMetalink = btAutoDownloadContent;
+        data.pauseMetadata = !btAutoDownloadContent;
+      }
+
+      if (btTracker) {
+        data.btTracker = reduceTrackerString(convertLineToComma(btTracker));
+      }
+
+      if (rpcListenPort === EMPTY_STRING) {
+        data.rpcListenPort = this.rpcDefaultPort;
+      }
+
+      logger.log("[Motrix] preference changed data:", data);
+
+      usePreferenceStore()
+        .save(data)
+        .then(() => {
+          this.syncFormConfig();
+          this.$msg.success(this.$t("preferences.save-success-message"));
+          if (this.isRenderer) {
+            if ("autoHideWindow" in data) {
+              this.$electron.ipcRenderer.send(
+                "command",
+                "application:auto-hide-window",
+                autoHideWindow,
+              );
+            }
+            if ("hideAppMenu" in data) {
+              this.$electron.ipcRenderer.send(
+                "command",
+                "application:relaunch",
+              );
+            }
+          }
+        })
+        .catch((_e) => {
+          this.$msg.success(this.$t("preferences.save-fail-message"));
+        });
+
+      changedConfig.basic = {};
+      changedConfig.advanced = {};
+    },
+    resetForm(_formName) {
+      this.syncFormConfig();
+    },
+  },
+  async beforeRouteLeave(to, from) {
+    changedConfig.advanced = diffConfig(this.formOriginal, this.form);
+    if (to.path === "/preference/basic") {
+      return true;
     }
-    .el-select__tags {
-      overflow-x: auto;
+    if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
+      return true;
     }
-  }
-}
-.ua-group {
-  margin-top: 8px;
-}
-</style>
+    const { response } = await dialog.showMessageBox({
+      type: "warning",
+      title: this.$t("preferences.not-saved"),
+      message: this.$t("preferences.not-saved-confirm"),
+      buttons: [this.$t("app.yes"), this.$t("app.no")],
+      cancelId: 1,
+    });
+    if (response === 0) {
+      changedConfig.basic = {};
+      changedConfig.advanced = {};
+      return true;
+    }
+    return false;
+  },
+};
+</script>

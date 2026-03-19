@@ -1,7 +1,7 @@
 export default {
-  'active': 'Letöltés',
-  'waiting': 'Varakozás',
-  'stopped': 'Lealitva',
+  active: 'Letöltés',
+  waiting: 'Varakozás',
+  stopped: 'Lealitva',
   'new-task': 'Feladat hozzáadasa',
   'new-bt-task': 'Új BT Feladat hozzáadasa',
   'open-file': 'Torrent fájl megnyitása...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'Kiterjesztés',
   'file-size': 'Méret',
   'file-completed-size': 'Letöltött',
-  'selected-files-sum': 'Kijelölve: {{selectedFilesCount}} fájl, teljes méret {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Kijelölve: {{selectedFilesCount}} fájl, teljes méret {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Válasszon legalább egy fájlt',
   'task-gid': 'GID',
   'task-name': 'Feladat név',
@@ -71,7 +72,8 @@ export default {
   'delete-task-success': 'Sikeresen törölve "{{taskName}}"',
   'delete-task-fail': 'Sikertelen volt a törlés "{{taskName}}"',
   'remove-task-file-fail': 'Sikertelen volt a fájlok törlés, kérjük törölje manualisan',
-  'remove-task-config-file-fail': 'Sikertelen volt a feladat konfiguráció törlése, kérjük törölje manualisan',
+  'remove-task-config-file-fail':
+    'Sikertelen volt a feladat konfiguráció törlése, kérjük törölje manualisan',
   'move-task-up': 'Feladat mozgatása fel',
   'move-task-down': 'Feladat mozgatása le',
   'pause-all-task': 'Minden feladat szünetelése',
@@ -115,5 +117,5 @@ export default {
   'bt-download-complete-tips': 'Tips: Be tudod fejezni a tovvábadás',
   'bt-stopping-seeding-tip': 'tovvábadás befejezése, Ez eltarthat par percig...',
   'download-fail-message': 'Letöltés sikertelen volt {{taskName}}',
-  'download-fail-notify': 'Letöltés sikertelen volt'
+  'download-fail-notify': 'Letöltés sikertelen volt',
 }

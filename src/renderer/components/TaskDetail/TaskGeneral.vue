@@ -1,190 +1,150 @@
 <template>
-  <el-form
-    class="mo-task-general"
-    ref="form"
-    :model="form"
-    :label-width="formLabelWidth"
-    v-if="task"
-  >
-    <el-form-item :label="`${$t('task.task-gid')}: `">
-      <div class="form-static-value">
-        {{ task.gid }}
+  <div class="mo-task-general" v-if="task">
+    <div class="general-card">
+      <div class="general-card-row">
+        <span class="general-card-label">{{ $t("task.task-gid") }}</span>
+        <span class="general-card-value mono">{{ task.gid }}</span>
       </div>
-    </el-form-item>
-    <el-form-item :label="`${$t('task.task-name')}: `">
-      <div class="form-static-value">
-        {{ taskFullName }}
+      <div class="general-card-row">
+        <span class="general-card-label">{{ $t("task.task-name") }}</span>
+        <span class="general-card-value">{{ taskFullName }}</span>
       </div>
-    </el-form-item>
-    <el-form-item :label="`${$t('task.task-dir')}: `">
-      <el-input placeholder="" readonly v-model="path">
-        <template #append>
-          <mo-show-in-folder
-            v-if="isRenderer"
-            :path="path"
-          />
-        </template>
-      </el-input>
-    </el-form-item>
-    <el-form-item :label="`${$t('task.task-status')}: `">
-      <div class="form-static-value">
-        <mo-task-status :theme="currentTheme" :status="taskStatus" />
+      <div class="general-card-row">
+        <span class="general-card-label">{{ $t("task.task-dir") }}</span>
+        <span class="general-card-value general-card-value--dir">
+          <span class="dir-text">{{ path }}</span>
+          <mo-show-in-folder v-if="isRenderer" :path="path" />
+        </span>
       </div>
-    </el-form-item>
-    <el-form-item :label="`${$t('task.task-error-info')}: `" v-if="task.errorCode && task.errorCode !== '0'">
-      <div class="form-static-value">
-        {{ task.errorCode }} {{ task.errorMessage }}
+      <div class="general-card-row">
+        <span class="general-card-label">{{ $t("task.task-status") }}</span>
+        <span class="general-card-value"
+          ><mo-task-status :theme="currentTheme" :status="taskStatus"
+        /></span>
       </div>
-    </el-form-item>
-
-    <el-divider v-if="isBT">
-      <i class="el-icon-attract"></i>
-      {{ $t('task.task-bittorrent-info') }}
-    </el-divider>
-
-    <el-form-item :label="`${$t('task.task-info-hash')}: `" v-if="isBT">
-      <div class="form-static-value">
-        {{ task.infoHash }}
-        <i class="copy-link" @click="handleCopyClick">
-          <mo-icon
-            name="link"
-            width="12"
-            height="12"
-          />
-        </i>
+      <div
+        class="general-card-row"
+        v-if="task.errorCode && task.errorCode !== '0'"
+      >
+        <span class="general-card-label">{{ $t("task.task-error-info") }}</span>
+        <span class="general-card-value general-card-value--error"
+          >{{ task.errorCode }} {{ task.errorMessage }}</span
+        >
       </div>
-    </el-form-item>
-    <el-form-item :label="`${$t('task.task-piece-length')}: `" v-if="isBT">
-      <div class="form-static-value">
-        {{ pieceLengthText }}
+    </div>
+    <div v-if="isBT" class="general-section-header">
+      <Magnet :size="14" /><span>{{ $t("task.task-bittorrent-info") }}</span>
+    </div>
+    <div v-if="isBT" class="general-card">
+      <div class="general-card-row">
+        <span class="general-card-label">{{ $t("task.task-info-hash") }}</span>
+        <span class="general-card-value mono"
+          >{{ task.infoHash }}
+          <i class="copy-link" @click="handleCopyClick"><Link :size="12" /></i
+        ></span>
       </div>
-    </el-form-item>
-    <el-form-item :label="`${$t('task.task-num-pieces')}: `" v-if="isBT">
-      <div class="form-static-value">
-        {{ task.numPieces }}
+      <div class="general-card-row">
+        <span class="general-card-label">{{
+          $t("task.task-piece-length")
+        }}</span>
+        <span class="general-card-value">{{ pieceLengthText }}</span>
       </div>
-    </el-form-item>
-    <el-form-item :label="`${$t('task.task-bittorrent-creation-date')}: `" v-if="isBT">
-      <div class="form-static-value">
-        {{ creationDateText }}
+      <div class="general-card-row">
+        <span class="general-card-label">{{ $t("task.task-num-pieces") }}</span>
+        <span class="general-card-value">{{ task.numPieces }}</span>
       </div>
-    </el-form-item>
-    <el-form-item :label="`${$t('task.task-bittorrent-comment')}: `" v-if="isBT">
-      <div class="form-static-value">
-        {{ task.bittorrent.comment }}
+      <div class="general-card-row">
+        <span class="general-card-label">{{
+          $t("task.task-bittorrent-creation-date")
+        }}</span>
+        <span class="general-card-value">{{ creationDateText }}</span>
       </div>
-    </el-form-item>
-  </el-form>
+      <div class="general-card-row">
+        <span class="general-card-label">{{
+          $t("task.task-bittorrent-comment")
+        }}</span>
+        <span class="general-card-value">{{ task.bittorrent.comment }}</span>
+      </div>
+    </div>
+  </div>
 </template>
-
 <script lang="ts">
-  import is from 'electron-is'
-  import { mapState } from 'vuex'
-  import {
-    bytesToSize,
-    calcFormLabelWidth,
-    checkTaskIsBT,
-    checkTaskIsSeeder,
-    getTaskName,
-    getTaskUri,
-    localeDateTimeFormat
-  } from '@shared/utils'
-  import { APP_THEME, TASK_STATUS } from '@shared/constants'
-  import { getTaskFullPath } from '@/utils/native'
-  import ShowInFolder from '@/components/Native/ShowInFolder.vue'
-  import TaskStatus from '@/components/Task/TaskStatus.vue'
-  import '@/components/Icons/folder'
-  import '@/components/Icons/link'
+import { Magnet, Link } from "lucide-vue-next";
+import is from "electron-is";
+import { useAppStore } from "@/store/app";
+import { usePreferenceStore } from "@/store/preference";
+import {
+  bytesToSize,
+  checkTaskIsBT,
+  checkTaskIsSeeder,
+  getTaskName,
+  getTaskUri,
+  localeDateTimeFormat,
+} from "@shared/utils";
+import { APP_THEME, TASK_STATUS } from "@shared/constants";
+import { getTaskFullPath } from "@/utils/native";
+import ShowInFolder from "@/components/Native/ShowInFolder.vue";
+import TaskStatus from "@/components/Task/TaskStatus.vue";
 
-  export default {
-    name: 'mo-task-general',
-    components: {
-      [ShowInFolder.name]: ShowInFolder,
-      [TaskStatus.name]: TaskStatus
+export default {
+  name: "mo-task-general",
+  components: {
+    [ShowInFolder.name]: ShowInFolder,
+    [TaskStatus.name]: TaskStatus,
+    Magnet,
+    Link,
+  },
+  props: {
+    task: {
+      type: Object,
     },
-    props: {
-      task: {
-        type: Object
-      }
+  },
+  computed: {
+    isRenderer: () => is.renderer(),
+    systemTheme() {
+      return useAppStore().systemTheme;
     },
-    data () {
-      const { locale } = (this.$store as any).state.preference.config
-      return {
-        form: {},
-        formLabelWidth: calcFormLabelWidth(locale),
-        locale
-      }
+    theme() {
+      return (usePreferenceStore().config as any).theme;
     },
-    computed: {
-      isRenderer: () => is.renderer(),
-      ...(mapState as any)('app', {
-        systemTheme: (state: any) => state.systemTheme
-      }),
-      ...(mapState as any)('preference', {
-        theme: (state: any) => state.config.theme
-      }),
-      currentTheme () {
-        if (this.theme === APP_THEME.AUTO) {
-          return this.systemTheme
-        } else {
-          return this.theme
-        }
-      },
-      taskFullName () {
-        return getTaskName(this.task, {
-          defaultName: this.$t('task.get-task-name'),
-          maxLen: -1
-        })
-      },
-      taskName () {
-        return getTaskName(this.task, {
-          defaultName: this.$t('task.get-task-name'),
-          maxLen: 32
-        })
-      },
-      isSeeder () {
-        return checkTaskIsSeeder(this.task)
-      },
-      taskStatus () {
-        const { task, isSeeder } = this
-        if (isSeeder) {
-          return TASK_STATUS.SEEDING
-        } else {
-          return task.status
-        }
-      },
-      path () {
-        return getTaskFullPath(this.task)
-      },
-      isBT () {
-        return checkTaskIsBT(this.task)
-      },
-      pieceLengthText () {
-        const pieceLength = this.task && this.task.pieceLength
-        return bytesToSize(pieceLength)
-      },
-      creationDateText () {
-        const creationDate = this.task &&
-          this.task.bittorrent &&
-          this.task.bittorrent.creationDate
-        return localeDateTimeFormat(creationDate, this.locale)
-      }
+    currentTheme() {
+      return this.theme === APP_THEME.AUTO ? this.systemTheme : this.theme;
     },
-    methods: {
-      handleCopyClick () {
-        const { task } = this
-        const uri = getTaskUri(task)
-        navigator.clipboard.writeText(uri)
-          .then(() => {
-            this.$msg.success(this.$t('task.copy-link-success'))
-          })
-      }
-    }
-  }
+    taskFullName() {
+      return getTaskName(this.task, {
+        defaultName: this.$t("task.get-task-name"),
+        maxLen: -1,
+      });
+    },
+    isSeeder() {
+      return checkTaskIsSeeder(this.task);
+    },
+    taskStatus() {
+      return this.isSeeder ? TASK_STATUS.SEEDING : this.task.status;
+    },
+    path() {
+      return getTaskFullPath(this.task);
+    },
+    isBT() {
+      return checkTaskIsBT(this.task);
+    },
+    pieceLengthText() {
+      return bytesToSize(this.task && this.task.pieceLength);
+    },
+    creationDateText() {
+      const locale =
+        ((usePreferenceStore().config as any) || {}).locale || "en-US";
+      const creationDate = this.task?.bittorrent?.creationDate;
+      return localeDateTimeFormat(creationDate, locale);
+    },
+  },
+  methods: {
+    handleCopyClick() {
+      const uri = getTaskUri(this.task);
+      navigator.clipboard.writeText(uri).then(() => {
+        this.$msg.success(this.$t("task.copy-link-success"));
+      });
+    },
+  },
+};
 </script>
-
-<style lang="scss">
-.copy-link {
-  cursor: pointer;
-}
-</style>

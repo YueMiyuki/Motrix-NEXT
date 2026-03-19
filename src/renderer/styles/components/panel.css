@@ -1,0 +1,37 @@
+/* Panel component */
+@layer components {
+  .panel {
+    background: var(--mo-bg-panel);
+  }
+  .panel .panel-header {
+    position: relative;
+    padding: 28px 0 16px;
+    margin: 0 16px;
+    border-bottom: 1px solid var(--mo-panel-border-color);
+    user-select: none;
+    animation: header-fade-in 0.5s var(--ease-decelerate);
+  }
+  .panel .panel-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-primary), transparent);
+    border-radius: calc(var(--radius) - 2px);
+  }
+  .panel .panel-header h4 {
+    margin: 0;
+    color: var(--mo-panel-title-color);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 28px;
+    letter-spacing: -0.02em;
+  }
+  .panel .panel-content {
+    position: relative;
+    padding: 0;
+    height: 100%;
+  }
+}

@@ -15,7 +15,7 @@ const defaultRuntimeFetch = runtimeGlobal.fetch
 
 export class JSONRPCClient extends EventEmitter {
   [key: string]: any
-  constructor (options: any = {}) {
+  constructor(options: any = {}) {
     super()
     this.deferreds = Object.create(null)
     this.lastId = 0
@@ -23,23 +23,15 @@ export class JSONRPCClient extends EventEmitter {
     Object.assign(this, JSONRPCClient.defaultOptions, options)
   }
 
-  id () {
+  id() {
     return this.lastId++
   }
 
-  url (protocol) {
-    return (
-      protocol +
-      (this.secure ? 's' : '') +
-      '://' +
-      this.host +
-      ':' +
-      this.port +
-      this.path
-    )
+  url(protocol) {
+    return protocol + (this.secure ? 's' : '') + '://' + this.host + ':' + this.port + this.path
   }
 
-  websocket (message) {
+  websocket(message) {
     return new Promise<void>((resolve, reject) => {
       const cb = (err?: Error | null) => {
         if (err) reject(err)
@@ -50,14 +42,14 @@ export class JSONRPCClient extends EventEmitter {
     })
   }
 
-  async http (message) {
+  async http(message) {
     const response = await this.fetch(this.url('http'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     })
 
     response
@@ -70,22 +62,22 @@ export class JSONRPCClient extends EventEmitter {
     return response
   }
 
-  _buildMessage (method, params) {
+  _buildMessage(method, params) {
     if (typeof method !== 'string') {
       throw new TypeError(method + ' is not a string')
     }
 
     const message = {
       method,
-      'json-rpc': '2.0',
-      id: this.id()
+      jsonrpc: '2.0',
+      id: this.id(),
     }
 
     if (params) Object.assign(message, { params })
     return message
   }
 
-  async batch (calls) {
+  async batch(calls) {
     const message = calls.map(([method, params]) => {
       return this._buildMessage(method, params)
     })
@@ -98,7 +90,7 @@ export class JSONRPCClient extends EventEmitter {
     })
   }
 
-  async call (method, parameters) {
+  async call(method, parameters) {
     const message = this._buildMessage(method, parameters)
     await this._send(message)
 
@@ -107,16 +99,14 @@ export class JSONRPCClient extends EventEmitter {
     return promise
   }
 
-  async _send (message) {
+  async _send(message) {
     this.emit('output', message)
 
     const { socket } = this
-    return socket && socket.readyState === 1
-      ? this.websocket(message)
-      : this.http(message)
+    return socket && socket.readyState === 1 ? this.websocket(message) : this.http(message)
   }
 
-  _onresponse ({ id, error, result }) {
+  _onresponse({ id, error, result }) {
     const deferred = this.deferreds[id]
     if (!deferred) return
     if (error) deferred.reject(new JSONRPCError(error))
@@ -124,11 +114,11 @@ export class JSONRPCClient extends EventEmitter {
     delete this.deferreds[id]
   }
 
-  _onrequest ({ method, params }) {
+  _onrequest({ method, params }) {
     return this.onrequest(method, params)
   }
 
-  _onnotification ({ method, params }) {
+  _onnotification({ method, params }) {
     this.emit(method, params)
   }
 
@@ -144,13 +134,13 @@ export class JSONRPCClient extends EventEmitter {
     }
   }
 
-  _onobject (message) {
+  _onobject(message) {
     if (message.method === undefined) this._onresponse(message)
     else if (message.id === undefined) this._onnotification(message)
     else this._onrequest(message)
   }
 
-  async open () {
+  async open() {
     const socket = (this.socket = new this.WebSocket(this.url('ws')))
 
     socket.onclose = (...args) => {
@@ -176,7 +166,7 @@ export class JSONRPCClient extends EventEmitter {
     return promiseEvent(this, 'open')
   }
 
-  async close () {
+  async close() {
     const { socket } = this
     socket.close()
     return promiseEvent(this, 'close')
@@ -189,6 +179,6 @@ export class JSONRPCClient extends EventEmitter {
     secret: '',
     path: '/jsonrpc',
     fetch: defaultRuntimeFetch,
-    WebSocket: defaultRuntimeWebSocket
+    WebSocket: defaultRuntimeWebSocket,
   }
 }

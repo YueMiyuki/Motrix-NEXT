@@ -1,7 +1,7 @@
 export default {
-  'active': '다운로드 중',
-  'waiting': '대기 중',
-  'stopped': '중단됨',
+  active: '다운로드 중',
+  waiting: '대기 중',
+  stopped: '중단됨',
   'new-task': '새 작업',
   'new-bt-task': '새 BT 작업',
   'open-file': '토렌트 파일 열기...',
@@ -54,7 +54,8 @@ export default {
   'navigate-to-downloading': '다운로드로 이동',
   'show-advanced-options': '고급 옵션',
   'copyright-warning': '저작권 경고',
-  'copyright-warning-message': '다운로드하려는 파일은 저작권이 있는 오디오 또는 비디오일 수 있으므로 사용 권한이 있는지 확인하십시오.',
+  'copyright-warning-message':
+    '다운로드하려는 파일은 저작권이 있는 오디오 또는 비디오일 수 있으므로 사용 권한이 있는지 확인하십시오.',
   'copyright-yes': '예, 권한이 있습니다',
   'copyright-no': '아니요, 권한이 없습니다',
   'copyright-error-message': '저작권 문제로 인해 작업 추가 실패',
@@ -114,7 +115,8 @@ export default {
   'bt-download-complete-message': '{{taskName}} 다운로드 완료, 배포 중',
   'bt-download-complete-notify': 'BT 다운로드 완료, 배포 중...',
   'bt-download-complete-tips': '도움말: 작업을 중지하여 배포를 종료할 수 있습니다',
-  'bt-stopping-seeding-tip': '배포를 중지하면 연결을 끊는 데 시간이 걸립니다. 잠시 기다려 주십시오...',
+  'bt-stopping-seeding-tip':
+    '배포를 중지하면 연결을 끊는 데 시간이 걸립니다. 잠시 기다려 주십시오...',
   'download-fail-message': '{{taskName}} 다운로드 실패',
-  'download-fail-notify': '다운로드 실패'
+  'download-fail-notify': '다운로드 실패',
 }

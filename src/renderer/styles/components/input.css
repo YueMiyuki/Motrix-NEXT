@@ -1,0 +1,165 @@
+/* Input group and number input */
+@layer components {
+  .mo-input-group {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  .mo-input-group--bordered {
+    border-radius: calc(var(--radius) - 2px) !important;
+  }
+  .mo-input-group--bordered > .mo-input-prepend,
+  .mo-input-group--bordered > .mo-input-append {
+    border: none;
+  }
+  .mo-input-group--bordered > .mo-input-prepend {
+    border-right: 1px solid var(--border);
+  }
+  .mo-input-group--bordered > .mo-input-append {
+    border-left: 1px solid var(--border);
+  }
+  .mo-input-group > input[data-slot='input'],
+  .mo-input-group > [data-slot='input'] {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .mo-input-group input[data-slot='input'] {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    flex: 1;
+    min-width: 0;
+  }
+  .mo-input-prepend + input[data-slot='input'],
+  .mo-input-prepend + [data-slot='input'],
+  .mo-input-prepend + * > input[data-slot='input'] {
+    border-left: none;
+  }
+  .mo-input-group > input[data-slot='input']:has(+ .mo-input-append),
+  .mo-input-group > [data-slot='input']:has(+ .mo-input-append) {
+    border-right: none;
+  }
+  .mo-input-group > :first-child,
+  .mo-input-group > :first-child input {
+    border-top-left-radius: calc(var(--radius) - 2px) !important;
+    border-bottom-left-radius: calc(var(--radius) - 2px) !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+  .mo-input-group > :last-child,
+  .mo-input-group > :last-child input {
+    border-top-right-radius: calc(var(--radius) - 2px) !important;
+    border-bottom-right-radius: calc(var(--radius) - 2px) !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+  }
+  .mo-input-prepend,
+  .mo-input-append {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    height: 36px;
+    background: var(--muted);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .mo-input-prepend {
+    border-right: none;
+    border-top-left-radius: calc(var(--radius) - 2px);
+    border-bottom-left-radius: calc(var(--radius) - 2px);
+  }
+  .mo-input-append {
+    border-left: none;
+    border-top-right-radius: calc(var(--radius) - 2px);
+    border-bottom-right-radius: calc(var(--radius) - 2px);
+    cursor: pointer;
+  }
+  .mo-input-number {
+    display: block;
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 2px);
+    background: transparent;
+    color: var(--foreground);
+    font-size: 13px;
+    outline: none;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  .mo-input-number::-webkit-inner-spin-button,
+  .mo-input-number::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+  .mo-input-number:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 50%, transparent);
+  }
+  .mo-number-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  .mo-number-input-wrap .mo-input-number {
+    padding-right: 32px;
+  }
+  .mo-number-input-wrap .mo-number-btns {
+    position: absolute;
+    right: 1px;
+    top: 1px;
+    bottom: 1px;
+    display: flex;
+    flex-direction: column;
+    width: 26px;
+    border-left: 1px solid var(--border);
+    overflow: hidden;
+    border-radius: calc(var(--radius) - 2px);
+  }
+  .mo-number-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--mo-input-number-btn-bg);
+    color: var(--mo-input-number-btn-color);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 0;
+    transition:
+      background 0.12s,
+      color 0.12s;
+  }
+  .mo-number-btn:hover {
+    background: var(--mo-input-number-btn-hover-bg);
+    color: var(--mo-input-number-btn-hover-color);
+  }
+  .mo-number-btn:active {
+    background: var(--mo-input-number-btn-hover-bg);
+  }
+  .mo-number-btn:first-child {
+    border-bottom: 1px solid var(--border);
+  }
+  .mo-number-btn svg {
+    width: 10px;
+    height: 10px;
+    stroke-width: 2.5;
+  }
+  .dark .mo-input-group--bordered {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  .dark .mo-input-group--bordered > .mo-input-prepend,
+  .dark .mo-input-group--bordered > .mo-input-append {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+}

@@ -1,7 +1,7 @@
 export default {
-  'active': 'Mengunduh',
-  'waiting': 'Mengunggu',
-  'stopped': 'Terhenti',
+  active: 'Mengunduh',
+  waiting: 'Mengunggu',
+  stopped: 'Terhenti',
   'new-task': 'Tugas Baru',
   'new-bt-task': 'Tugas BT baru',
   'open-file': 'Buka Berkas Torrent...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'Perpanjangan',
   'file-size': 'Ukuran',
   'file-completed-size': 'Ukuran domplet',
-  'selected-files-sum': 'Terpilih: {{selectedFilesCount}} berkas, total ukuran {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'Terpilih: {{selectedFilesCount}} berkas, total ukuran {{selectedFilesTotalSize}}',
   'select-at-least-one': 'Pilih setidaknya satu file',
   'task-gid': 'GID',
   'task-name': 'Nama Tugas',
@@ -54,7 +55,8 @@ export default {
   'navigate-to-downloading': 'Beralih ke Unduhan',
   'show-advanced-options': 'Setting Lanjutan',
   'copyright-warning': 'Peringatan Hak Cipta',
-  'copyright-warning-message': 'File yang ingin Anda unduh mungkin berupa audio atau video yang dilindungi hak cipta, pastikan Anda memiliki izin untuk mengaksesnya.',
+  'copyright-warning-message':
+    'File yang ingin Anda unduh mungkin berupa audio atau video yang dilindungi hak cipta, pastikan Anda memiliki izin untuk mengaksesnya.',
   'copyright-yes': 'Ya, Saya punya izin',
   'copyright-no': 'Tidak, Saya tidak punya izin',
   'copyright-error-message': 'Gagal menambahkan tugas karena masalah hak cipta',
@@ -71,7 +73,8 @@ export default {
   'delete-task-success': 'Tugas "{{taskName}}" berhasil dihapus',
   'delete-task-fail': 'Tugas "{{taskName}}" gagal dihapus',
   'remove-task-file-fail': 'Gagal menghapus berkas tugas, silahkan hapus secara manual',
-  'remove-task-config-file-fail': 'Gagal menghapus pengaturan berkas tugas, silahkan hapus secara manual',
+  'remove-task-config-file-fail':
+    'Gagal menghapus pengaturan berkas tugas, silahkan hapus secara manual',
   'move-task-up': 'Pidahkan Tugas ke Atas',
   'move-task-down': 'Pidahkan Tugas ke Bawah',
   'pause-all-task': 'Tunda Semua Tugas',
@@ -113,7 +116,8 @@ export default {
   'bt-download-complete-message': 'Selesai mengunduh {{taskName}}, penyemaian',
   'bt-download-complete-notify': 'BT Unduh Selesai, penyemaian...',
   'bt-download-complete-tips': 'Tips: Anda dapat menghentikan tugas untuk mengakhiri penyemaian',
-  'bt-stopping-seeding-tip': 'Menghentikan penyemaian, perlu beberapa saat untuk memutuskan, harap tunggu...',
+  'bt-stopping-seeding-tip':
+    'Menghentikan penyemaian, perlu beberapa saat untuk memutuskan, harap tunggu...',
   'download-fail-message': 'Gagal mengunduh {{taskName}}',
-  'download-fail-notify': 'Unduhan Gagal'
+  'download-fail-notify': 'Unduhan Gagal',
 }

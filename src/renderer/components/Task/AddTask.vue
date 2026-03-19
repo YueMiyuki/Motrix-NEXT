@@ -1,442 +1,480 @@
 <template>
-  <el-dialog
-    custom-class="tab-title-dialog add-task-dialog"
-    width="67vw"
-    :visible="visible"
-    :top="dialogTop"
-    :show-close="false"
-    :before-close="beforeClose"
-    @open="handleOpen"
-    @opened="handleOpened"
-    @closed="handleClosed"
-  >
-    <el-form ref="taskForm" label-position="left" :model="form" :rules="rules">
-      <el-tabs :value="type" @tab-click="handleTabClick">
-        <el-tab-pane :label="$t('task.uri-task')" name="uri">
-          <el-form-item>
-            <el-input
-              ref="uri"
-              type="textarea"
-              auto-complete="off"
-              :autosize="{ minRows: 3, maxRows: 5 }"
-              :placeholder="$t('task.uri-task-tips')"
-              @paste="handleUriPaste"
-              v-model="form.uris"
-            >
-            </el-input>
-          </el-form-item>
-        </el-tab-pane>
-        <el-tab-pane :label="$t('task.torrent-task')" name="torrent">
-          <el-form-item>
-            <mo-select-torrent v-on:change="handleTorrentChange" />
-          </el-form-item>
-        </el-tab-pane>
-      </el-tabs>
-      <el-row :gutter="12">
-        <el-col :span="15" :xs="24">
-          <el-form-item
-            :label="`${$t('task.task-out')}: `"
-            :label-width="formLabelWidth"
-          >
-            <el-input
-              :placeholder="$t('task.task-out-tips')"
-              v-model="form.out"
-            >
-            </el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="9" :xs="24">
-          <el-form-item
-            :label="`${$t('task.task-split')}: `"
-            :label-width="formLabelWidth"
-          >
-            <el-input-number
-              v-model="form.split"
-              controls-position="right"
-              :min="1"
-              :max="config.engineMaxConnectionPerServer"
-              :label="$t('task.task-split')"
-            >
-            </el-input-number>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-form-item
-        :label="`${$t('task.task-dir')}: `"
-        :label-width="formLabelWidth"
-      >
-        <el-input
-          placeholder=""
-          v-model="form.dir"
-          :readonly="isMas"
+  <Dialog :open="visible" @update:open="handleDialogOpenChange">
+    <DialogContent :show-close-button="false" class="add-task-dialog">
+      <DialogHeader class="atd-header">
+        <div class="atd-header-left">
+          <div class="atd-header-icon">
+            <Download :size="16" />
+          </div>
+          <DialogTitle class="atd-header-title">{{
+            $t("task.new-task")
+          }}</DialogTitle>
+        </div>
+        <button
+          type="button"
+          class="atd-close-btn"
+          aria-label="Close"
+          @click="handleClose"
         >
-          <template #prepend>
-            <mo-history-directory
-              @selected="handleHistoryDirectorySelected"
-            />
-          </template>
-          <template #append>
-            <mo-select-directory
-              v-if="isRenderer"
-              @selected="handleNativeDirectorySelected"
-            />
-          </template>
-        </el-input>
-      </el-form-item>
-      <div class="task-advanced-options" v-if="showAdvanced">
-        <el-form-item
-          :label="`${$t('task.task-user-agent')}: `"
-          :label-width="formLabelWidth"
-        >
-          <el-input
-            type="textarea"
-            auto-complete="off"
-            :autosize="{ minRows: 2, maxRows: 3 }"
-            :placeholder="$t('task.task-user-agent')"
-            v-model="form.userAgent"
+          <X :size="14" />
+        </button>
+      </DialogHeader>
+
+      <form ref="taskForm" class="atd-form" @submit.prevent>
+        <!-- Source Tabs -->
+        <div class="atd-source-tabs">
+          <button
+            type="button"
+            class="atd-source-tab"
+            :class="{ 'atd-source-tab--active': type === 'uri' }"
+            @click="handleTabClick({ props: { name: 'uri' } })"
           >
-          </el-input>
-        </el-form-item>
-        <el-form-item
-          :label="`${$t('task.task-authorization')}: `"
-          :label-width="formLabelWidth"
-        >
-          <el-input
-            type="textarea"
-            auto-complete="off"
-            :autosize="{ minRows: 2, maxRows: 3 }"
-            :placeholder="$t('task.task-authorization')"
-            v-model="form.authorization"
+            <Link2 :size="14" />
+            {{ $t("task.uri-task") }}
+          </button>
+          <button
+            type="button"
+            class="atd-source-tab"
+            :class="{ 'atd-source-tab--active': type === 'torrent' }"
+            @click="handleTabClick({ props: { name: 'torrent' } })"
           >
-          </el-input>
-        </el-form-item>
-        <el-form-item
-          :label="`${$t('task.task-referer')}: `"
-          :label-width="formLabelWidth"
-        >
-          <el-input
-            type="textarea"
-            auto-complete="off"
-            :autosize="{ minRows: 2, maxRows: 3 }"
-            :placeholder="$t('task.task-referer')"
-            v-model="form.referer"
+            <FileArchive :size="14" />
+            {{ $t("task.torrent-task") }}
+          </button>
+        </div>
+
+        <!-- Source Bodies (stacked) -->
+        <div class="atd-source-stack">
+          <div
+            class="atd-source-body"
+            :class="{ 'atd-source-body--active': type === 'uri' }"
           >
-          </el-input>
-        </el-form-item>
-        <el-form-item
-          :label="`${$t('task.task-cookie')}: `"
-          :label-width="formLabelWidth"
-        >
-          <el-input
-            type="textarea"
-            auto-complete="off"
-            :autosize="{ minRows: 2, maxRows: 3 }"
-            :placeholder="$t('task.task-cookie')"
-            v-model="form.cookie"
-          >
-          </el-input>
-        </el-form-item>
-        <el-row :gutter="12">
-          <el-col :span="16" :xs="24">
-            <el-form-item
-              :label="`${$t('task.task-proxy')}: `"
-              :label-width="formLabelWidth"
-            >
-              <el-input
-                placeholder="[http://][USER:PASSWORD@]HOST[:PORT]"
-                v-model="form.allProxy">
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8" :xs="24">
-            <div class="help-link">
-              <a target="_blank" href="https://github.com/agalwood/Motrix/wiki/Proxy" rel="noopener noreferrer">
-                {{ $t('preferences.proxy-tips') }}
-                <mo-icon name="link" width="12" height="12" />
-              </a>
+            <div class="atd-source-inner">
+              <Textarea
+                ref="uri"
+                auto-complete="off"
+                rows="4"
+                :placeholder="$t('task.uri-task-tips')"
+                @paste="handleUriPaste"
+                v-model="form.uris"
+                class="atd-uri-input resize-none"
+              />
             </div>
-          </el-col>
-        </el-row>
-        <el-form-item label="" :label-width="formLabelWidth" style="margin-top: 12px;">
-          <el-checkbox class="chk" v-model="form.newTaskShowDownloading">
-            {{$t('task.navigate-to-downloading')}}
-          </el-checkbox>
-        </el-form-item>
-      </div>
-    </el-form>
-    <template #title>
-      <button
-        type="button"
-        class="el-dialog__headerbtn"
-        aria-label="Close"
-        @click="handleClose">
-        <i class="el-dialog__close el-icon el-icon-close"></i>
-      </button>
-    </template>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-row>
-          <el-col :span="9" :xs="9">
-            <el-checkbox class="chk" v-model="showAdvanced">
-              {{$t('task.show-advanced-options')}}
-            </el-checkbox>
-          </el-col>
-          <el-col :span="15" :xs="15">
-            <el-button @click="handleCancel('taskForm')">
-              {{$t('app.cancel')}}
-            </el-button>
-            <el-button
-              type="primary"
-              @click="submitForm('taskForm')"
-            >
-              {{$t('app.submit')}}
-            </el-button>
-          </el-col>
-        </el-row>
-      </div>
-    </template>
-  </el-dialog>
+          </div>
+          <div
+            class="atd-source-body"
+            :class="{ 'atd-source-body--active': type === 'torrent' }"
+          >
+            <div class="atd-source-inner">
+              <mo-select-torrent v-on:change="handleTorrentChange" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Core Options -->
+        <div class="atd-fields">
+          <div class="atd-field atd-field--wide">
+            <label class="atd-field-label">{{ $t("task.task-out") }}</label>
+            <Input :placeholder="$t('task.task-out-tips')" v-model="form.out" />
+          </div>
+          <div class="atd-field atd-field--narrow">
+            <label class="atd-field-label">{{ $t("task.task-split") }}</label>
+            <NumberInput v-model="form.split" :min="1" :max="64" />
+          </div>
+          <div class="atd-field atd-field--full">
+            <label class="atd-field-label">{{ $t("task.task-dir") }}</label>
+            <div class="mo-input-group mo-input-group--bordered">
+              <span class="mo-input-prepend">
+                <mo-history-directory
+                  @selected="handleHistoryDirectorySelected"
+                />
+              </span>
+              <Input
+                placeholder=""
+                v-model="form.dir"
+                :readonly="isMas"
+                class="flex-1 border-0 shadow-none rounded-none"
+              />
+              <span class="mo-input-append" v-if="isRenderer">
+                <mo-select-directory
+                  @selected="handleNativeDirectorySelected"
+                />
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Options -->
+        <div
+          class="atd-advanced-wrapper"
+          :class="{ 'atd-advanced-wrapper--open': showAdvanced }"
+        >
+          <div class="atd-advanced">
+            <div class="atd-advanced-grid">
+              <div class="atd-field atd-field--full">
+                <label class="atd-field-label">{{
+                  $t("task.task-user-agent")
+                }}</label>
+                <Textarea
+                  auto-complete="off"
+                  rows="2"
+                  :placeholder="$t('task.task-user-agent')"
+                  v-model="form.userAgent"
+                  class="resize-none"
+                />
+              </div>
+              <div class="atd-field atd-field--full">
+                <label class="atd-field-label">{{
+                  $t("task.task-authorization")
+                }}</label>
+                <Textarea
+                  auto-complete="off"
+                  rows="2"
+                  :placeholder="$t('task.task-authorization')"
+                  v-model="form.authorization"
+                  class="resize-none"
+                />
+              </div>
+              <div class="atd-field">
+                <label class="atd-field-label">{{
+                  $t("task.task-referer")
+                }}</label>
+                <Textarea
+                  auto-complete="off"
+                  rows="2"
+                  :placeholder="$t('task.task-referer')"
+                  v-model="form.referer"
+                  class="resize-none"
+                />
+              </div>
+              <div class="atd-field">
+                <label class="atd-field-label">{{
+                  $t("task.task-cookie")
+                }}</label>
+                <Textarea
+                  auto-complete="off"
+                  rows="2"
+                  :placeholder="$t('task.task-cookie')"
+                  v-model="form.cookie"
+                  class="resize-none"
+                />
+              </div>
+              <div class="atd-field atd-field--full">
+                <label class="atd-field-label">
+                  {{ $t("task.task-proxy") }}
+                  <a
+                    class="atd-field-help"
+                    target="_blank"
+                    href="https://github.com/agalwood/Motrix/wiki/Proxy"
+                    rel="noopener noreferrer"
+                  >
+                    {{ $t("preferences.proxy-tips") }}
+                    <ExternalLink :size="11" />
+                  </a>
+                </label>
+                <Input
+                  placeholder="[http://][USER:PASSWORD@]HOST[:PORT]"
+                  v-model="form.allProxy"
+                />
+              </div>
+              <div class="atd-field atd-field--full atd-field--checkbox">
+                <ui-checkbox v-model="form.newTaskShowDownloading">
+                  {{ $t("task.navigate-to-downloading") }}
+                </ui-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <DialogFooter class="atd-footer">
+        <button
+          type="button"
+          class="atd-advanced-toggle"
+          :class="{ 'atd-advanced-toggle--active': showAdvanced }"
+          @click="showAdvanced = !showAdvanced"
+        >
+          <SlidersHorizontal :size="13" />
+          {{ $t("task.show-advanced-options") }}
+          <ChevronDown
+            :size="12"
+            class="atd-toggle-chevron"
+            :class="{ 'atd-toggle-chevron--open': showAdvanced }"
+          />
+        </button>
+        <div class="atd-footer-actions">
+          <ui-button @click="handleCancel('taskForm')">{{
+            $t("app.cancel")
+          }}</ui-button>
+          <ui-button variant="primary" @click="submitForm('taskForm')">
+            <Download :size="14" style="margin-right: 6px" />
+            {{ $t("app.submit") }}
+          </ui-button>
+        </div>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <script lang="ts">
-  import is from 'electron-is'
-  import { mapState } from 'vuex'
-  import { isEmpty } from 'lodash'
-  import HistoryDirectory from '@/components/Preference/HistoryDirectory.vue'
-  import SelectDirectory from '@/components/Native/SelectDirectory.vue'
-  import SelectTorrent from '@/components/Task/SelectTorrent.vue'
-  import {
-    initTaskForm,
-    buildUriPayload,
-    buildTorrentPayload
-  } from '@/utils/task'
-  import { ADD_TASK_TYPE } from '@shared/constants'
-  import { detectResource } from '@shared/utils'
-  import '@/components/Icons/inbox'
+import {
+  X,
+  Download,
+  Link2,
+  FileArchive,
+  SlidersHorizontal,
+  ChevronDown,
+  ExternalLink,
+} from "lucide-vue-next";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import NumberInput from "@/components/ui/NumberInput.vue";
+import logger from "@shared/utils/logger";
+import is from "electron-is";
+import electron from "electron";
+import { useAppStore } from "@/store/app";
+import { useTaskStore } from "@/store/task";
+import { usePreferenceStore } from "@/store/preference";
+import { isEmpty } from "lodash";
+import HistoryDirectory from "@/components/Preference/HistoryDirectory.vue";
+import SelectDirectory from "@/components/Native/SelectDirectory.vue";
+import SelectTorrent from "@/components/Task/SelectTorrent.vue";
+import UiButton from "@/components/ui/compat/UiButton.vue";
+import {
+  initTaskForm,
+  buildUriPayload,
+  buildTorrentPayload,
+} from "@/utils/task";
+import { ADD_TASK_TYPE } from "@shared/constants";
+import { detectResource } from "@shared/utils";
 
-  export default {
-    name: 'mo-add-task',
-    components: {
-      [HistoryDirectory.name]: HistoryDirectory,
-      [SelectDirectory.name]: SelectDirectory,
-      [SelectTorrent.name]: SelectTorrent
+export default {
+  name: "mo-add-task",
+  components: {
+    [HistoryDirectory.name]: HistoryDirectory,
+    [SelectDirectory.name]: SelectDirectory,
+    [SelectTorrent.name]: SelectTorrent,
+    UiButton,
+    NumberInput,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+    Input,
+    Textarea,
+    X,
+    Download,
+    Link2,
+    FileArchive,
+    SlidersHorizontal,
+    ChevronDown,
+    ExternalLink,
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
     },
-    props: {
-      visible: {
-        type: Boolean,
-        default: false
-      },
-      type: {
-        type: String,
-        default: ADD_TASK_TYPE.URI
+    type: {
+      type: String,
+      default: ADD_TASK_TYPE.URI,
+    },
+  },
+  data() {
+    return {
+      formLabelWidth: "110px",
+      showAdvanced: false,
+      form: {},
+      rules: {},
+    };
+  },
+  computed: {
+    isRenderer: () => is.renderer(),
+    isMas: () => is.mas(),
+    config() {
+      return usePreferenceStore().config;
+    },
+    taskType() {
+      return this.type;
+    },
+  },
+  watch: {
+    taskType(current, previous) {
+      if (this.visible && previous === ADD_TASK_TYPE.URI) {
+        return;
+      }
+
+      if (current === ADD_TASK_TYPE.URI) {
+        setTimeout(() => {
+          this.focusUriInput();
+        }, 300);
       }
     },
-    data () {
-      return {
-        formLabelWidth: '110px',
-        showAdvanced: false,
-        form: {},
-        rules: {}
-      }
-    },
-    computed: {
-      isRenderer: () => is.renderer(),
-      isMas: () => is.mas(),
-      ...(mapState as any)('app', {
-        taskList: (state: any) => state.taskList
-      }),
-      ...(mapState as any)('preference', {
-        config: (state: any) => state.config
-      }),
-      taskType () {
-        return this.type
-      },
-      dialogTop () {
-        return this.showAdvanced ? '8vh' : '15vh'
-      }
-    },
-    watch: {
-      taskType (current, previous) {
-        if (this.visible && previous === ADD_TASK_TYPE.URI) {
-          return
-        }
-
-        if (current === ADD_TASK_TYPE.URI) {
-          setTimeout(() => {
-            this.$refs.uri && this.$refs.uri.focus()
-          }, 50)
-        }
-      },
-      visible (current) {
-        if (current === true) {
-          document.addEventListener('keydown', this.handleHotkey)
-        } else {
-          document.removeEventListener('keydown', this.handleHotkey)
+    visible(current, previous) {
+      if (current === true) {
+        document.addEventListener("keydown", this.handleHotkey);
+        this.handleOpen();
+      } else {
+        document.removeEventListener("keydown", this.handleHotkey);
+        if (previous === true) {
+          this.handleClosed();
         }
       }
     },
-    beforeUnmount () {
-      document.removeEventListener('keydown', this.handleHotkey)
+  },
+  beforeUnmount() {
+    document.removeEventListener("keydown", this.handleHotkey);
+  },
+  methods: {
+    focusUriInput() {
+      const el = this.$refs.uri?.$el;
+      if (el) {
+        el.focus();
+      }
     },
-    methods: {
-      async autofillResourceLink () {
-        const content = await navigator.clipboard.readText()
-        const hasResource = detectResource(content)
-        if (!hasResource) {
-          return
+    handleDialogOpenChange(open) {
+      if (!open) {
+        this.handleClose();
+      }
+    },
+    async autofillResourceLink() {
+      let content = "";
+      try {
+        const nativeClipboard = electron && electron.clipboard;
+        if (nativeClipboard && typeof nativeClipboard.readText === "function") {
+          content = nativeClipboard.readText();
         }
+      } catch (err) {
+        return;
+      }
 
-        if (isEmpty(this.form.uris)) {
-          this.form.uris = content
-        }
-      },
-      beforeClose () {
-        if (isEmpty(this.form.uris) && isEmpty(this.form.torrent)) {
-          this.handleClose()
-        }
-      },
-      handleOpen () {
-        this.showAdvanced = false
-        this.form = initTaskForm(this.$store.state)
-        if (this.taskType === ADD_TASK_TYPE.URI) {
-          this.autofillResourceLink()
-          setTimeout(() => {
-            this.$refs.uri && this.$refs.uri.focus()
-          }, 50)
-        }
-      },
-      handleOpened () {
-        this.detectThunderResource(this.form.uris)
-      },
-      handleCancel () {
-        this.$store.dispatch('app/hideAddTaskDialog')
-      },
-      handleClose () {
-        this.$store.dispatch('app/hideAddTaskDialog')
-        this.$store.dispatch('app/updateAddTaskOptions', {})
-      },
-      handleClosed () {
-        // Reset state on open to avoid update loops during close transitions.
-      },
-      handleHotkey (event) {
-        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-          event.preventDefault()
+      if (!content || content.length > 4096) {
+        return;
+      }
 
-          this.submitForm('taskForm')
-        }
-      },
-      handleTabClick (tab) {
-        this.$store.dispatch('app/changeAddTaskType', tab.name)
-      },
-      handleUriPaste () {
-        setImmediate(() => {
-          const uris = this.$refs.uri.value
-          this.detectThunderResource(uris)
-        })
-      },
-      detectThunderResource (uris = '') {
-        if (uris.includes('thunder://')) {
-          this.$msg({
-            type: 'warning',
-            message: this.$t('task.thunder-link-tips'),
-            duration: 6000
-          })
-        }
-      },
-      handleTorrentChange (torrent, selectedFileIndex) {
-        this.form.torrent = torrent
-        this.form.selectFile = selectedFileIndex
-      },
-      handleHistoryDirectorySelected (dir) {
-        this.form.dir = dir
-      },
-      handleNativeDirectorySelected (dir) {
-        this.form.dir = dir
-        this.$store.dispatch('preference/recordHistoryDirectory', dir)
-      },
-      addTask (type, form) {
-        let payload = null
-        if (type === ADD_TASK_TYPE.URI) {
-          payload = buildUriPayload(form)
-          this.$store.dispatch('task/addUri', payload).catch(err => {
-            this.$msg.error(err.message)
-          })
-        } else if (type === ADD_TASK_TYPE.TORRENT) {
-          payload = buildTorrentPayload(form)
-          this.$store.dispatch('task/addTorrent', payload).catch(err => {
-            this.$msg.error(err.message)
-          })
-        } else if (type === 'metalink') {
+      const hasResource = detectResource(content);
+      if (!hasResource) {
+        return;
+      }
+
+      if (isEmpty(this.form.uris)) {
+        this.form.uris = content;
+      }
+    },
+    handleOpen() {
+      this.showAdvanced = false;
+      this.form = initTaskForm({
+        app: useAppStore().$state,
+        preference: usePreferenceStore().$state,
+      });
+      setTimeout(() => {
+        this.focusUriInput();
+      }, 100);
+
+      if (this.taskType === ADD_TASK_TYPE.URI && isEmpty(this.form.uris)) {
+        setTimeout(() => {
+          this.autofillResourceLink();
+        }, 0);
+      }
+
+      setTimeout(() => {
+        this.detectThunderResource(this.form.uris);
+      }, 150);
+    },
+    handleCancel() {
+      useAppStore().hideAddTaskDialog();
+    },
+    handleClose() {
+      const appStore = useAppStore();
+      appStore.hideAddTaskDialog();
+      appStore.updateAddTaskOptions({});
+    },
+    handleClosed() {
+      // Reset state
+    },
+    handleHotkey(event) {
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        this.submitForm("taskForm");
+      }
+    },
+    handleTabClick(tab) {
+      const name = tab?.props?.name || tab?.paneName || tab?.name;
+      if (name) {
+        useAppStore().changeAddTaskType(name);
+      }
+    },
+    handleUriPaste() {
+      setImmediate(() => {
+        const uris = this.form.uris;
+        this.detectThunderResource(uris);
+      });
+    },
+    detectThunderResource(uris = "") {
+      if (uris.includes("thunder://")) {
+        this.$msg({
+          type: "warning",
+          message: this.$t("task.thunder-link-tips"),
+          duration: 6000,
+        });
+      }
+    },
+    handleTorrentChange(torrent, selectedFileIndex) {
+      this.form.torrent = torrent;
+      this.form.selectFile = selectedFileIndex;
+    },
+    handleHistoryDirectorySelected(dir) {
+      this.form.dir = dir;
+    },
+    handleNativeDirectorySelected(dir) {
+      this.form.dir = dir;
+      usePreferenceStore().recordHistoryDirectory(dir);
+    },
+    async addTask(type, form) {
+      let payload = null;
+      if (type === ADD_TASK_TYPE.URI) {
+        payload = buildUriPayload(form);
+        return useTaskStore().addUri(payload);
+      } else if (type === ADD_TASK_TYPE.TORRENT) {
+        payload = buildTorrentPayload(form);
+        return useTaskStore().addTorrent(payload);
+      } else if (type === "metalink") {
         // @TODO addMetalink
-        } else {
-          console.error('[Motrix] Add task fail', form)
-        }
-      },
-      submitForm (formName) {
-        this.$refs[formName].validate(valid => {
-          if (!valid) {
-            return false
-          }
-
-          try {
-            this.addTask(this.type, this.form)
-
-            this.$store.dispatch('app/hideAddTaskDialog')
+      } else {
+        logger.error("[Motrix] Add task fail", form);
+        throw new Error("task.new-task-unsupported-type");
+      }
+    },
+    submitForm() {
+      try {
+        this.addTask(this.type, this.form)
+          .then(() => {
+            useAppStore().hideAddTaskDialog();
             if (this.form.newTaskShowDownloading) {
-              this.$router.push({
-                path: '/task/active'
-              }).catch(err => {
-                console.log(err)
-              })
+              this.$router
+                .push({
+                  path: "/task/active",
+                })
+                .catch((err) => {
+                  logger.log(err);
+                });
             }
-          } catch (err) {
-            this.$msg.error(this.$t(err.message))
-          }
-        })
+          })
+          .catch((err) => {
+            this.$msg.error(this.$t(err.message || "task.new-task-fail"));
+          });
+      } catch (err) {
+        this.$msg.error(this.$t(err.message || "task.new-task-fail"));
       }
-    }
-  }
+    },
+  },
+};
 </script>
-
-<style lang="scss">
-.el-dialog.add-task-dialog {
-  max-width: 632px;
-  min-width: 380px;
-  .task-advanced-options .el-form-item:last-of-type {
-    margin-bottom: 0;
-  }
-  .el-tabs__header {
-    user-select: none;
-  }
-  .el-input-number.el-input-number--mini {
-    width: 100%;
-  }
-  .help-link {
-    font-size: 12px;
-    line-height: 14px;
-    padding-top: 7px;
-    > a {
-      color: #909399;
-    }
-  }
-  .el-dialog__footer {
-    padding-top: 20px;
-    background-color: $--add-task-dialog-footer-background;
-    border-radius: 0 0 5px 5px;
-  }
-  .dialog-footer {
-    .chk {
-      float: left;
-      line-height: 28px;
-      &.el-checkbox {
-        & .el-checkbox__input {
-          line-height: 19px;
-        }
-        & .el-checkbox__label {
-          padding-left: 6px;
-        }
-      }
-    }
-  }
-}
-</style>

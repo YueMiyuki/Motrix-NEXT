@@ -17,7 +17,7 @@ const initCanvas = () => {
 const drawTray = async (payload) => {
   self.postMessage({
     type: 'log',
-    payload
+    payload,
   })
 
   if (!canvas) {
@@ -27,15 +27,15 @@ const drawTray = async (payload) => {
   try {
     const tray = await draw({
       canvas,
-      ...payload
+      ...payload,
     })
 
     self.postMessage({
       type: 'tray:drawed',
       payload: {
         idx,
-        tray
-      }
+        tray,
+      },
     })
 
     idx += 1
@@ -47,22 +47,22 @@ const drawTray = async (payload) => {
 const logger = (text) => {
   self.postMessage({
     type: 'log',
-    payload: text
+    payload: text,
   })
 }
 
 self.postMessage({
   type: 'initialized',
-  payload: Date.now()
+  payload: Date.now(),
 })
 
 self.addEventListener('message', (event) => {
   const { type, payload } = event.data
   switch (type) {
-  case 'tray:draw':
-    drawTray(payload)
-    break
-  default:
-    logger(JSON.stringify(event.data))
+    case 'tray:draw':
+      drawTray(payload)
+      break
+    default:
+      logger(JSON.stringify(event.data))
   }
 })

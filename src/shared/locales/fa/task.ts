@@ -1,7 +1,7 @@
 export default {
-  'active': 'در حال بارگیری',
-  'waiting': 'در انتظار',
-  'stopped': 'متوقف شد',
+  active: 'در حال بارگیری',
+  waiting: 'در انتظار',
+  stopped: 'متوقف شد',
   'new-task': 'وظیفهٔ جدید',
   'new-bt-task': 'وظیفهٔ بیت‌تورنت جدید',
   'open-file': 'بازکردن پروندهٔ تورنت...',
@@ -15,7 +15,8 @@ export default {
   'file-extension': 'پسوند',
   'file-size': 'اندازه',
   'file-completed-size': 'تکمیل شده',
-  'selected-files-sum': 'گزیده: {{selectedFilesCount}} پرونده، اندازه کل {{selectedFilesTotalSize}}',
+  'selected-files-sum':
+    'گزیده: {{selectedFilesCount}} پرونده، اندازه کل {{selectedFilesTotalSize}}',
   'select-at-least-one': 'لطفاً حداقل یک پرونده را انتخاب کنید',
   'task-gid': 'GID',
   'task-name': 'نام وظیفه',
@@ -54,7 +55,8 @@ export default {
   'navigate-to-downloading': 'برو به دانلودها',
   'show-advanced-options': 'گزینه‌های پیشرفته',
   'copyright-warning': 'هشدار حق تکثیر',
-  'copyright-warning-message': 'پرونده‌ای که می‌خواهید بارگیری کنید ممکن است صوت یا ویدیوی تحت حمایت قانون حق تکثیر باشد، مطمئن شوید که اجازه دسترسی به آن را دارید.',
+  'copyright-warning-message':
+    'پرونده‌ای که می‌خواهید بارگیری کنید ممکن است صوت یا ویدیوی تحت حمایت قانون حق تکثیر باشد، مطمئن شوید که اجازه دسترسی به آن را دارید.',
   'copyright-yes': 'بله، من اجازه دارم',
   'copyright-no': 'خیر، من اجازه ندارم',
   'copyright-error-message': 'به دلیل حق تکثیر، افزودن وظیفه انجام نشد',
@@ -71,7 +73,8 @@ export default {
   'delete-task-success': 'حذف وظیفه "{{taskName}}" با موفقیت انجام شد',
   'delete-task-fail': 'حذف وظیفه "{{taskName}}" شکست خورد',
   'remove-task-file-fail': 'حذف وظیفه(ها) شکست خورد، لطفاً به صورت دستی حذفشان کنید',
-  'remove-task-config-file-fail': 'حذف پروندهٔ پیکربندی وظیفه شکست خورد، لطفاً به صورت دستی حذفشان کنید',
+  'remove-task-config-file-fail':
+    'حذف پروندهٔ پیکربندی وظیفه شکست خورد، لطفاً به صورت دستی حذفشان کنید',
   'move-task-up': 'جابجایی وظیفه به بالا',
   'move-task-down': 'جابجایی وظیفه به پایین',
   'pause-all-task': 'توقف همهٔ وظایف',
@@ -104,7 +107,7 @@ export default {
   'remaining-prefix': 'باقیمانده',
   'select-torrent': 'پروندهٔ تورنت را اینجا بکشید، یا برای گزینش کلیک کنید',
   'task-info-dialog-title': '{{title}} جزئیات',
-    'download-start-message': 'بارگیری {{taskName}} شروع شد',
+  'download-start-message': 'بارگیری {{taskName}} شروع شد',
   'download-pause-message': 'مکث در بارگیری {{taskName}}',
   'download-stop-message': 'بارگیری {{taskName}} متوقف شد',
   'download-error-message': 'هنگام بارگیری {{taskName}} خطای رخ داد',
@@ -113,7 +116,8 @@ export default {
   'bt-download-complete-message': 'بارگیری {{taskName}} تکمیل شد، بذرپاشی',
   'bt-download-complete-notify': 'بارگیری بیت‌تورنت تکمیل شد، بذرپاشی...',
   'bt-download-complete-tips': 'نکات: شما می‌توانید با توقف یک وظیفه، به بذرپاشی آن را پایان دهید',
-  'bt-stopping-seeding-tip': 'متوقف کردن بذرپاشی، قطع ارتباط مدتی طول خواهد کشید، لطفاً صبر کنید ...',
+  'bt-stopping-seeding-tip':
+    'متوقف کردن بذرپاشی، قطع ارتباط مدتی طول خواهد کشید، لطفاً صبر کنید ...',
   'download-fail-message': 'بارگیری {{taskName}} شکست خورد',
-  'download-fail-notify': 'بارگیری شکست خورد'
+  'download-fail-notify': 'بارگیری شکست خورد',
 }

@@ -1,4 +1,4 @@
 export default {
   'task-list': 'Tasks',
-  'preferences': 'Preferences'
+  preferences: 'Preferences',
 }

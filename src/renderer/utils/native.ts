@@ -1,10 +1,7 @@
+import logger from '@shared/utils/logger'
 import { shell, nativeTheme } from '@electron/remote'
-import { Message } from 'element-ui'
-
-import {
-  getFileNameFromFile,
-  isMagnetTask
-} from '@shared/utils'
+import { toast } from 'vue-sonner'
+import { getFileNameFromFile, isMagnetTask } from '@shared/utils'
 import { APP_THEME, TASK_STATUS } from '@shared/constants'
 
 const { access, constants } = window.require('fs')
@@ -17,9 +14,9 @@ export const showItemInFolder = (fullPath, { errorMsg }) => {
 
   fullPath = resolve(fullPath)
   access(fullPath, constants.F_OK, (err) => {
-    console.warn(`[Motrix] ${fullPath} ${err ? 'does not exist' : 'exists'}`)
+    logger.warn(`[Motrix] ${fullPath} ${err ? 'does not exist' : 'exists'}`)
     if (err && errorMsg) {
-      Message.error(errorMsg)
+      toast.error(errorMsg)
       return
     }
 
@@ -87,7 +84,7 @@ export const moveTaskFilesToTrash = (task) => {
 
   let deleteResult1 = true
   access(path, constants.F_OK, async (err) => {
-    console.log(`[Motrix] ${path} ${err ? 'does not exist' : 'exists'}`)
+    logger.log(`[Motrix] ${path} ${err ? 'does not exist' : 'exists'}`)
     if (!err) {
       await shell.trashItem(path)
       deleteResult1 = true
@@ -102,7 +99,7 @@ export const moveTaskFilesToTrash = (task) => {
   let deleteResult2 = true
   const extraFilePath = `${path}.aria2`
   access(extraFilePath, constants.F_OK, async (err) => {
-    console.log(`[Motrix] ${extraFilePath} ${err ? 'does not exist' : 'exists'}`)
+    logger.log(`[Motrix] ${extraFilePath} ${err ? 'does not exist' : 'exists'}`)
     if (!err) {
       await shell.trashItem(extraFilePath)
       deleteResult2 = true
