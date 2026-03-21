@@ -29,10 +29,6 @@ jobs:
           - platform: linux/arm64
             os: ubuntu-24.04-arm
             target: aarch64-unknown-linux-gnu
-          - platform: linux/armv7l
-            os: ubuntu-latest
-            target: armv7-unknown-linux-gnueabihf
-            linker: arm-linux-gnueabihf-gcc
           - platform: win32/x64
             os: windows-latest
             target: x86_64-pc-windows-msvc
@@ -72,9 +68,6 @@ jobs:
             libayatana-appindicator3-dev \
             librsvg2-dev \
             patchelf
-          if [ "${{ matrix.target }}" = "armv7-unknown-linux-gnueabihf" ]; then
-            sudo apt-get install -y gcc-arm-linux-gnueabihf
-          fi
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

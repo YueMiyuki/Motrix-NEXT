@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
@@ -8,6 +9,15 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.resolve(dirname, 'src/renderer/pages/index')
 const outDir = path.resolve(dirname, 'dist/outputs')
+const staticDir = path.resolve(dirname, 'static')
+
+const hasStaticAssets =
+  fs.existsSync(staticDir) &&
+  fs.statSync(staticDir).isDirectory() &&
+  fs.readdirSync(staticDir, { recursive: true }).some((entry) => {
+    const fullPath = path.join(staticDir, String(entry))
+    return fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()
+  })
 
 export default defineConfig({
   root: rootDir,
@@ -15,14 +25,18 @@ export default defineConfig({
   plugins: [
     vue(),
     tailwindcss(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: path.resolve(dirname, 'static/**/*'),
-          dest: 'static',
-        },
-      ],
-    }),
+    ...(hasStaticAssets
+      ? [
+          viteStaticCopy({
+            targets: [
+              {
+                src: path.resolve(dirname, 'static/**/*'),
+                dest: 'static',
+              },
+            ],
+          }),
+        ]
+      : []),
   ],
   resolve: {
     alias: {
