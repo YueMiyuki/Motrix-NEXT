@@ -56,10 +56,10 @@ function initTrayWorker() {
   return worker
 }
 
-function init(config: any) {
+async function init(config: any) {
   const locale = (config && config.locale) || 'en-US'
   const localeManager = getLocaleManager()
-  localeManager.changeLanguageByLocale(locale)
+  await localeManager.changeLanguageByLocale(locale)
   const i18n = localeManager.getI18n()
 
   const app = createApp(App)

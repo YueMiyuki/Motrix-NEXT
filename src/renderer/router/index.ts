@@ -1,11 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Main from '@/components/Main.vue'
 import TaskIndex from '@/components/Task/Index.vue'
-import PreferenceIndex from '@/components/Preference/Index.vue'
-import PreferenceSubnav from '@/components/Subnav/PreferenceSubnav.vue'
-import PreferenceBasic from '@/components/Preference/Basic.vue'
-import PreferenceAdvanced from '@/components/Preference/Advanced.vue'
-import PreferenceLab from '@/components/Preference/Lab.vue'
 
 export default createRouter({
   history: createWebHashHistory(),
@@ -32,15 +27,15 @@ export default createRouter({
         {
           path: '/preference',
           name: 'preference',
-          component: PreferenceIndex,
+          component: () => import('@/components/Preference/Index.vue'),
           props: true,
           children: [
             {
               path: 'basic',
               alias: '',
               components: {
-                subnav: PreferenceSubnav,
-                form: PreferenceBasic,
+                subnav: () => import('@/components/Subnav/PreferenceSubnav.vue'),
+                form: () => import('@/components/Preference/Basic.vue'),
               },
               props: {
                 subnav: { current: 'basic' },
@@ -49,8 +44,8 @@ export default createRouter({
             {
               path: 'advanced',
               components: {
-                subnav: PreferenceSubnav,
-                form: PreferenceAdvanced,
+                subnav: () => import('@/components/Subnav/PreferenceSubnav.vue'),
+                form: () => import('@/components/Preference/Advanced.vue'),
               },
               props: {
                 subnav: { current: 'advanced' },
@@ -59,8 +54,8 @@ export default createRouter({
             {
               path: 'lab',
               components: {
-                subnav: PreferenceSubnav,
-                form: PreferenceLab,
+                subnav: () => import('@/components/Subnav/PreferenceSubnav.vue'),
+                form: () => import('@/components/Preference/Lab.vue'),
               },
               props: {
                 subnav: { current: 'lab' },

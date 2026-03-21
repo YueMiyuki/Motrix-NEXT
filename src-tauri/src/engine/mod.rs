@@ -49,8 +49,41 @@ fn resolve_engine_file(
     Err(format!("{} not found in any search path", filename).into())
 }
 
+fn is_local_rpc_host(host: &str) -> bool {
+    matches!(host, "127.0.0.1" | "localhost" | "::1" | "[::1]")
+}
+
+fn should_start_embedded_engine(config: &crate::config::ConfigManager) -> bool {
+    let host = config
+        .get_user_config()
+        .get("rpc-host")
+        .and_then(|v| v.as_str())
+        .unwrap_or("127.0.0.1")
+        .trim()
+        .to_lowercase();
+
+    is_local_rpc_host(host.as_str())
+}
+
 pub async fn start_engine(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     let state = handle.state::<AppState>();
+
+    {
+        let config = state.config.lock().unwrap();
+        if !should_start_embedded_engine(&config) {
+            let host = config
+                .get_user_config()
+                .get("rpc-host")
+                .and_then(|v| v.as_str())
+                .unwrap_or("unknown");
+            log::info!(
+                "Skipping embedded aria2c startup because rpc-host is set to external address: {}",
+                host
+            );
+            *state.engine_running.lock().unwrap() = false;
+            return Ok(());
+        }
+    }
 
     {
         let mut guard = ENGINE_PROCESS.lock().await;

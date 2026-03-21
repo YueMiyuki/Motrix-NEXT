@@ -39,6 +39,7 @@
 
 <script lang="ts">
 import is from '@/shims/platform'
+import { useTaskStore } from '@/store/task'
 
 import { commands } from '@/components/CommandManager/instance'
 import { TASK_STATUS } from '@shared/constants'
@@ -183,6 +184,8 @@ export default {
     },
     onInfoClick() {
       const { task } = this
+      // Open detail directly to avoid missing UI response when command listeners are not active.
+      useTaskStore().showTaskDetail(task)
       commands.emit('show-task-info', { task })
     },
   },

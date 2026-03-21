@@ -1,8 +1,9 @@
-import resources from '@shared/locales/all'
 import LocaleManager from '@shared/locales/LocaleManager'
+import { getInitialLocaleResources, loadLocaleResource } from '@shared/locales/loader'
 
 const localeManager = new LocaleManager({
-  resources,
+  resources: getInitialLocaleResources(),
+  loadResource: loadLocaleResource,
 })
 
 export function getLocaleManager() {
