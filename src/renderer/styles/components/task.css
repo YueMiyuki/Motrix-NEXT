@@ -146,6 +146,29 @@
     text-align: right;
     color: var(--mo-task-action-color);
   }
+  .task-total-progress {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 4px;
+    padding: 0 8px;
+    height: 24px;
+    border-radius: calc(var(--radius) - 2px);
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+  .task-total-progress-size {
+    font-size: 0.6875rem;
+    font-weight: 500;
+  }
+  .task-total-progress-percent {
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+  .dark .task-total-progress {
+    background: rgba(255, 255, 255, 0.06);
+  }
   .task-actions .task-action {
     display: inline-flex;
     align-items: center;
@@ -241,6 +264,14 @@
   .task-progress-info-left {
     min-height: 0.875rem;
     flex-shrink: 0;
+  }
+  .task-progress-percent {
+    display: inline-flex;
+    margin-right: 6px;
+  }
+  .task-progress-percent > span {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
   .task-progress-info-left span {
     font-weight: 500;

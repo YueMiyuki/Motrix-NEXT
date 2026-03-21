@@ -1,6 +1,9 @@
 <template>
   <div class="task-progress-info">
     <div class="task-progress-info-left">
+      <div class="task-progress-percent">
+        <span>{{ progressPercent }}%</span>
+      </div>
       <div v-if="task.completedLength > 0 || task.totalLength > 0">
         <span>{{ formatBytes(task.completedLength, 2) }}</span>
         <span v-if="task.totalLength > 0">
@@ -37,6 +40,7 @@
 <script lang="ts">
 import {
   bytesToSize,
+  calcProgress,
   checkTaskIsBT,
   checkTaskIsSeeder,
   timeFormat,
@@ -82,6 +86,10 @@ export default {
           second: this.$t("app.second"),
         },
       });
+    },
+    progressPercent() {
+      const result = calcProgress(this.task.totalLength, this.task.completedLength, 1);
+      return `${result}`.replace(/\.0$/, "");
     },
   },
   methods: {

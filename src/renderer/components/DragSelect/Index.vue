@@ -61,9 +61,11 @@ export default {
     const self = this;
 
     let containerRect = container.getBoundingClientRect();
+    const DRAG_START_THRESHOLD = 4;
     const box = this.createBox();
     let start = { x: 0, y: 0 };
     let end = { x: 0, y: 0 };
+    let dragging = false;
 
     function touchStart(e) {
       e.preventDefault();
@@ -79,19 +81,30 @@ export default {
       containerRect = container.getBoundingClientRect();
       start = getCoords(e, containerRect);
       end = start;
+      dragging = false;
       document.addEventListener("mousemove", drag);
       document.addEventListener("touchmove", touchMove);
 
       box.style.top = start.y + "px";
       box.style.left = start.x + "px";
+      box.style.width = "0";
+      box.style.height = "0";
 
       container.prepend(box);
-      self.intersection(box);
     }
 
     function drag(e) {
       end = getCoords(e, containerRect);
       const dimensions = getDimensions(start, end);
+
+      if (!dragging) {
+        dragging =
+          dimensions.width >= DRAG_START_THRESHOLD ||
+          dimensions.height >= DRAG_START_THRESHOLD;
+      }
+      if (!dragging) {
+        return;
+      }
 
       if (end.x < start.x) {
         box.style.left = end.x + "px";
@@ -108,6 +121,7 @@ export default {
     function endDrag() {
       start = { x: 0, y: 0 };
       end = { x: 0, y: 0 };
+      dragging = false;
 
       box.style.width = 0;
       box.style.height = 0;

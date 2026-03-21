@@ -156,6 +156,10 @@ fn build_task_submenu(
         .item(&MenuItemBuilder::with_id("pause-task", "Pause Task").build(handle)?)
         .item(&MenuItemBuilder::with_id("resume-task", "Resume Task").build(handle)?)
         .item(&MenuItemBuilder::with_id("delete-task", "Delete Task").build(handle)?)
+        .item(&MenuItemBuilder::with_id("move-task-up", "Move Task Up").build(handle)?)
+        .item(
+            &MenuItemBuilder::with_id("move-task-down", "Move Task Down").build(handle)?,
+        )
         .separator()
         .item(
             &MenuItemBuilder::with_id("pause-all-task", "Pause All Tasks")
@@ -228,6 +232,8 @@ fn setup_menu_event_handler(app: &App) {
             "pause-task" => emit_command(app, "application:pause-task"),
             "resume-task" => emit_command(app, "application:resume-task"),
             "delete-task" => emit_command(app, "application:delete-task"),
+            "move-task-up" => emit_command(app, "application:move-task-up"),
+            "move-task-down" => emit_command(app, "application:move-task-down"),
             "pause-all-task" => emit_command(app, "application:pause-all-task"),
             "resume-all-task" => emit_command(app, "application:resume-all-task"),
             "select-all-task" => emit_command(app, "application:select-all-task"),

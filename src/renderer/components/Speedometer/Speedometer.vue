@@ -1,26 +1,26 @@
 <template>
-  <div
-    v-show="isTaskPage"
-    class="mo-speedometer"
-    :class="{ stopped: stat.numActive === 0 }"
-  >
-    <div class="mode" @click="toggleEngineMode">
-      <i>
-        <Gauge :size="24" />
-      </i>
-      <em>{{ engineMode }}</em>
+  <Transition name="speedometer-panel">
+    <div v-if="isTaskPage" class="mo-speedometer" :class="{ stopped: isStopped }">
+      <div class="mode" @click="toggleEngineMode">
+        <i>
+          <Gauge :size="24" />
+        </i>
+        <em>{{ engineMode }}</em>
+      </div>
+      <Transition name="speedometer-value" mode="out-in">
+        <div class="value" v-if="!isStopped" key="active">
+          <em>
+            <CloudUpload :size="14" />
+            {{ formatBytes(stat.uploadSpeed) }}/s
+          </em>
+          <span>
+            <CloudDownload :size="14" />
+            {{ formatBytes(stat.downloadSpeed) }}/s
+          </span>
+        </div>
+      </Transition>
     </div>
-    <div class="value" v-if="stat.numActive > 0">
-      <em>
-        <CloudUpload :size="14" />
-        {{ formatBytes(stat.uploadSpeed) }}/s
-      </em>
-      <span>
-        <CloudDownload :size="14" />
-        {{ formatBytes(stat.downloadSpeed) }}/s
-      </span>
-    </div>
-  </div>
+  </Transition>
 </template>
 
 <script lang="ts">
@@ -42,6 +42,9 @@ export default {
     },
     engineMode() {
       return usePreferenceStore().engineMode;
+    },
+    isStopped() {
+      return this.stat.numActive === 0;
     },
     isTaskPage() {
       const path = this.$router.currentRoute.value?.path;

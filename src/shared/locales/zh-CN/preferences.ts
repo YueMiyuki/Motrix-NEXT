@@ -67,6 +67,7 @@ export default {
   'dht-port': 'DHT 监听端口',
   security: '安全性',
   rpc: 'RPC',
+  'rpc-host': '服务器地址',
   'rpc-listen-port': 'RPC 监听端口',
   'rpc-secret': 'RPC 授权密钥',
   'rpc-secret-tips': '查看说明文档',

@@ -12,6 +12,8 @@ import {
 } from '@shared/utils'
 import { ENGINE_RPC_HOST, ENGINE_RPC_PORT, EMPTY_STRING } from '@shared/constants'
 
+const RPC_CONFIG_KEYS = ['rpc-host', 'rpc-listen-port', 'rpc-secret']
+
 export default class Api {
   [key: string]: any
   constructor(options: any = {}) {
@@ -41,10 +43,58 @@ export default class Api {
     return result
   }
 
+  getRpcConnectionConfig(config: any = this.config) {
+    const port = Number(config?.rpcListenPort) || ENGINE_RPC_PORT
+    const secret = config?.rpcSecret || EMPTY_STRING
+    const host = `${config?.rpcHost || ENGINE_RPC_HOST}`.trim() || ENGINE_RPC_HOST
+    return {
+      host,
+      port,
+      secret,
+    }
+  }
+
+  isSameClientConfig(nextConfig: any = this.config) {
+    if (!this.client) {
+      return false
+    }
+
+    const { host, port, secret } = this.getRpcConnectionConfig(nextConfig)
+    return this.client.host === host && this.client.port === port && this.client.secret === secret
+  }
+
+  async reconnectClient(nextConfig: any = this.config) {
+    this.config = nextConfig
+
+    if (!this.client) {
+      this.client = this.initClient()
+      this.client.open().catch((err) => {
+        logger.log('engine client reconnect open fail', err)
+      })
+      return
+    }
+
+    if (this.isSameClientConfig(nextConfig)) {
+      return
+    }
+
+    try {
+      await this.client.close()
+    } catch (err) {
+      logger.log('engine client close before reconnect fail', err)
+    }
+
+    const { host, port, secret } = this.getRpcConnectionConfig(nextConfig)
+    this.client.host = host
+    this.client.port = port
+    this.client.secret = secret
+    this.client.open().catch((err) => {
+      logger.log('engine client reconnect open fail', err)
+    })
+  }
+
   initClient() {
-    const port = Number(this.config?.rpcListenPort) || ENGINE_RPC_PORT
-    const secret = this.config?.rpcSecret || EMPTY_STRING
-    const host = ENGINE_RPC_HOST
+    const { host, port, secret } = this.getRpcConnectionConfig(this.config)
     return new Aria2({
       host,
       port,
@@ -65,12 +115,19 @@ export default class Api {
 
   async fetchPreference() {
     this.config = await this.loadConfig()
+    await this.reconnectClient(this.config)
     return this.config
   }
 
-  savePreference(params: any = {}) {
+  async savePreference(params: any = {}) {
     const kebabParams = changeKeysToKebabCase(params)
-    return this.savePreferenceToNativeStore(kebabParams)
+    await this.savePreferenceToNativeStore(kebabParams)
+
+    const shouldReconnect = Object.keys(kebabParams).some((key) => RPC_CONFIG_KEYS.includes(key))
+    if (shouldReconnect) {
+      this.config = await this.loadConfig()
+      await this.reconnectClient(this.config)
+    }
   }
 
   savePreferenceToNativeStore(params: any = {}) {
@@ -279,6 +336,11 @@ export default class Api {
 
   resumeAllTask() {
     return this.ensureReady().then((client) => client.call('unpauseAll'))
+  }
+
+  changePosition(params: any = {}) {
+    const { gid, pos = 0, how = 'POS_CUR' } = params
+    return this.ensureReady().then((client) => client.call('changePosition', gid, pos, how))
   }
 
   removeTask(params: any = {}) {

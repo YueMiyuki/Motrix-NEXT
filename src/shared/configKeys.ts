@@ -21,6 +21,7 @@ const userKeys = [
   'open-at-login',
   'protocols',
   'proxy',
+  'rpc-host',
   'resume-all-when-app-launched',
   'run-mode',
   'show-progress-bar',

@@ -179,7 +179,7 @@ export default {
     },
   },
   mounted() {
-    setImmediate(() => {
+    this.$nextTick(() => {
       this.updateGraphicWidth();
     });
   },

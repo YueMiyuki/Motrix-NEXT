@@ -410,7 +410,7 @@ export default {
       }
     },
     handleUriPaste() {
-      setImmediate(() => {
+      this.$nextTick(() => {
         const uris = this.form.uris;
         this.detectThunderResource(uris);
       });

@@ -1,5 +1,11 @@
 <template>
   <div class="task-actions">
+    <div class="task-total-progress" v-if="showTotalProgress">
+      <span class="task-total-progress-size">
+        {{ formatBytes(totalCompletedLength, 1) }} / {{ formatBytes(totalLength, 1) }}
+      </span>
+      <span class="task-total-progress-percent">{{ totalProgressPercent }}%</span>
+    </div>
     <ui-tooltip
       class="item"
       effect="dark"
@@ -23,6 +29,36 @@
     >
       <i class="task-action" @click="onRefreshClick">
         <RefreshCw :size="14" :class="{ 'animate-spin': refreshing }" />
+      </i>
+    </ui-tooltip>
+    <ui-tooltip
+      class="item"
+      effect="dark"
+      placement="bottom"
+      :content="$t('task.move-task-up')"
+      v-if="currentList !== 'stopped'"
+    >
+      <i
+        class="task-action"
+        :class="{ disabled: selectedGidListCount === 0 }"
+        @click="onMoveUpClick"
+      >
+        <ArrowUp :size="14" />
+      </i>
+    </ui-tooltip>
+    <ui-tooltip
+      class="item"
+      effect="dark"
+      placement="bottom"
+      :content="$t('task.move-task-down')"
+      v-if="currentList !== 'stopped'"
+    >
+      <i
+        class="task-action"
+        :class="{ disabled: selectedGidListCount === 0 }"
+        @click="onMoveDownClick"
+      >
+        <ArrowDown :size="14" />
       </i>
     </ui-tooltip>
     <ui-tooltip
@@ -73,7 +109,16 @@ import { useTaskStore } from "@/store/task";
 
 import { commands } from "@/components/CommandManager/instance";
 import { ADD_TASK_TYPE } from "@shared/constants";
-import { Trash2, RefreshCw, Play, Pause, Eraser } from "lucide-vue-next";
+import { bytesToSize, calcProgress } from "@shared/utils";
+import {
+  Trash2,
+  RefreshCw,
+  Play,
+  Pause,
+  Eraser,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-vue-next";
 
 export default {
   name: "mo-task-actions",
@@ -83,6 +128,8 @@ export default {
     Play,
     Pause,
     Eraser,
+    ArrowUp,
+    ArrowDown,
   },
   props: ["task"],
   data() {
@@ -95,11 +142,27 @@ export default {
     currentList() {
       return useTaskStore().currentList;
     },
+    taskList() {
+      return useTaskStore().taskList;
+    },
     selectedGidListCount() {
       return useTaskStore().selectedGidList.length;
     },
     hasSelection() {
       return this.selectedGidListCount > 0;
+    },
+    showTotalProgress() {
+      return this.currentList !== "stopped" && this.totalLength > 0;
+    },
+    totalLength() {
+      return this.taskList.reduce((sum, task) => sum + Number(task.totalLength || 0), 0);
+    },
+    totalCompletedLength() {
+      return this.taskList.reduce((sum, task) => sum + Number(task.completedLength || 0), 0);
+    },
+    totalProgressPercent() {
+      const result = calcProgress(this.totalLength, this.totalCompletedLength, 1);
+      return `${result}`.replace(/\.0$/, "");
     },
   },
   methods: {
@@ -169,6 +232,30 @@ export default {
           });
       }
     },
+    onMoveUpClick() {
+      useTaskStore()
+        .moveSelectedTasks("up")
+        .then((movedCount) => {
+          if (movedCount > 0) {
+            this.$msg.success(this.$t("task.move-task-up"));
+          }
+        })
+        .catch(() => {
+          this.$msg.error(this.$t("task.move-task-up"));
+        });
+    },
+    onMoveDownClick() {
+      useTaskStore()
+        .moveSelectedTasks("down")
+        .then((movedCount) => {
+          if (movedCount > 0) {
+            this.$msg.success(this.$t("task.move-task-down"));
+          }
+        })
+        .catch(() => {
+          this.$msg.error(this.$t("task.move-task-down"));
+        });
+    },
     onPurgeRecordClick() {
       useTaskStore()
         .purgeTaskRecord()
@@ -183,6 +270,9 @@ export default {
     },
     onAddClick() {
       useAppStore().showAddTaskDialog(ADD_TASK_TYPE.URI);
+    },
+    formatBytes(value, precision = 1) {
+      return bytesToSize(value, precision);
     },
   },
 };

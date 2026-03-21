@@ -1,5 +1,43 @@
 /* Speedometer widget */
 @layer components {
+  .speedometer-panel-enter-active,
+  .speedometer-panel-leave-active {
+    transition:
+      opacity 0.28s ease,
+      transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: bottom right;
+  }
+  .speedometer-panel-enter-from,
+  .speedometer-panel-leave-to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.94);
+  }
+  .speedometer-value-enter-active,
+  .speedometer-value-leave-active {
+    transition:
+      opacity 0.22s ease,
+      transform 0.22s ease,
+      max-width 0.28s ease,
+      margin-left 0.28s ease,
+      padding-left 0.28s ease;
+    overflow: hidden;
+  }
+  .speedometer-value-enter-from,
+  .speedometer-value-leave-to {
+    opacity: 0;
+    transform: translateX(6px);
+    max-width: 0;
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .speedometer-value-enter-to,
+  .speedometer-value-leave-from {
+    opacity: 1;
+    transform: translateX(0);
+    max-width: 220px;
+    margin-left: auto;
+    padding-left: 8px;
+  }
   .mo-speedometer {
     font-size: 12px;
     position: fixed;
@@ -10,7 +48,7 @@
     align-items: center;
     justify-content: space-between;
     box-sizing: border-box;
-    min-width: 160px;
+    width: 188px;
     height: 44px;
     padding: 6px 12px 6px 8px;
     border-radius: calc(var(--radius) - 2px);
@@ -39,13 +77,15 @@
     transition-duration: 0.12s;
   }
   .mo-speedometer.stopped {
-    min-width: unset;
     width: 44px;
     padding: 0;
     justify-content: center;
   }
   .mo-speedometer.stopped .mode em {
-    display: none;
+    opacity: 0;
+    max-width: 0;
+    margin-left: 0;
+    transform: translateX(-4px);
   }
   .mo-speedometer em {
     font-style: normal;
@@ -75,16 +115,26 @@
   .mo-speedometer .mode em {
     display: inline-block;
     margin-left: 2px;
+    max-width: 40px;
     font-size: 9px;
     line-height: 1;
     white-space: nowrap;
     color: var(--mo-speedometer-primary-color);
+    overflow: hidden;
+    opacity: 1;
+    transform: translateX(0);
+    transition:
+      opacity 0.22s ease,
+      max-width 0.28s ease,
+      margin-left 0.28s ease,
+      transform 0.22s ease;
   }
   .mo-speedometer .value {
     font-size: 0;
     text-align: right;
     white-space: nowrap;
     animation: value-fade-in 0.3s ease;
+    min-width: 0;
     margin-left: auto;
     padding-left: 8px;
   }

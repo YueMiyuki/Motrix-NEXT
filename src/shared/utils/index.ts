@@ -523,8 +523,8 @@ export const formatOptionsForEngine = (options: any = {}) => {
 }
 
 export const buildRpcUrl = (options: any = {}) => {
-  const { port, secret } = options
-  let result = `${ENGINE_RPC_HOST}:${port}/jsonrpc`
+  const { host = ENGINE_RPC_HOST, port, secret } = options
+  let result = `${host}:${port}/jsonrpc`
   if (secret) {
     result = `token:${secret}@${result}`
   }

@@ -250,7 +250,7 @@ export default {
           useTaskStore().toggleEnabledFetchPeers(true);
           break;
         case "files":
-          setImmediate(() => {
+          this.$nextTick(() => {
             this.updateFilesListSelection();
           });
           break;

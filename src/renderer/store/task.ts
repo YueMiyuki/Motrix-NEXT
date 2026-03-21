@@ -282,5 +282,76 @@ export const useTaskStore = defineStore('task', {
         this.saveSession()
       })
     },
+    async moveSelectedTasks(direction: 'up' | 'down') {
+      const { ACTIVE } = TASK_STATUS
+      const selectedTasks = this.taskList.filter((task) => this.selectedGidList.includes(task.gid))
+      const selectedActiveTasks = selectedTasks.filter((task) => task.status === ACTIVE)
+
+      if (selectedActiveTasks.length > 0) {
+        await Promise.allSettled(
+          selectedActiveTasks.map((task) => {
+            return api.forcePauseTask({ gid: task.gid })
+          }),
+        )
+      }
+
+      const waitingList = await api
+        .fetchWaitingTaskList({
+          offset: 0,
+          num: 10000,
+          keys: ['gid'],
+        })
+        .catch((err) => {
+          logger.warn('[Motrix] moveSelectedTasks fetchWaitingTaskList failed:', err.message)
+          return []
+        })
+      const queue = waitingList.map((task) => task.gid)
+      const selectedQueue = queue.filter((gid) => this.selectedGidList.includes(gid))
+
+      let moved = 0
+      const walkList = direction === 'up' ? [...selectedQueue] : [...selectedQueue].reverse()
+
+      for (const gid of walkList) {
+        const currentIndex = queue.indexOf(gid)
+        if (currentIndex < 0) {
+          continue
+        }
+        const targetIndex =
+          direction === 'up'
+            ? Math.max(currentIndex - 1, 0)
+            : Math.min(currentIndex + 1, queue.length - 1)
+        if (targetIndex === currentIndex) {
+          continue
+        }
+
+        try {
+          await api.changePosition({
+            gid,
+            pos: targetIndex,
+            how: 'POS_SET',
+          })
+          const [currentGid] = queue.splice(currentIndex, 1)
+          queue.splice(targetIndex, 0, currentGid)
+          moved += 1
+        } catch (err) {
+          logger.warn('[Motrix] moveSelectedTasks changePosition failed:', err.message)
+        }
+      }
+
+      if (selectedActiveTasks.length > 0) {
+        await Promise.allSettled(
+          selectedActiveTasks.map((task) => {
+            return api.resumeTask({ gid: task.gid })
+          }),
+        )
+      }
+
+      if (moved > 0 || selectedActiveTasks.length > 0) {
+        await this.fetchList()
+        this.saveSession()
+      }
+
+      return moved
+    },
   },
 })

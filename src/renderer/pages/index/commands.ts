@@ -123,10 +123,6 @@ const navigatePreferences = () => {
   })
 }
 
-const showUnderDevelopmentMessage = () => {
-  toast.info(i18n.t('app.under-development-message'))
-}
-
 const pauseTask = () => {
   getTaskStore().batchPauseSelectedTasks()
 }
@@ -142,11 +138,31 @@ const deleteTask = () => {
 }
 
 const moveTaskUp = () => {
-  showUnderDevelopmentMessage()
+  getTaskStore()
+    .moveSelectedTasks('up')
+    .then((movedCount) => {
+      if (movedCount === 0) {
+        return
+      }
+      toast.success(i18n.t('task.move-task-up'))
+    })
+    .catch(() => {
+      toast.error(i18n.t('task.move-task-up'))
+    })
 }
 
 const moveTaskDown = () => {
-  showUnderDevelopmentMessage()
+  getTaskStore()
+    .moveSelectedTasks('down')
+    .then((movedCount) => {
+      if (movedCount === 0) {
+        return
+      }
+      toast.success(i18n.t('task.move-task-down'))
+    })
+    .catch(() => {
+      toast.error(i18n.t('task.move-task-down'))
+    })
 }
 
 const pauseAllTask = () => {

@@ -72,6 +72,7 @@ export default {
   'dht-port': 'DHT Listen Port',
   security: 'Security',
   rpc: 'RPC',
+  'rpc-host': 'Server Address',
   'rpc-listen-port': 'RPC Listen Port',
   'rpc-secret': 'RPC Secret',
   'rpc-secret-tips': 'View RPC Secret Manual',

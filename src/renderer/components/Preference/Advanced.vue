@@ -293,6 +293,16 @@
             <div class="settings-select-group">
               <div class="settings-select-item">
                 <label class="settings-select-item-label">{{
+                  $t("preferences.rpc-host")
+                }}</label>
+                <Input
+                  :placeholder="rpcDefaultHost"
+                  v-model="form.rpcHost"
+                  @blur="onRpcHostBlur"
+                />
+              </div>
+              <div class="settings-select-item">
+                <label class="settings-select-item-label">{{
                   $t("preferences.rpc-listen-port")
                 }}</label>
                 <div class="mo-input-group">
@@ -697,6 +707,7 @@ import {
 import userAgentMap from "@shared/ua";
 import {
   EMPTY_STRING,
+  ENGINE_RPC_HOST,
   ENGINE_RPC_PORT,
   LOG_LEVELS,
   TRACKER_SOURCE_OPTIONS,
@@ -734,6 +745,7 @@ const initForm = (config) => {
     logLevel,
     protocols,
     proxy,
+    rpcHost,
     rpcListenPort,
     rpcSecret,
     trackerSource,
@@ -758,6 +770,7 @@ const initForm = (config) => {
       scope: [],
     },
     protocols: { ...protocols },
+    rpcHost: rpcHost || ENGINE_RPC_HOST,
     rpcListenPort,
     rpcSecret,
     trackerSource,
@@ -849,6 +862,9 @@ export default {
     rpcDefaultPort() {
       return ENGINE_RPC_PORT;
     },
+    rpcDefaultHost() {
+      return ENGINE_RPC_HOST;
+    },
     logLevels() {
       return LOG_LEVELS;
     },
@@ -866,22 +882,19 @@ export default {
     },
   },
   watch: {
-    "form.rpcListenPort"(val) {
-      const url = buildRpcUrl({
-        port: this.form.rpcListenPort,
-        secret: val,
-      });
-      writeText(url).catch(() => {});
-    },
-    "form.rpcSecret"(val) {
-      const url = buildRpcUrl({
-        port: this.form.rpcListenPort,
-        secret: val,
-      });
-      writeText(url).catch(() => {});
-    },
+    "form.rpcHost": "syncRpcUrlToClipboard",
+    "form.rpcListenPort": "syncRpcUrlToClipboard",
+    "form.rpcSecret": "syncRpcUrlToClipboard",
   },
   methods: {
+    syncRpcUrlToClipboard() {
+      const url = buildRpcUrl({
+        host: this.form.rpcHost,
+        port: this.form.rpcListenPort,
+        secret: this.form.rpcSecret,
+      });
+      writeText(url).catch(() => {});
+    },
     getTrackerLabel(value) {
       for (const group of this.trackerSourceOptions) {
         for (const item of group.options) {
@@ -994,6 +1007,12 @@ export default {
       const port = generateRandomInt(25000, 29999);
       this.form.dhtListenPort = port;
     },
+    onRpcHostBlur() {
+      this.form.rpcHost = `${this.form.rpcHost || EMPTY_STRING}`.trim();
+      if (EMPTY_STRING === this.form.rpcHost || !this.form.rpcHost) {
+        this.form.rpcHost = this.rpcDefaultHost;
+      }
+    },
     onRpcListenPortBlur() {
       if (
         EMPTY_STRING === this.form.rpcListenPort ||
@@ -1061,6 +1080,7 @@ export default {
         autoHideWindow,
         btAutoDownloadContent,
         btTracker,
+        rpcHost,
         rpcListenPort,
       } = data;
 
@@ -1072,6 +1092,12 @@ export default {
 
       if (btTracker) {
         data.btTracker = reduceTrackerString(convertLineToComma(btTracker));
+      }
+
+      if (rpcHost === EMPTY_STRING) {
+        data.rpcHost = this.rpcDefaultHost;
+      } else if (typeof rpcHost === "string") {
+        data.rpcHost = rpcHost.trim() || this.rpcDefaultHost;
       }
 
       if (rpcListenPort === EMPTY_STRING) {

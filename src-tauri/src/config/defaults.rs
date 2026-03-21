@@ -81,6 +81,7 @@ pub fn user_defaults() -> Map<String, Value> {
             "scope": ["download", "update-app", "update-trackers"]
         }),
     );
+    m.insert("rpc-host".into(), json!("127.0.0.1"));
     m.insert("resume-all-when-app-launched".into(), json!(false));
     m.insert("run-mode".into(), json!(1));
     m.insert("show-progress-bar".into(), json!(true));
