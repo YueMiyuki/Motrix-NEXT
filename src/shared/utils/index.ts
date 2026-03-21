@@ -533,6 +533,7 @@ export const buildRpcUrl = (options: any = {}) => {
   return result
 }
 
+// eslint-disable-next-line no-unused-vars
 const checkIsNeedRestart = (changed = {}) => {
   if (isEmpty(changed)) {
     return false
@@ -542,6 +543,7 @@ const checkIsNeedRestart = (changed = {}) => {
   return needRestartKeys.some((key) => changedKeys.includes(key))
 }
 
+// eslint-disable-next-line no-unused-vars
 const checkIsNeedRun = (enable, lastTime, interval) => {
   if (!enable) {
     return false

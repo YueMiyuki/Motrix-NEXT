@@ -73,6 +73,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Sync aria2 binaries from latest upstream release
+        if: ${{ env.SKIP_ARIA2_SYNC != 'true' }}
+        run: pnpm run sync:aria2
+
       - name: Inject updater public key from secrets
         if: startsWith(github.ref, 'refs/tags/')
         run: |
@@ -98,14 +102,12 @@ jobs:
           TEAM_ID: ${{ secrets.team_id }}
           APPLE_ID: ${{ secrets.apple_id }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.apple_app_specific_password }}
-          SKIP_ARIA2_SYNC: true
 
       - name: Build release artifacts (manual)
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: pnpm tauri build --target ${{ matrix.target }}
         env:
           CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER: ${{ matrix.linker }}
-          SKIP_ARIA2_SYNC: true
 
       - name: Verify local bundle output exists
         shell: bash

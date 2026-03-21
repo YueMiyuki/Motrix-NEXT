@@ -71,6 +71,7 @@ export const convertTrackerDataToLine = (arr = []) => {
     .trim()
 }
 
+// eslint-disable-next-line no-unused-vars
 const convertTrackerDataToComma = (arr = []) => {
   return convertTrackerDataToLine(arr)
     .replace(/(?:\r\n|\r|\n)/g, ',')

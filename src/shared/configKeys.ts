@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 const userKeys = [
   'auto-check-update',
   'auto-hide-window',

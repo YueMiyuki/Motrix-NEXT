@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, normalizePath } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
@@ -30,10 +30,11 @@ export default defineConfig({
           viteStaticCopy({
             targets: [
               {
-                src: path.resolve(dirname, 'static/**/*'),
+                src: `${normalizePath(staticDir)}/**/*`,
                 dest: 'static',
               },
             ],
+            silent: true,
           }),
         ]
       : []),

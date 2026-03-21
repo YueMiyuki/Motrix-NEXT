@@ -19,6 +19,7 @@
     "build": "node scripts/build.mjs",
     "dev:renderer": "vite --config vite.renderer.config.ts --mode development --port 9080",
     "pack:renderer": "vite build --config vite.renderer.config.ts --mode production",
+    "sync:aria2": "node scripts/sync-aria2.mjs",
     "lint": "eslint \"src/renderer/**/*.{ts,vue}\" \"src/shared/**/*.{ts,vue}\" --fix",
     "prettier": "prettier -w .",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
