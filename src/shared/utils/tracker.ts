@@ -71,7 +71,7 @@ export const convertTrackerDataToLine = (arr = []) => {
     .trim()
 }
 
-export const convertTrackerDataToComma = (arr = []) => {
+const convertTrackerDataToComma = (arr = []) => {
   return convertTrackerDataToLine(arr)
     .replace(/(?:\r\n|\r|\n)/g, ',')
     .trim()

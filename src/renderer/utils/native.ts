@@ -9,7 +9,10 @@ function joinPath(...parts: string[]): string {
   return joined.replace(/[/\\]+/g, '/')
 }
 
-export const showItemInFolder = async (fullPath: string, { errorMsg }: { errorMsg?: string } = {}) => {
+export const showItemInFolder = async (
+  fullPath: string,
+  { errorMsg }: { errorMsg?: string } = {},
+) => {
   if (!fullPath) return
 
   try {

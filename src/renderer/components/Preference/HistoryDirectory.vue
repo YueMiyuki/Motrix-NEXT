@@ -13,7 +13,7 @@
         align="start"
       >
         <div class="mo-directory-empty" v-if="empty">
-          {{ $t("task.no-task") }}
+          {{ $t('task.no-task') }}
         </div>
         <ul class="mo-directory-list" v-if="favoriteDirectories.length > 0">
           <li
@@ -21,9 +21,7 @@
             :key="directory"
             @click.stop="() => handleSelectItem(directory)"
           >
-            <span class="mo-directory-path" :title="directory">{{
-              directory
-            }}</span>
+            <span class="mo-directory-path" :title="directory">{{ directory }}</span>
             <span class="mo-directory-actions">
               <Star
                 :size="18"
@@ -45,9 +43,7 @@
             :key="directory"
             @click.stop="() => handleSelectItem(directory)"
           >
-            <span class="mo-directory-path" :title="directory">{{
-              directory
-            }}</span>
+            <span class="mo-directory-path" :title="directory">{{ directory }}</span>
             <span class="mo-directory-actions">
               <StarOff
                 v-if="showFavoriteAction"
@@ -69,20 +65,16 @@
 </template>
 
 <script lang="ts">
-import logger from "@shared/utils/logger";
-import { History, Star, StarOff, Trash2 } from "lucide-vue-next";
-import UiButton from "@/components/ui/compat/UiButton.vue";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { usePreferenceStore } from "@/store/preference";
-import { MAX_NUM_OF_DIRECTORIES } from "@shared/constants";
-import { cloneArray } from "@shared/utils";
+import logger from '@shared/utils/logger'
+import { History, Star, StarOff, Trash2 } from 'lucide-vue-next'
+import UiButton from '@/components/ui/compat/UiButton.vue'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { usePreferenceStore } from '@/store/preference'
+import { MAX_NUM_OF_DIRECTORIES } from '@shared/constants'
+import { cloneArray } from '@shared/utils'
 
 export default {
-  name: "mo-history-directory",
+  name: 'mo-history-directory',
   components: {
     [UiButton.name]: UiButton,
     Popover,
@@ -102,57 +94,49 @@ export default {
   data() {
     return {
       visible: false,
-    };
+    }
   },
   computed: {
     historyDirectories() {
-      return cloneArray(
-        (usePreferenceStore().config as any).historyDirectories,
-        true,
-      );
+      return cloneArray((usePreferenceStore().config as any).historyDirectories, true)
     },
     favoriteDirectories() {
-      return cloneArray(
-        (usePreferenceStore().config as any).favoriteDirectories,
-        true,
-      );
+      return cloneArray((usePreferenceStore().config as any).favoriteDirectories, true)
     },
     empty() {
-      const { favoriteDirectories, historyDirectories } = this;
-      return favoriteDirectories.length + historyDirectories.length === 0;
+      const { favoriteDirectories, historyDirectories } = this
+      return favoriteDirectories.length + historyDirectories.length === 0
     },
     popoverDisabled() {
-      const { favoriteDirectories, historyDirectories } = this;
-      return (
-        favoriteDirectories.length === 0 && historyDirectories.length === 0
-      );
+      const { favoriteDirectories, historyDirectories } = this
+      return favoriteDirectories.length === 0 && historyDirectories.length === 0
     },
     showDivider() {
-      const { favoriteDirectories, historyDirectories } = this;
-      return favoriteDirectories.length > 0 && historyDirectories.length > 0;
+      const { favoriteDirectories, historyDirectories } = this
+      return favoriteDirectories.length > 0 && historyDirectories.length > 0
     },
     showFavoriteAction() {
-      const { favoriteDirectories } = this;
-      return favoriteDirectories.length < MAX_NUM_OF_DIRECTORIES;
+      const { favoriteDirectories } = this
+      return favoriteDirectories.length < MAX_NUM_OF_DIRECTORIES
     },
   },
   methods: {
     handleSelectItem(directory) {
-      this.$emit("selected", directory.trim());
-      this.visible = false;
+      this.$emit('selected', directory.trim())
+      this.visible = false
     },
     handleFavoriteItem(directory) {
-      logger.log("handleFavoriteItem==>", directory);
-      usePreferenceStore().favoriteDirectory(directory);
+      logger.log('handleFavoriteItem==>', directory)
+      usePreferenceStore().favoriteDirectory(directory)
     },
     handleCancelFavoriteItem(directory) {
-      logger.log("handleCancelFavoriteItem==>", directory);
-      usePreferenceStore().cancelFavoriteDirectory(directory);
+      logger.log('handleCancelFavoriteItem==>', directory)
+      usePreferenceStore().cancelFavoriteDirectory(directory)
     },
     handleRemoveItem(directory) {
-      logger.log("handleRemoveItem==>", directory);
-      usePreferenceStore().removeDirectory(directory);
+      logger.log('handleRemoveItem==>', directory)
+      usePreferenceStore().removeDirectory(directory)
     },
   },
-};
+}
 </script>

@@ -10,14 +10,14 @@
 </template>
 
 <script lang="ts">
-import { useAppStore } from "@/store/app";
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
-import AppInfo from "@/components/About/AppInfo.vue";
-import Copyright from "@/components/About/Copyright.vue";
-import { getVersion } from "@tauri-apps/api/app";
+import { useAppStore } from '@/store/app'
+import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog'
+import AppInfo from '@/components/About/AppInfo.vue'
+import Copyright from '@/components/About/Copyright.vue'
+import { getVersion } from '@tauri-apps/api/app'
 
 export default {
-  name: "mo-about-panel",
+  name: 'mo-about-panel',
   components: {
     Dialog,
     DialogContent,
@@ -34,39 +34,39 @@ export default {
   data() {
     return {
       version: '',
-    };
+    }
   },
   async created() {
     try {
-      this.version = await getVersion();
+      this.version = await getVersion()
     } catch {
-      this.version = '';
+      this.version = ''
     }
   },
   computed: {
     engineInfo() {
-      return useAppStore().engineInfo;
+      return useAppStore().engineInfo
     },
   },
   watch: {
     visible(val) {
       if (val) {
-        this.handleOpen();
+        this.handleOpen()
       }
     },
   },
   methods: {
     handleOpen() {
-      useAppStore().fetchEngineInfo();
+      useAppStore().fetchEngineInfo()
     },
     handleDialogOpenChange(open) {
       if (!open) {
-        this.handleClose();
+        this.handleClose()
       }
     },
     handleClose() {
-      useAppStore().hideAboutPanel();
+      useAppStore().hideAboutPanel()
     },
   },
-};
+}
 </script>

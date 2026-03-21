@@ -533,7 +533,7 @@ export const buildRpcUrl = (options: any = {}) => {
   return result
 }
 
-export const checkIsNeedRestart = (changed = {}) => {
+const checkIsNeedRestart = (changed = {}) => {
   if (isEmpty(changed)) {
     return false
   }
@@ -542,7 +542,7 @@ export const checkIsNeedRestart = (changed = {}) => {
   return needRestartKeys.some((key) => changedKeys.includes(key))
 }
 
-export const checkIsNeedRun = (enable, lastTime, interval) => {
+const checkIsNeedRun = (enable, lastTime, interval) => {
   if (!enable) {
     return false
   }

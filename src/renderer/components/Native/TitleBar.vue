@@ -16,13 +16,13 @@
 </template>
 
 <script lang="ts">
-import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { Minus, Maximize2, X } from "lucide-vue-next";
+import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
+import { Minus, Maximize2, X } from 'lucide-vue-next'
 
-const appWindow = getCurrentWebviewWindow();
+const appWindow = getCurrentWebviewWindow()
 
 export default {
-  name: "mo-title-bar",
+  name: 'mo-title-bar',
   components: {
     Minus,
     Maximize2,
@@ -35,19 +35,19 @@ export default {
   },
   methods: {
     handleMinimize() {
-      appWindow.minimize();
+      appWindow.minimize()
     },
     async handleMaximize() {
-      const maximized = await appWindow.isMaximized();
+      const maximized = await appWindow.isMaximized()
       if (maximized) {
-        appWindow.unmaximize();
+        appWindow.unmaximize()
       } else {
-        appWindow.maximize();
+        appWindow.maximize()
       }
     },
     handleClose() {
-      appWindow.hide();
+      appWindow.hide()
     },
   },
-};
+}
 </script>

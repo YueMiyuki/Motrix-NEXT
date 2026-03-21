@@ -6,16 +6,9 @@
           <div class="atd-header-icon">
             <Download :size="16" />
           </div>
-          <DialogTitle class="atd-header-title">{{
-            $t("task.new-task")
-          }}</DialogTitle>
+          <DialogTitle class="atd-header-title">{{ $t('task.new-task') }}</DialogTitle>
         </div>
-        <button
-          type="button"
-          class="atd-close-btn"
-          aria-label="Close"
-          @click="handleClose"
-        >
+        <button type="button" class="atd-close-btn" aria-label="Close" @click="handleClose">
           <X :size="14" />
         </button>
       </DialogHeader>
@@ -30,7 +23,7 @@
             @click="handleTabClick({ props: { name: 'uri' } })"
           >
             <Link2 :size="14" />
-            {{ $t("task.uri-task") }}
+            {{ $t('task.uri-task') }}
           </button>
           <button
             type="button"
@@ -39,16 +32,13 @@
             @click="handleTabClick({ props: { name: 'torrent' } })"
           >
             <FileArchive :size="14" />
-            {{ $t("task.torrent-task") }}
+            {{ $t('task.torrent-task') }}
           </button>
         </div>
 
         <!-- Source Bodies (stacked) -->
         <div class="atd-source-stack">
-          <div
-            class="atd-source-body"
-            :class="{ 'atd-source-body--active': type === 'uri' }"
-          >
+          <div class="atd-source-body" :class="{ 'atd-source-body--active': type === 'uri' }">
             <div class="atd-source-inner">
               <Textarea
                 ref="uri"
@@ -61,10 +51,7 @@
               />
             </div>
           </div>
-          <div
-            class="atd-source-body"
-            :class="{ 'atd-source-body--active': type === 'torrent' }"
-          >
+          <div class="atd-source-body" :class="{ 'atd-source-body--active': type === 'torrent' }">
             <div class="atd-source-inner">
               <mo-select-torrent v-on:change="handleTorrentChange" />
             </div>
@@ -74,20 +61,18 @@
         <!-- Core Options -->
         <div class="atd-fields">
           <div class="atd-field atd-field--wide">
-            <label class="atd-field-label">{{ $t("task.task-out") }}</label>
+            <label class="atd-field-label">{{ $t('task.task-out') }}</label>
             <Input :placeholder="$t('task.task-out-tips')" v-model="form.out" />
           </div>
           <div class="atd-field atd-field--narrow">
-            <label class="atd-field-label">{{ $t("task.task-split") }}</label>
+            <label class="atd-field-label">{{ $t('task.task-split') }}</label>
             <NumberInput v-model="form.split" :min="1" :max="64" />
           </div>
           <div class="atd-field atd-field--full">
-            <label class="atd-field-label">{{ $t("task.task-dir") }}</label>
+            <label class="atd-field-label">{{ $t('task.task-dir') }}</label>
             <div class="mo-input-group mo-input-group--bordered">
               <span class="mo-input-prepend">
-                <mo-history-directory
-                  @selected="handleHistoryDirectorySelected"
-                />
+                <mo-history-directory @selected="handleHistoryDirectorySelected" />
               </span>
               <Input
                 placeholder=""
@@ -96,25 +81,18 @@
                 class="flex-1 border-0 shadow-none rounded-none"
               />
               <span class="mo-input-append" v-if="isRenderer">
-                <mo-select-directory
-                  @selected="handleNativeDirectorySelected"
-                />
+                <mo-select-directory @selected="handleNativeDirectorySelected" />
               </span>
             </div>
           </div>
         </div>
 
         <!-- Advanced Options -->
-        <div
-          class="atd-advanced-wrapper"
-          :class="{ 'atd-advanced-wrapper--open': showAdvanced }"
-        >
+        <div class="atd-advanced-wrapper" :class="{ 'atd-advanced-wrapper--open': showAdvanced }">
           <div class="atd-advanced">
             <div class="atd-advanced-grid">
               <div class="atd-field atd-field--full">
-                <label class="atd-field-label">{{
-                  $t("task.task-user-agent")
-                }}</label>
+                <label class="atd-field-label">{{ $t('task.task-user-agent') }}</label>
                 <Textarea
                   auto-complete="off"
                   rows="2"
@@ -124,9 +102,7 @@
                 />
               </div>
               <div class="atd-field atd-field--full">
-                <label class="atd-field-label">{{
-                  $t("task.task-authorization")
-                }}</label>
+                <label class="atd-field-label">{{ $t('task.task-authorization') }}</label>
                 <Textarea
                   auto-complete="off"
                   rows="2"
@@ -136,9 +112,7 @@
                 />
               </div>
               <div class="atd-field">
-                <label class="atd-field-label">{{
-                  $t("task.task-referer")
-                }}</label>
+                <label class="atd-field-label">{{ $t('task.task-referer') }}</label>
                 <Textarea
                   auto-complete="off"
                   rows="2"
@@ -148,9 +122,7 @@
                 />
               </div>
               <div class="atd-field">
-                <label class="atd-field-label">{{
-                  $t("task.task-cookie")
-                }}</label>
+                <label class="atd-field-label">{{ $t('task.task-cookie') }}</label>
                 <Textarea
                   auto-complete="off"
                   rows="2"
@@ -161,25 +133,22 @@
               </div>
               <div class="atd-field atd-field--full">
                 <label class="atd-field-label">
-                  {{ $t("task.task-proxy") }}
+                  {{ $t('task.task-proxy') }}
                   <a
                     class="atd-field-help"
                     target="_blank"
                     href="https://github.com/agalwood/Motrix/wiki/Proxy"
                     rel="noopener noreferrer"
                   >
-                    {{ $t("preferences.proxy-tips") }}
+                    {{ $t('preferences.proxy-tips') }}
                     <ExternalLink :size="11" />
                   </a>
                 </label>
-                <Input
-                  placeholder="[http://][USER:PASSWORD@]HOST[:PORT]"
-                  v-model="form.allProxy"
-                />
+                <Input placeholder="[http://][USER:PASSWORD@]HOST[:PORT]" v-model="form.allProxy" />
               </div>
               <div class="atd-field atd-field--full atd-field--checkbox">
                 <ui-checkbox v-model="form.newTaskShowDownloading">
-                  {{ $t("task.navigate-to-downloading") }}
+                  {{ $t('task.navigate-to-downloading') }}
                 </ui-checkbox>
               </div>
             </div>
@@ -195,7 +164,7 @@
           @click="showAdvanced = !showAdvanced"
         >
           <SlidersHorizontal :size="13" />
-          {{ $t("task.show-advanced-options") }}
+          {{ $t('task.show-advanced-options') }}
           <ChevronDown
             :size="12"
             class="atd-toggle-chevron"
@@ -203,12 +172,10 @@
           />
         </button>
         <div class="atd-footer-actions">
-          <ui-button @click="handleCancel('taskForm')">{{
-            $t("app.cancel")
-          }}</ui-button>
+          <ui-button @click="handleCancel('taskForm')">{{ $t('app.cancel') }}</ui-button>
           <ui-button variant="primary" @click="submitForm('taskForm')">
             <Download :size="14" style="margin-right: 6px" />
-            {{ $t("app.submit") }}
+            {{ $t('app.submit') }}
           </ui-button>
         </div>
       </DialogFooter>
@@ -225,38 +192,34 @@ import {
   SlidersHorizontal,
   ChevronDown,
   ExternalLink,
-} from "lucide-vue-next";
+} from 'lucide-vue-next'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import NumberInput from "@/components/ui/NumberInput.vue";
-import logger from "@shared/utils/logger";
-import is from "@/shims/electron-is";
-import { useAppStore } from "@/store/app";
-import { useTaskStore } from "@/store/task";
-import { usePreferenceStore } from "@/store/preference";
-import { isEmpty } from "lodash";
-import HistoryDirectory from "@/components/Preference/HistoryDirectory.vue";
-import SelectDirectory from "@/components/Native/SelectDirectory.vue";
-import SelectTorrent from "@/components/Task/SelectTorrent.vue";
-import UiButton from "@/components/ui/compat/UiButton.vue";
-import {
-  initTaskForm,
-  buildUriPayload,
-  buildTorrentPayload,
-} from "@/utils/task";
-import { ADD_TASK_TYPE } from "@shared/constants";
-import { detectResource } from "@shared/utils";
-import { readText } from "@tauri-apps/plugin-clipboard-manager";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import NumberInput from '@/components/ui/NumberInput.vue'
+import logger from '@shared/utils/logger'
+import is from '@/shims/platform'
+import { useAppStore } from '@/store/app'
+import { useTaskStore } from '@/store/task'
+import { usePreferenceStore } from '@/store/preference'
+import { isEmpty } from 'lodash'
+import HistoryDirectory from '@/components/Preference/HistoryDirectory.vue'
+import SelectDirectory from '@/components/Native/SelectDirectory.vue'
+import SelectTorrent from '@/components/Task/SelectTorrent.vue'
+import UiButton from '@/components/ui/compat/UiButton.vue'
+import { initTaskForm, buildUriPayload, buildTorrentPayload } from '@/utils/task'
+import { ADD_TASK_TYPE } from '@shared/constants'
+import { detectResource } from '@shared/utils'
+import { readText } from '@tauri-apps/plugin-clipboard-manager'
 
 export default {
-  name: "mo-add-task",
+  name: 'mo-add-task',
   components: {
     [HistoryDirectory.name]: HistoryDirectory,
     [SelectDirectory.name]: SelectDirectory,
@@ -290,188 +253,188 @@ export default {
   },
   data() {
     return {
-      formLabelWidth: "110px",
+      formLabelWidth: '110px',
       showAdvanced: false,
       form: {},
       rules: {},
-    };
+    }
   },
   computed: {
     isRenderer: () => is.renderer(),
     isMas: () => is.mas(),
     config() {
-      return usePreferenceStore().config;
+      return usePreferenceStore().config
     },
     taskType() {
-      return this.type;
+      return this.type
     },
   },
   watch: {
     taskType(current, previous) {
       if (this.visible && previous === ADD_TASK_TYPE.URI) {
-        return;
+        return
       }
 
       if (current === ADD_TASK_TYPE.URI) {
         setTimeout(() => {
-          this.focusUriInput();
-        }, 300);
+          this.focusUriInput()
+        }, 300)
       }
     },
     visible(current, previous) {
       if (current === true) {
-        document.addEventListener("keydown", this.handleHotkey);
-        this.handleOpen();
+        document.addEventListener('keydown', this.handleHotkey)
+        this.handleOpen()
       } else {
-        document.removeEventListener("keydown", this.handleHotkey);
+        document.removeEventListener('keydown', this.handleHotkey)
         if (previous === true) {
-          this.handleClosed();
+          this.handleClosed()
         }
       }
     },
   },
   beforeUnmount() {
-    document.removeEventListener("keydown", this.handleHotkey);
+    document.removeEventListener('keydown', this.handleHotkey)
   },
   methods: {
     focusUriInput() {
-      const el = this.$refs.uri?.$el;
+      const el = this.$refs.uri?.$el
       if (el) {
-        el.focus();
+        el.focus()
       }
     },
     handleDialogOpenChange(open) {
       if (!open) {
-        this.handleClose();
+        this.handleClose()
       }
     },
     async autofillResourceLink() {
-      let content = "";
+      let content = ''
       try {
-        content = await readText();
+        content = await readText()
       } catch (err) {
-        return;
+        return
       }
 
       if (!content || content.length > 4096) {
-        return;
+        return
       }
 
-      const hasResource = detectResource(content);
+      const hasResource = detectResource(content)
       if (!hasResource) {
-        return;
+        return
       }
 
       if (isEmpty(this.form.uris)) {
-        this.form.uris = content;
+        this.form.uris = content
       }
     },
     handleOpen() {
-      this.showAdvanced = false;
+      this.showAdvanced = false
       this.form = initTaskForm({
         app: useAppStore().$state,
         preference: usePreferenceStore().$state,
-      });
+      })
       setTimeout(() => {
-        this.focusUriInput();
-      }, 100);
+        this.focusUriInput()
+      }, 100)
 
       if (this.taskType === ADD_TASK_TYPE.URI && isEmpty(this.form.uris)) {
         setTimeout(() => {
-          this.autofillResourceLink();
-        }, 0);
+          this.autofillResourceLink()
+        }, 0)
       }
 
       setTimeout(() => {
-        this.detectThunderResource(this.form.uris);
-      }, 150);
+        this.detectThunderResource(this.form.uris)
+      }, 150)
     },
     handleCancel() {
-      useAppStore().hideAddTaskDialog();
+      useAppStore().hideAddTaskDialog()
     },
     handleClose() {
-      const appStore = useAppStore();
-      appStore.hideAddTaskDialog();
-      appStore.updateAddTaskOptions({});
+      const appStore = useAppStore()
+      appStore.hideAddTaskDialog()
+      appStore.updateAddTaskOptions({})
     },
     handleClosed() {
       // Reset state
     },
     handleHotkey(event) {
-      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
-        event.preventDefault();
-        this.submitForm("taskForm");
+      if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault()
+        this.submitForm('taskForm')
       }
     },
     handleTabClick(tab) {
-      const name = tab?.props?.name || tab?.paneName || tab?.name;
+      const name = tab?.props?.name || tab?.paneName || tab?.name
       if (name) {
-        useAppStore().changeAddTaskType(name);
+        useAppStore().changeAddTaskType(name)
       }
     },
     handleUriPaste() {
       this.$nextTick(() => {
-        const uris = this.form.uris;
-        this.detectThunderResource(uris);
-      });
+        const uris = this.form.uris
+        this.detectThunderResource(uris)
+      })
     },
-    detectThunderResource(uris = "") {
-      if (uris.includes("thunder://")) {
+    detectThunderResource(uris = '') {
+      if (uris.includes('thunder://')) {
         this.$msg({
-          type: "warning",
-          message: this.$t("task.thunder-link-tips"),
+          type: 'warning',
+          message: this.$t('task.thunder-link-tips'),
           duration: 6000,
-        });
+        })
       }
     },
     handleTorrentChange(torrent, selectedFileIndex) {
-      this.form.torrent = torrent;
-      this.form.selectFile = selectedFileIndex;
+      this.form.torrent = torrent
+      this.form.selectFile = selectedFileIndex
     },
     handleHistoryDirectorySelected(dir) {
-      this.form.dir = dir;
+      this.form.dir = dir
     },
     handleNativeDirectorySelected(dir) {
-      this.form.dir = dir;
-      usePreferenceStore().recordHistoryDirectory(dir);
+      this.form.dir = dir
+      usePreferenceStore().recordHistoryDirectory(dir)
     },
     async addTask(type, form) {
-      let payload = null;
+      let payload = null
       if (type === ADD_TASK_TYPE.URI) {
-        payload = buildUriPayload(form);
-        return useTaskStore().addUri(payload);
+        payload = buildUriPayload(form)
+        return useTaskStore().addUri(payload)
       } else if (type === ADD_TASK_TYPE.TORRENT) {
-        payload = buildTorrentPayload(form);
-        return useTaskStore().addTorrent(payload);
-      } else if (type === "metalink") {
+        payload = buildTorrentPayload(form)
+        return useTaskStore().addTorrent(payload)
+      } else if (type === 'metalink') {
         // @TODO addMetalink
       } else {
-        logger.error("[Motrix] Add task fail", form);
-        throw new Error("task.new-task-unsupported-type");
+        logger.error('[Motrix] Add task fail', form)
+        throw new Error('task.new-task-unsupported-type')
       }
     },
     submitForm() {
       try {
         this.addTask(this.type, this.form)
           .then(() => {
-            useAppStore().hideAddTaskDialog();
+            useAppStore().hideAddTaskDialog()
             if (this.form.newTaskShowDownloading) {
               this.$router
                 .push({
-                  path: "/task/active",
+                  path: '/task/active',
                 })
                 .catch((err) => {
-                  logger.log(err);
-                });
+                  logger.log(err)
+                })
             }
           })
           .catch((err) => {
-            this.$msg.error(this.$t(err.message || "task.new-task-fail"));
-          });
+            this.$msg.error(this.$t(err.message || 'task.new-task-fail'))
+          })
       } catch (err) {
-        this.$msg.error(this.$t(err.message || "task.new-task-fail"));
+        this.$msg.error(this.$t(err.message || 'task.new-task-fail'))
       }
     },
   },
-};
+}
 </script>

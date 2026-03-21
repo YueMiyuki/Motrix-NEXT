@@ -85,7 +85,9 @@ function init(config: any) {
     ;(window as any).__app.trayWorker = initTrayWorker()
 
     // Show the window after mount to avoid a white flash.
-    getCurrentWebviewWindow().show().catch(() => {})
+    getCurrentWebviewWindow()
+      .show()
+      .catch(() => {})
   })
 }
 

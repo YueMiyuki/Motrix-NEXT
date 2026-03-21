@@ -9,16 +9,10 @@
       @drop.prevent="onDrop"
       @click="triggerFileInput"
     >
-      <input
-        ref="fileInput"
-        type="file"
-        accept=".torrent"
-        hidden
-        @change="onFileInputChange"
-      />
+      <input ref="fileInput" type="file" accept=".torrent" hidden @change="onFileInputChange" />
       <i class="upload-inbox-icon"><Inbox :size="24" /></i>
       <div class="upload-text">
-        {{ $t("task.select-torrent") }}
+        {{ $t('task.select-torrent') }}
         <div class="torrent-name" v-if="name">{{ name }}</div>
       </div>
     </div>
@@ -47,26 +41,22 @@
 </template>
 
 <script lang="ts">
-import logger from "@shared/utils/logger";
-import { useAppStore } from "@/store/app";
-import { usePreferenceStore } from "@/store/preference";
-import TaskFiles from "@/components/TaskDetail/TaskFiles.vue";
-import { Inbox, Trash } from "lucide-vue-next";
-import {
-  EMPTY_STRING,
-  NONE_SELECTED_FILES,
-  SELECTED_ALL_FILES,
-} from "@shared/constants";
-import { buildFileList, listTorrentFiles, getAsBase64 } from "@shared/utils";
+import logger from '@shared/utils/logger'
+import { useAppStore } from '@/store/app'
+import { usePreferenceStore } from '@/store/preference'
+import TaskFiles from '@/components/TaskDetail/TaskFiles.vue'
+import { Inbox, Trash } from 'lucide-vue-next'
+import { EMPTY_STRING, NONE_SELECTED_FILES, SELECTED_ALL_FILES } from '@shared/constants'
+import { buildFileList, listTorrentFiles, getAsBase64 } from '@shared/utils'
 
 function getParseTorrentRemote() {
   // parse-torrent depends on Node.js, so it cannot run in Tauri's webview.
   // The backend handles torrent file listing.
-  return null;
+  return null
 }
 
 export default {
-  name: "mo-select-torrent",
+  name: 'mo-select-torrent',
   components: {
     [TaskFiles.name]: TaskFiles,
     Inbox,
@@ -80,100 +70,94 @@ export default {
       files: [],
       selectedFiles: [],
       isDragOver: false,
-    };
+    }
   },
   computed: {
     torrents() {
-      return useAppStore().addTaskTorrents;
+      return useAppStore().addTaskTorrents
     },
     config() {
-      return usePreferenceStore().config;
+      return usePreferenceStore().config
     },
     isTorrentsEmpty() {
-      return this.torrents.length === 0;
+      return this.torrents.length === 0
     },
   },
   watch: {
     torrents(fileList) {
       if (fileList.length === 0) {
-        this.reset();
-        return;
+        this.reset()
+        return
       }
 
-      const file = fileList[0];
+      const file = fileList[0]
       if (!file.raw) {
-        return;
+        return
       }
 
-      const parseTorrentRemote = getParseTorrentRemote();
+      const parseTorrentRemote = getParseTorrentRemote()
       if (!parseTorrentRemote) {
-        logger.warn(
-          "[Motrix] parse-torrent is unavailable in renderer process.",
-        );
-        return;
+        logger.warn('[Motrix] parse-torrent is unavailable in renderer process.')
+        return
       }
 
-      parseTorrentRemote(
-        file.raw,
-        { timeout: 60 * 1000 },
-        (err, parsedTorrent) => {
-          if (err) throw err;
-          logger.log("[Motrix] parsed torrent: ", parsedTorrent);
-          this.files = listTorrentFiles(parsedTorrent.files);
-          this.$refs.torrentFileList.toggleAllSelection();
+      parseTorrentRemote(file.raw, { timeout: 60 * 1000 }, (err, parsedTorrent) => {
+        if (err) throw err
+        logger.log('[Motrix] parsed torrent: ', parsedTorrent)
+        this.files = listTorrentFiles(parsedTorrent.files)
+        this.$refs.torrentFileList.toggleAllSelection()
 
-          getAsBase64(file.raw, (torrent) => {
-            this.name = file.name;
-            this.currentTorrent = torrent;
-            this.$emit("change", torrent, SELECTED_ALL_FILES);
-          });
-        },
-      );
+        getAsBase64(file.raw, (torrent) => {
+          this.name = file.name
+          this.currentTorrent = torrent
+          this.$emit('change', torrent, SELECTED_ALL_FILES)
+        })
+      })
     },
   },
   methods: {
     reset() {
-      this.name = EMPTY_STRING;
-      this.currentTorrent = EMPTY_STRING;
-      this.files = [];
+      this.name = EMPTY_STRING
+      this.currentTorrent = EMPTY_STRING
+      this.files = []
       if (this.$refs.torrentFileList) {
-        this.$refs.torrentFileList.clearSelection();
+        this.$refs.torrentFileList.clearSelection()
       }
-      this.$emit("change", EMPTY_STRING, NONE_SELECTED_FILES);
+      this.$emit('change', EMPTY_STRING, NONE_SELECTED_FILES)
     },
     triggerFileInput() {
-      this.$refs.fileInput?.click();
+      this.$refs.fileInput?.click()
     },
     onFileInputChange(event) {
-      const files = event.target.files;
-      if (!files || files.length === 0) return;
-      const file = files[0];
-      const fileList = [{ name: file.name, raw: file }];
-      this.handleChange(fileList[0], fileList);
+      const files = event.target.files
+      if (!files || files.length === 0) return
+      const file = files[0]
+      const fileList = [{ name: file.name, raw: file }]
+      this.handleChange(fileList[0], fileList)
     },
     onDrop(event) {
-      this.isDragOver = false;
-      const files = event.dataTransfer?.files;
-      if (!files || files.length === 0) return;
-      const file = files[0];
-      if (!file.name.endsWith(".torrent")) return;
-      const fileList = [{ name: file.name, raw: file }];
-      this.handleChange(fileList[0], fileList);
+      this.isDragOver = false
+      const files = event.dataTransfer?.files
+      if (!files || files.length === 0) return
+      const file = files[0]
+      if (!file.name.endsWith('.torrent')) return
+      const fileList = [{ name: file.name, raw: file }]
+      this.handleChange(fileList[0], fileList)
     },
     handleChange(file, fileList) {
-      useAppStore().addTaskAddTorrents({ fileList });
+      useAppStore().addTaskAddTorrents({ fileList })
     },
     handleExceed(files) {
-      const fileList = buildFileList(files[0]);
-      useAppStore().addTaskAddTorrents({ fileList });
+      const fileList = buildFileList(files[0])
+      useAppStore().addTaskAddTorrents({ fileList })
     },
     handleTrashClick() {
-      useAppStore().addTaskAddTorrents({ fileList: [] });
+      useAppStore().addTaskAddTorrents({ fileList: [] })
     },
     handleSelectionChange(val) {
-      const { currentTorrent } = this;
-      this.$emit("change", currentTorrent, val);
+      const { currentTorrent } = this
+      this.$emit('change', currentTorrent, val)
     },
   },
-};
+}
 </script>

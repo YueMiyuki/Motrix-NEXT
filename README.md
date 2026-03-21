@@ -126,14 +126,14 @@ flatpak run net.agalwood.Motrix
 
 ## 🖥 User Interface
 
-![motrix-screenshot-task-en.png](https://cdn.nlark.com/yuque/0/2020/png/129147/1589782238501-e7b39166-da58-4152-ae34-65a061cafa48.png)
+![motrix-screenshot-task-en.png](./static/readme/UI.png)
 
 ## ⌨️ Development
 
 ### Clone Code
 
 ```bash
-git clone git@github.com:agalwood/Motrix.git
+git clone https://github.com/YueMiyuki/Motrix-NEXT
 ```
 
 ### Install Dependencies
@@ -141,7 +141,7 @@ git clone git@github.com:agalwood/Motrix.git
 Requires Node.js >= 22 and Rust >= 1.77.
 
 ```bash
-cd Motrix
+cd Motrix-NEXT
 pnpm install
 ```
 
@@ -156,8 +156,6 @@ pnpm run dev
 ```bash
 pnpm run build
 ```
-
-After building, the application will be found in the project's `src-tauri/target/release/bundle` directory.
 
 ## 🛠 Technology Stack
 

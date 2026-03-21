@@ -39,9 +39,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": [
-      "../extra/**/*"
-    ],
+    "resources": ["../extra/**/*"],
     "fileAssociations": [
       {
         "ext": ["torrent"],

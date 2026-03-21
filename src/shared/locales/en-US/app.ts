@@ -21,7 +21,8 @@ export default {
   show: 'Show Motrix',
   quit: 'Quit Motrix',
   'quit-confirm': 'Are you sure you want to quit Motrix?',
-  'quit-confirm-active': 'There are {{count}} active download task(s). Are you sure you want to quit?',
+  'quit-confirm-active':
+    'There are {{count}} active download task(s). Are you sure you want to quit?',
   'under-development-message': 'Sorry, this feature is under development...',
   yes: 'Yes',
   no: 'No',

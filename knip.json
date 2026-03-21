@@ -1,0 +1,3 @@
+{
+  "ignore": ["/build/syncAria2.js", "src/renderer/components/ui/**"]
+}

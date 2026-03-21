@@ -11,12 +11,34 @@ permissions:
 
 jobs:
   release:
-    name: Release (${{ matrix.os }})
+    name: Release (${{ matrix.platform }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        include:
+          - platform: darwin/x64
+            os: macos-latest
+            target: x86_64-apple-darwin
+          - platform: darwin/arm64
+            os: macos-latest
+            target: aarch64-apple-darwin
+          - platform: linux/x64
+            os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - platform: linux/arm64
+            os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          - platform: linux/armv7l
+            os: ubuntu-latest
+            target: armv7-unknown-linux-gnueabihf
+            linker: arm-linux-gnueabihf-gcc
+          - platform: win32/x64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - platform: win32/ia32
+            os: windows-latest
+            target: i686-pc-windows-msvc
 
     steps:
       - name: Check out Git repository
@@ -33,60 +55,63 @@ jobs:
           node-version: 24
           cache: pnpm
 
-      - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v2
-        if: startsWith(matrix.os, 'ubuntu')
-        env:
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.snapcraft_token }}
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
 
-      - name: Test Snapcraft
+      - name: Install Linux build dependencies
         if: startsWith(matrix.os, 'ubuntu')
-        run: snapcraft --help
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf
+          if [ "${{ matrix.target }}" = "armv7-unknown-linux-gnueabihf" ]; then
+            sudo apt-get install -y gcc-arm-linux-gnueabihf
+          fi
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build and publish release artifacts
-        run: pnpm run release
+      - name: Build and publish release artifacts (tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: tauri-apps/tauri-action@v0
+        with:
+          args: --target ${{ matrix.target }}
+          tagName: ${{ github.ref_name }}
+          releaseName: Motrix ${{ github.ref_name }}
+          releaseBody: See the assets for this release.
+          releaseDraft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.snapcraft_token }}
+          CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER: ${{ matrix.linker }}
           TEAM_ID: ${{ secrets.team_id }}
           APPLE_ID: ${{ secrets.apple_id }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.apple_app_specific_password }}
+          SKIP_ARIA2_SYNC: true
 
-      - name: Verify local updater metadata
-        if: matrix.os != 'ubuntu-latest'
-        shell: bash
-        run: |
-          set -euo pipefail
-          shopt -s nullglob
-          files=(release/latest*.yml)
-          if [ ${#files[@]} -eq 0 ]; then
-            echo "::error::No latest*.yml was generated. electron-updater requires this metadata."
-            ls -la release || true
-            exit 1
-          fi
-          printf 'Found updater metadata files:\n%s\n' "${files[@]}"
-
-      - name: Verify release has updater metadata
-        if: startsWith(github.ref, 'refs/tags/') && matrix.os == 'macos-latest'
-        shell: bash
+      - name: Build release artifacts (manual)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        run: pnpm tauri build --target ${{ matrix.target }}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER: ${{ matrix.linker }}
+          SKIP_ARIA2_SYNC: true
+
+      - name: Verify local bundle output exists
+        shell: bash
         run: |
           set -euo pipefail
-          tag="${GITHUB_REF_NAME}"
-          assets=""
-          for _ in {1..10}; do
-            if assets="$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' 2>/dev/null)"; then
-              break
-            fi
-            sleep 10
-          done
-          echo "Published assets for ${tag}:"
-          echo "${assets:-}"
-          if ! grep -Eq '^latest.*\.yml$' <<<"$assets"; then
-            echo "::error::Release ${tag} is missing latest*.yml metadata."
+          bundle_dir="src-tauri/target/${{ matrix.target }}/release/bundle"
+          if [ ! -d "$bundle_dir" ]; then
+            echo "::error::No bundle output found at $bundle_dir"
+            ls -la "src-tauri/target/${{ matrix.target }}/release" || true
             exit 1
           fi
+          find "$bundle_dir" -maxdepth 3 -type f | sed 's/^/built: /'

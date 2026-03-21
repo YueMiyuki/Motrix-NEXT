@@ -6,33 +6,17 @@
       </a>
     </ui-col>
     <ui-col :span="18" class="copyright-right">
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://motrix.app/license"
-      >
-        {{ $t("about.license") }}
+      <a target="_blank" rel="noopener noreferrer" href="https://motrix.app/license">
+        {{ $t('about.license') }}
       </a>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://motrix.app/about"
-      >
-        {{ $t("about.about") }}
+      <a target="_blank" rel="noopener noreferrer" href="https://motrix.app/about">
+        {{ $t('about.about') }}
       </a>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://motrix.app/support"
-      >
-        {{ $t("about.support") }}
+      <a target="_blank" rel="noopener noreferrer" href="https://motrix.app/support">
+        {{ $t('about.support') }}
       </a>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://motrix.app/release"
-      >
-        {{ $t("about.release") }}
+      <a target="_blank" rel="noopener noreferrer" href="https://motrix.app/release">
+        {{ $t('about.release') }}
       </a>
     </ui-col>
   </ui-row>
@@ -40,12 +24,12 @@
 
 <script lang="ts">
 export default {
-  name: "mo-copyright",
+  name: 'mo-copyright',
   data() {
-    const year = new Date().getFullYear();
+    const year = new Date().getFullYear()
     return {
       year,
-    };
+    }
   },
-};
+}
 </script>

@@ -1,6 +1,6 @@
 export const EMPTY_STRING = ''
-export const PORTABLE_EXECUTABLE_DIR = process.env.PORTABLE_EXECUTABLE_DIR
-export const IS_PORTABLE = PORTABLE_EXECUTABLE_DIR && PORTABLE_EXECUTABLE_DIR !== EMPTY_STRING
+const PORTABLE_EXECUTABLE_DIR = process.env.PORTABLE_EXECUTABLE_DIR
+const IS_PORTABLE = PORTABLE_EXECUTABLE_DIR && PORTABLE_EXECUTABLE_DIR !== EMPTY_STRING
 
 export const APP_THEME = {
   AUTO: 'auto',
@@ -36,7 +36,7 @@ export const MAX_NUM_OF_DIRECTORIES = 5
 export const ENGINE_RPC_HOST = '127.0.0.1'
 export const ENGINE_RPC_PORT = 16800
 export const ENGINE_MAX_CONCURRENT_DOWNLOADS = 10
-export const ENGINE_MAX_CONNECTION_PER_SERVER = 64
+const ENGINE_MAX_CONNECTION_PER_SERVER = 64
 
 export const UNKNOWN_PEERID = '%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00'
 export const UNKNOWN_PEERID_NAME = 'unknown'
@@ -47,10 +47,10 @@ const ONE_HOUR = ONE_MINUTE * 60
 const ONE_DAY = ONE_HOUR * 24
 
 // 12 Hours
-export const AUTO_SYNC_TRACKER_INTERVAL = ONE_HOUR * 12
+const AUTO_SYNC_TRACKER_INTERVAL = ONE_HOUR * 12
 
 // One Week
-export const AUTO_CHECK_UPDATE_INTERVAL = ONE_DAY * 7
+const AUTO_CHECK_UPDATE_INTERVAL = ONE_DAY * 7
 
 export const MAX_BT_TRACKER_LENGTH = 6144
 
@@ -66,9 +66,9 @@ const NGOSANG_TRACKERS_ALL_URL =
 const NGOSANG_TRACKERS_ALL_IP_URL =
   'https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all_ip.txt'
 
-export const NGOSANG_TRACKERS_BEST_URL_CDN =
+const NGOSANG_TRACKERS_BEST_URL_CDN =
   'https://cdn.jsdelivr.net/gh/ngosang/trackerslist/trackers_best.txt'
-export const NGOSANG_TRACKERS_BEST_IP_URL_CDN =
+const NGOSANG_TRACKERS_BEST_IP_URL_CDN =
   'https://cdn.jsdelivr.net/gh/ngosang/trackerslist/trackers_best_ip.txt'
 const NGOSANG_TRACKERS_ALL_URL_CDN =
   'https://cdn.jsdelivr.net/gh/ngosang/trackerslist/trackers_all.txt'
@@ -189,12 +189,12 @@ export const PROXY_SCOPE_OPTIONS = [
 export const NONE_SELECTED_FILES = 'none'
 export const SELECTED_ALL_FILES = 'all'
 
-export const IP_VERSION = {
+const IP_VERSION = {
   V4: 4,
   V6: 6,
 }
 
-export const LOGIN_SETTING_OPTIONS = {
+const LOGIN_SETTING_OPTIONS = {
   // For Windows
   args: ['--opened-at-login=1'],
 }

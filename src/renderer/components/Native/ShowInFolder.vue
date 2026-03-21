@@ -5,11 +5,11 @@
 </template>
 
 <script lang="ts">
-import { Folder } from "lucide-vue-next";
-import { showItemInFolder } from "@/utils/native";
+import { Folder } from 'lucide-vue-next'
+import { showItemInFolder } from '@/utils/native'
 
 export default {
-  name: "mo-show-in-folder",
+  name: 'mo-show-in-folder',
   components: {
     Folder,
   },
@@ -22,12 +22,12 @@ export default {
   methods: {
     onFolderClick() {
       if (!this.path) {
-        return;
+        return
       }
       showItemInFolder(this.path, {
-        errorMsg: this.$t("task.file-not-exist"),
-      });
+        errorMsg: this.$t('task.file-not-exist'),
+      })
     },
   },
-};
+}
 </script>

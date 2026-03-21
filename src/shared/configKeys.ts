@@ -176,4 +176,4 @@ const startupOnlyKeys = [
   'pause',
 ]
 
-export { userKeys, systemKeys, needRestartKeys, startupOnlyKeys }
+export { userKeys, systemKeys, needRestartKeys }

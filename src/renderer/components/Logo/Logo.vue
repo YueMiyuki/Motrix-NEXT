@@ -1,12 +1,7 @@
 <template>
   <div class="logo">
     <a target="_blank" href="https://motrix.app/">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        :width="width"
-        :height="height"
-        viewBox="0 0 62 14"
-      >
+      <svg xmlns="http://www.w3.org/2000/svg" :width="width" :height="height" viewBox="0 0 62 14">
         <g fill-rule="evenodd">
           <path
             d="M40,2 C40,1 41,1.53477231e-14 42,1.53477231e-14 C42,1.53477231e-14 60,1.27897692e-14 60,1.53477231e-14 C61,1.27897692e-14 62,1 62,2 C62,2 62,12 62,12 C62,13 61,14 60,14 C60,14 42,14 42,14 C41,14 40,13 40,12 C40,12 40,2 40,2 Z M44,3.5 C44,3.5 44,10.5 44,10.5 C44,11 44.5,11.5 45,11.5 C45,11.5 57,11.5 57,11.5 C57.5,11.5 58,11 58,10.5 C58,10.5 58,3.5 58,3.5 C58,3 57.5,2.5 57,2.5 C57,2.5 45,2.5 45,2.5 C44.5,2.5 44,3 44,3.5 Z"
@@ -23,7 +18,7 @@
 
 <script lang="ts">
 export default {
-  name: "mo-logo",
+  name: 'mo-logo',
   props: {
     width: {
       type: Number,
@@ -34,5 +29,5 @@ export default {
       default: 14,
     },
   },
-};
+}
 </script>

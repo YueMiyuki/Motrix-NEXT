@@ -17,8 +17,39 @@ export const useTaskStore = defineStore('task', {
     seedingList: [],
     taskList: [],
     selectedGidList: [],
+    taskOrderMap: {
+      active: [],
+      waiting: [],
+      stopped: [],
+    },
   }),
   actions: {
+    applyTaskOrder(type, tasks = []) {
+      const order = this.taskOrderMap[type]
+      if (!order || order.length === 0 || tasks.length < 2) {
+        return tasks
+      }
+
+      const orderIndex = new Map(order.map((gid, index) => [gid, index]))
+      const fallbackIndex = new Map(tasks.map((task, index) => [task.gid, index]))
+
+      return [...tasks].sort((a, b) => {
+        const aOrderIndex = orderIndex.get(a.gid)
+        const bOrderIndex = orderIndex.get(b.gid)
+        const aIndex = typeof aOrderIndex === 'number' ? aOrderIndex : Number.MAX_SAFE_INTEGER
+        const bIndex = typeof bOrderIndex === 'number' ? bOrderIndex : Number.MAX_SAFE_INTEGER
+        if (aIndex !== bIndex) {
+          return aIndex - bIndex
+        }
+        return (fallbackIndex.get(a.gid) || 0) - (fallbackIndex.get(b.gid) || 0)
+      })
+    },
+    updateTaskOrder(type, gids = []) {
+      this.taskOrderMap = {
+        ...this.taskOrderMap,
+        [type]: [...gids],
+      }
+    },
     changeCurrentList(currentList) {
       this.currentList = currentList
       this.selectedGidList = []
@@ -26,12 +57,18 @@ export const useTaskStore = defineStore('task', {
     },
     async fetchList() {
       try {
-        const data = await api.fetchTaskList({ type: this.currentList })
-        this.taskList = data
+        const type = this.currentList
+        const data = await api.fetchTaskList({ type })
+        const orderedData = this.applyTaskOrder(type, data)
+        this.taskList = orderedData
+        this.updateTaskOrder(
+          type,
+          orderedData.map((task) => task.gid),
+        )
 
-        const gids = data.map((task) => task.gid)
+        const gids = orderedData.map((task) => task.gid)
         this.selectedGidList = intersection(this.selectedGidList, gids)
-        return data
+        return orderedData
       } catch (err) {
         logger.warn('[Motrix] fetchList failed:', err.message)
         this.taskList = []
@@ -282,33 +319,92 @@ export const useTaskStore = defineStore('task', {
         this.saveSession()
       })
     },
-    async moveSelectedTasks(direction: 'up' | 'down') {
+    async syncSelectedTaskOrder(direction: 'up' | 'down', selectedGids: string[]) {
       const { ACTIVE } = TASK_STATUS
-      const selectedTasks = this.taskList.filter((task) => this.selectedGidList.includes(task.gid))
+      const selectedGidSet = new Set(selectedGids)
+      const selectedTasks = this.taskList.filter((task) => selectedGidSet.has(task.gid))
       const selectedActiveTasks = selectedTasks.filter((task) => task.status === ACTIVE)
+      const activeSelectedGidSet = new Set(selectedActiveTasks.map((task) => task.gid))
+      let syncError: any = null
 
       if (selectedActiveTasks.length > 0) {
-        await Promise.allSettled(
+        const pauseResult = await Promise.allSettled(
           selectedActiveTasks.map((task) => {
             return api.forcePauseTask({ gid: task.gid })
           }),
         )
+        if (pauseResult.some((item) => item.status === 'rejected')) {
+          syncError = syncError || new Error('priority-sync-force-pause-failed')
+        }
       }
 
-      const waitingList = await api
-        .fetchWaitingTaskList({
-          offset: 0,
-          num: 10000,
-          keys: ['gid'],
-        })
-        .catch((err) => {
-          logger.warn('[Motrix] moveSelectedTasks fetchWaitingTaskList failed:', err.message)
-          return []
-        })
+      let waitingList: any[] = []
+      const maxAttempts = selectedActiveTasks.length > 0 ? 8 : 1
+      for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+        waitingList = await api
+          .fetchWaitingTaskList({
+            offset: 0,
+            num: 10000,
+            keys: ['gid'],
+          })
+          .catch((err) => {
+            logger.warn('[Motrix] moveSelectedTasks fetchWaitingTaskList failed:', err.message)
+            syncError = syncError || err || new Error('priority-sync-fetch-waiting-failed')
+            return []
+          })
+
+        if (selectedActiveTasks.length === 0) {
+          break
+        }
+
+        const queue = waitingList.map((task) => task.gid)
+        const activeMissingCount = selectedActiveTasks.filter(
+          (task) => !queue.includes(task.gid),
+        ).length
+        if (activeMissingCount === 0) {
+          break
+        }
+        await new Promise((resolve) => setTimeout(resolve, 120))
+      }
+
       const queue = waitingList.map((task) => task.gid)
-      const selectedQueue = queue.filter((gid) => this.selectedGidList.includes(gid))
+      const selectedQueue = queue.filter((gid) => selectedGidSet.has(gid))
+      const shouldResumeActiveTasks = selectedActiveTasks.length > 0
 
       let moved = 0
+
+      if (selectedQueue.length === 0 && selectedActiveTasks.length > 0 && direction === 'up') {
+        for (const task of selectedActiveTasks) {
+          try {
+            await api.changePosition({
+              gid: task.gid,
+              pos: 0,
+              how: 'POS_SET',
+            })
+            moved += 1
+          } catch (err) {
+            logger.warn('[Motrix] moveSelectedTasks active fallback failed:', err.message)
+            syncError = syncError || err || new Error('priority-sync-active-fallback-failed')
+          }
+        }
+      }
+      if (selectedQueue.length === 0 && selectedActiveTasks.length > 0 && direction === 'down') {
+        const targetPos = Math.max(queue.length - 1, 0)
+        for (const task of selectedActiveTasks) {
+          try {
+            await api.changePosition({
+              gid: task.gid,
+              pos: targetPos,
+              how: 'POS_SET',
+            })
+            moved += 1
+          } catch (err) {
+            logger.warn('[Motrix] moveSelectedTasks active demote fallback failed:', err.message)
+            syncError = syncError || err || new Error('priority-sync-active-demote-failed')
+          }
+        }
+      }
+
       const walkList = direction === 'up' ? [...selectedQueue] : [...selectedQueue].reverse()
 
       for (const gid of walkList) {
@@ -316,10 +412,13 @@ export const useTaskStore = defineStore('task', {
         if (currentIndex < 0) {
           continue
         }
-        const targetIndex =
-          direction === 'up'
-            ? Math.max(currentIndex - 1, 0)
-            : Math.min(currentIndex + 1, queue.length - 1)
+
+        let targetIndex = currentIndex
+        if (direction === 'up') {
+          targetIndex = activeSelectedGidSet.has(gid) ? 0 : Math.max(currentIndex - 1, 0)
+        } else {
+          targetIndex = Math.min(currentIndex + 1, queue.length - 1)
+        }
         if (targetIndex === currentIndex) {
           continue
         }
@@ -335,21 +434,87 @@ export const useTaskStore = defineStore('task', {
           moved += 1
         } catch (err) {
           logger.warn('[Motrix] moveSelectedTasks changePosition failed:', err.message)
+          syncError = syncError || err || new Error('priority-sync-change-position-failed')
         }
       }
 
-      if (selectedActiveTasks.length > 0) {
-        await Promise.allSettled(
+      if (selectedActiveTasks.length > 0 && shouldResumeActiveTasks) {
+        const resumeResult = await Promise.allSettled(
           selectedActiveTasks.map((task) => {
             return api.resumeTask({ gid: task.gid })
           }),
         )
+        if (resumeResult.some((item) => item.status === 'rejected')) {
+          syncError = syncError || new Error('priority-sync-resume-failed')
+        }
       }
 
       if (moved > 0 || selectedActiveTasks.length > 0) {
         await this.fetchList()
         this.saveSession()
       }
+
+      if (syncError) {
+        throw syncError
+      }
+
+      return moved
+    },
+    async moveSelectedTasks(
+      direction: 'up' | 'down',
+      options: { onSyncError?: (error: any) => void } = {},
+    ) {
+      const { onSyncError } = options
+      const selectedGids = [...this.selectedGidList]
+      if (selectedGids.length === 0) {
+        return 0
+      }
+
+      const selectedSet = new Set(selectedGids)
+      const nextList = [...this.taskList]
+      let moved = 0
+
+      if (direction === 'up') {
+        for (let i = 1; i < nextList.length; i += 1) {
+          const curr = nextList[i]
+          const prev = nextList[i - 1]
+          if (!selectedSet.has(curr.gid) || selectedSet.has(prev.gid)) {
+            continue
+          }
+          nextList[i - 1] = curr
+          nextList[i] = prev
+          moved += 1
+        }
+      } else {
+        for (let i = nextList.length - 2; i >= 0; i -= 1) {
+          const curr = nextList[i]
+          const next = nextList[i + 1]
+          if (!selectedSet.has(curr.gid) || selectedSet.has(next.gid)) {
+            continue
+          }
+          nextList[i + 1] = curr
+          nextList[i] = next
+          moved += 1
+        }
+      }
+
+      if (moved === 0) {
+        return 0
+      }
+
+      this.taskList = nextList
+      this.updateTaskOrder(
+        this.currentList,
+        nextList.map((task) => task.gid),
+      )
+      this.saveSession()
+
+      this.syncSelectedTaskOrder(direction, selectedGids).catch((err) => {
+        logger.warn('[Motrix] syncSelectedTaskOrder failed:', err.message)
+        if (typeof onSyncError === 'function') {
+          onSyncError(err)
+        }
+      })
 
       return moved
     },

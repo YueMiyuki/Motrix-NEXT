@@ -10,7 +10,7 @@
         <i class="subnav-icon">
           <Play :size="20" />
         </i>
-        <span>{{ $t("task.active") }}</span>
+        <span>{{ $t('task.active') }}</span>
       </li>
       <li
         @click="() => nav('waiting')"
@@ -20,7 +20,7 @@
         <i class="subnav-icon">
           <Pause :size="20" />
         </i>
-        <span>{{ $t("task.waiting") }}</span>
+        <span>{{ $t('task.waiting') }}</span>
       </li>
       <li
         @click="() => nav('stopped')"
@@ -30,18 +30,18 @@
         <i class="subnav-icon">
           <Square :size="20" />
         </i>
-        <span>{{ $t("task.stopped") }}</span>
+        <span>{{ $t('task.stopped') }}</span>
       </li>
     </ul>
   </nav>
 </template>
 
 <script lang="ts">
-import logger from "@shared/utils/logger";
-import { Pause, Play, Square } from "lucide-vue-next";
+import logger from '@shared/utils/logger'
+import { Pause, Play, Square } from 'lucide-vue-next'
 
 export default {
-  name: "mo-task-subnav",
+  name: 'mo-task-subnav',
   components: {
     Pause,
     Play,
@@ -50,24 +50,24 @@ export default {
   props: {
     current: {
       type: String,
-      default: "active",
+      default: 'active',
     },
   },
   computed: {
     title() {
-      return this.$t("subnav.task-list");
+      return this.$t('subnav.task-list')
     },
   },
   methods: {
-    nav(status = "active") {
+    nav(status = 'active') {
       this.$router
         .push({
           path: `/task/${status}`,
         })
         .catch((err) => {
-          logger.log(err);
-        });
+          logger.log(err)
+        })
     },
   },
-};
+}
 </script>

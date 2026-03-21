@@ -6,9 +6,7 @@
       </div>
       <div v-if="task.completedLength > 0 || task.totalLength > 0">
         <span>{{ formatBytes(task.completedLength, 2) }}</span>
-        <span v-if="task.totalLength > 0">
-          / {{ formatBytes(task.totalLength, 2) }}</span
-        >
+        <span v-if="task.totalLength > 0"> / {{ formatBytes(task.totalLength, 2) }}</span>
       </div>
     </div>
     <div class="task-progress-info-right" v-show="isActive">
@@ -45,12 +43,12 @@ import {
   checkTaskIsSeeder,
   timeFormat,
   timeRemaining,
-} from "@shared/utils";
-import { TASK_STATUS } from "@shared/constants";
-import { ArrowUp, ArrowDown, Magnet, Network } from "lucide-vue-next";
+} from '@shared/utils'
+import { TASK_STATUS } from '@shared/constants'
+import { ArrowUp, ArrowDown, Magnet, Network } from 'lucide-vue-next'
 
 export default {
-  name: "mo-task-progress-info",
+  name: 'mo-task-progress-info',
   components: {
     ArrowUp,
     ArrowDown,
@@ -64,38 +62,38 @@ export default {
   },
   computed: {
     isActive() {
-      return this.task.status === TASK_STATUS.ACTIVE;
+      return this.task.status === TASK_STATUS.ACTIVE
     },
     isBT() {
-      return checkTaskIsBT(this.task);
+      return checkTaskIsBT(this.task)
     },
     isSeeder() {
-      return checkTaskIsSeeder(this.task);
+      return checkTaskIsSeeder(this.task)
     },
     remaining() {
-      const { totalLength, completedLength, downloadSpeed } = this.task;
-      return timeRemaining(totalLength, completedLength, downloadSpeed);
+      const { totalLength, completedLength, downloadSpeed } = this.task
+      return timeRemaining(totalLength, completedLength, downloadSpeed)
     },
     remainingText() {
       return timeFormat(this.remaining, {
-        prefix: this.$t("task.remaining-prefix"),
+        prefix: this.$t('task.remaining-prefix'),
         i18n: {
-          gt1d: this.$t("app.gt1d"),
-          hour: this.$t("app.hour"),
-          minute: this.$t("app.minute"),
-          second: this.$t("app.second"),
+          gt1d: this.$t('app.gt1d'),
+          hour: this.$t('app.hour'),
+          minute: this.$t('app.minute'),
+          second: this.$t('app.second'),
         },
-      });
+      })
     },
     progressPercent() {
-      const result = calcProgress(this.task.totalLength, this.task.completedLength, 1);
-      return `${result}`.replace(/\.0$/, "");
+      const result = calcProgress(this.task.totalLength, this.task.completedLength, 1)
+      return `${result}`.replace(/\.0$/, '')
     },
   },
   methods: {
     formatBytes(value, precision) {
-      return bytesToSize(value, precision);
+      return bytesToSize(value, precision)
     },
   },
-};
+}
 </script>

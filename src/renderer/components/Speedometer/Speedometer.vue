@@ -24,13 +24,13 @@
 </template>
 
 <script lang="ts">
-import { useAppStore } from "@/store/app";
-import { usePreferenceStore } from "@/store/preference";
-import { bytesToSize } from "@shared/utils";
-import { CloudUpload, CloudDownload, Gauge } from "lucide-vue-next";
+import { useAppStore } from '@/store/app'
+import { usePreferenceStore } from '@/store/preference'
+import { bytesToSize } from '@shared/utils'
+import { CloudUpload, CloudDownload, Gauge } from 'lucide-vue-next'
 
 export default {
-  name: "mo-speedometer",
+  name: 'mo-speedometer',
   components: {
     Gauge,
     CloudUpload,
@@ -38,26 +38,26 @@ export default {
   },
   computed: {
     stat() {
-      return useAppStore().stat;
+      return useAppStore().stat
     },
     engineMode() {
-      return usePreferenceStore().engineMode;
+      return usePreferenceStore().engineMode
     },
     isStopped() {
-      return this.stat.numActive === 0;
+      return this.stat.numActive === 0
     },
     isTaskPage() {
-      const path = this.$router.currentRoute.value?.path;
-      return !path?.startsWith("/preference");
+      const path = this.$router.currentRoute.value?.path
+      return !path?.startsWith('/preference')
     },
   },
   methods: {
     toggleEngineMode() {
-      usePreferenceStore().toggleEngineMode();
+      usePreferenceStore().toggleEngineMode()
     },
     formatBytes(value) {
-      return bytesToSize(value);
+      return bytesToSize(value)
     },
   },
-};
+}
 </script>

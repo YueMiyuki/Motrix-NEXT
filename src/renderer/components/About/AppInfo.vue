@@ -6,12 +6,9 @@
     </div>
     <div class="app-icon"></div>
     <div class="engine-info" v-if="!!engine">
-      <h4>{{ $t("about.engine-version") }} {{ engine.version }}</h4>
+      <h4>{{ $t('about.engine-version') }} {{ engine.version }}</h4>
       <ul v-if="!isMas()">
-        <li
-          v-for="(feature, index) in engine.enabledFeatures"
-          v-bind:key="`feature-${index}`"
-        >
+        <li v-for="(feature, index) in engine.enabledFeatures" v-bind:key="`feature-${index}`">
           {{ feature }}
         </li>
       </ul>
@@ -20,31 +17,31 @@
 </template>
 
 <script lang="ts">
-import is from "@/shims/electron-is";
-import Logo from "@/components/Logo/Logo.vue";
+import is from '@/shims/platform'
+import Logo from '@/components/Logo/Logo.vue'
 
 export default {
-  name: "mo-app-info",
+  name: 'mo-app-info',
   components: {
     [Logo.name]: Logo,
   },
   props: {
     version: {
       type: String,
-      default: "",
+      default: '',
     },
     engine: {
       type: Object,
       default() {
         return {
-          version: "",
+          version: '',
           enabledFeatures: [],
-        };
+        }
       },
     },
   },
   methods: {
     isMas: is.mas,
   },
-};
+}
 </script>

@@ -12,12 +12,12 @@
 </template>
 
 <script lang="ts">
-import { usePreferenceStore } from "@/store/preference";
+import { usePreferenceStore } from '@/store/preference'
 
 export default {
-  name: "mo-content-preference",
+  name: 'mo-content-preference',
   created() {
-    usePreferenceStore().fetchPreference();
+    usePreferenceStore().fetchPreference()
   },
-};
+}
 </script>

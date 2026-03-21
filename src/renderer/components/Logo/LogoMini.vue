@@ -1,12 +1,7 @@
 <template>
   <h1 class="logo-mini">
     <a target="_blank" href="https://motrix.app/">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="28"
-        height="28"
-        viewBox="0 0 28 14"
-      >
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 14">
         <path
           fill="#FFF"
           fill-rule="evenodd"
@@ -20,6 +15,6 @@
 
 <script lang="ts">
 export default {
-  name: "mo-logo-mini",
-};
+  name: 'mo-logo-mini',
+}
 </script>

@@ -9,22 +9,22 @@
 
 <script lang="ts">
 export default {
-  name: "mo-browser",
+  name: 'mo-browser',
   props: {
     src: {
       type: String,
-      default: "",
+      default: '',
     },
   },
   data() {
     return {
       isLoading: true,
-    };
+    }
   },
   methods: {
     onLoad() {
-      this.isLoading = false;
+      this.isLoading = false
     },
   },
-};
+}
 </script>

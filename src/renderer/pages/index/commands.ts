@@ -139,7 +139,13 @@ const deleteTask = () => {
 
 const moveTaskUp = () => {
   getTaskStore()
-    .moveSelectedTasks('up')
+    .moveSelectedTasks('up', {
+      onSyncError: () => {
+        toast.error('Syncing priority failed', {
+          duration: 1800,
+        })
+      },
+    })
     .then((movedCount) => {
       if (movedCount === 0) {
         return
@@ -153,7 +159,13 @@ const moveTaskUp = () => {
 
 const moveTaskDown = () => {
   getTaskStore()
-    .moveSelectedTasks('down')
+    .moveSelectedTasks('down', {
+      onSyncError: () => {
+        toast.error('Syncing priority failed', {
+          duration: 1800,
+        })
+      },
+    })
     .then((movedCount) => {
       if (movedCount === 0) {
         return

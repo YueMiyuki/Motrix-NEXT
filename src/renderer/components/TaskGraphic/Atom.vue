@@ -14,7 +14,7 @@
 
 <script lang="ts">
 export default {
-  name: "mo-task-graphic-atom",
+  name: 'mo-task-graphic-atom',
   props: {
     status: {
       type: Number,
@@ -40,9 +40,9 @@ export default {
   },
   computed: {
     klass() {
-      const { status } = this;
-      return `graphic-atom graphic-atom-s${status}`;
+      const { status } = this
+      return `graphic-atom graphic-atom-s${status}`
     },
   },
-};
+}
 </script>
