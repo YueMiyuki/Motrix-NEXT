@@ -35,7 +35,13 @@ function greeting() {
 greeting()
 
 const args = process.argv.slice(2)
-const child = spawn('pnpm', ['tauri', 'build', ...args], {
+const tauriArgs = ['tauri', 'build', ...args]
+
+if (process.platform === 'win32') {
+  tauriArgs.push('--config', 'src-tauri/tauri.windows.conf.json')
+}
+
+const child = spawn('pnpm', tauriArgs, {
   stdio: 'inherit',
   shell: true,
   env: { ...process.env },

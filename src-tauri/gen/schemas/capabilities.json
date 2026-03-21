@@ -1,1 +1,67 @@
-{"default":{"identifier":"default","description":"Default capabilities for Motrix","local":true,"windows":["main"],"permissions":["core:default","core:window:default","core:window:allow-close","core:window:allow-minimize","core:window:allow-maximize","core:window:allow-unmaximize","core:window:allow-show","core:window:allow-hide","core:window:allow-set-focus","core:window:allow-is-maximized","core:window:allow-toggle-maximize","core:window:allow-set-title","core:window:allow-set-progress-bar","core:tray:default","core:tray:allow-set-icon","core:tray:allow-set-tooltip","core:menu:default","dialog:default","dialog:allow-open","dialog:allow-message","shell:default","shell:allow-open","store:default","fs:default",{"identifier":"fs:allow-exists","allow":[{"path":"$DOWNLOAD/**"},{"path":"$DOCUMENT/**"},{"path":"$DESKTOP/**"},{"path":"$APPDATA/**"},{"path":"$APPLOCALDATA/**"},{"path":"$RESOURCE/**"}]},{"identifier":"fs:allow-read-file","allow":[{"path":"$DOWNLOAD/**"},{"path":"$DOCUMENT/**"},{"path":"$DESKTOP/**"},{"path":"$APPDATA/**"},{"path":"$APPLOCALDATA/**"},{"path":"$RESOURCE/**"}]},"process:default","process:allow-exit","process:allow-restart","os:default","notification:default","notification:allow-notify","autostart:default","deep-link:default","clipboard-manager:default","clipboard-manager:allow-read-text","clipboard-manager:allow-write-text"]}}
+{
+  "default": {
+    "identifier": "default",
+    "description": "Default capabilities for Motrix",
+    "local": true,
+    "windows": ["main"],
+    "permissions": [
+      "core:default",
+      "core:window:default",
+      "core:window:allow-close",
+      "core:window:allow-minimize",
+      "core:window:allow-maximize",
+      "core:window:allow-unmaximize",
+      "core:window:allow-show",
+      "core:window:allow-hide",
+      "core:window:allow-set-focus",
+      "core:window:allow-is-maximized",
+      "core:window:allow-toggle-maximize",
+      "core:window:allow-set-title",
+      "core:window:allow-set-progress-bar",
+      "core:tray:default",
+      "core:tray:allow-set-icon",
+      "core:tray:allow-set-tooltip",
+      "core:menu:default",
+      "dialog:default",
+      "dialog:allow-open",
+      "dialog:allow-message",
+      "shell:default",
+      "shell:allow-open",
+      "store:default",
+      "fs:default",
+      {
+        "identifier": "fs:allow-exists",
+        "allow": [
+          { "path": "$DOWNLOAD/**" },
+          { "path": "$DOCUMENT/**" },
+          { "path": "$DESKTOP/**" },
+          { "path": "$APPDATA/**" },
+          { "path": "$APPLOCALDATA/**" },
+          { "path": "$RESOURCE/**" }
+        ]
+      },
+      {
+        "identifier": "fs:allow-read-file",
+        "allow": [
+          { "path": "$DOWNLOAD/**" },
+          { "path": "$DOCUMENT/**" },
+          { "path": "$DESKTOP/**" },
+          { "path": "$APPDATA/**" },
+          { "path": "$APPLOCALDATA/**" },
+          { "path": "$RESOURCE/**" }
+        ]
+      },
+      "process:default",
+      "process:allow-exit",
+      "process:allow-restart",
+      "os:default",
+      "notification:default",
+      "notification:allow-notify",
+      "autostart:default",
+      "deep-link:default",
+      "clipboard-manager:default",
+      "clipboard-manager:allow-read-text",
+      "clipboard-manager:allow-write-text"
+    ]
+  }
+}

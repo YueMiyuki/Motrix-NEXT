@@ -49,7 +49,9 @@ async function main() {
   }
 
   for (const target of targets) {
-    const asset = assets.find((item) => item.platform === target.platform && item.arch === target.arch)
+    const asset = assets.find(
+      (item) => item.platform === target.platform && item.arch === target.arch,
+    )
     if (!asset?.url) {
       throw new Error(`Missing aria2 asset for ${target.platform}/${target.arch}`)
     }
@@ -61,7 +63,9 @@ async function main() {
     if (asset.sha256) {
       const digest = sha256Hex(payload)
       if (digest !== String(asset.sha256).toLowerCase()) {
-        throw new Error(`Checksum mismatch for ${asset.name}: expected ${asset.sha256}, got ${digest}`)
+        throw new Error(
+          `Checksum mismatch for ${asset.name}: expected ${asset.sha256}, got ${digest}`,
+        )
       }
     }
 

@@ -92,7 +92,7 @@ export const fetchBtTrackerFromSource = async (source, proxyConfig: any = {}) =>
           proxy,
         })
         .then((value) => value.data)
-    })
+    }),
   )
     .then((results) => {
       const values = results
