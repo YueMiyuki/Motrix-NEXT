@@ -56,18 +56,18 @@
     "blob-util": "^2.0.2",
     "cfonts": "^3.3.1",
     "chalk": "^5.6.2",
-    "eslint": "^10.0.3",
+    "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^17.4.0",
-    "i18next": "^25.8.19",
+    "i18next": "^25.9.0",
     "lodash": "^4.17.23",
     "normalize.css": "^8.0.1",
     "pinia": "^3.0.4",
     "prettier": "^3.8.1",
     "randomatic": "^3.1.1",
     "sass": "1.98.0",
-    "stylelint": "^17.4.0",
+    "stylelint": "^17.5.0",
     "stylelint-config-standard": "^40.0.0",
     "stylelint-config-standard-vue": "^1.0.0",
     "stylelint-prettier": "^5.0.3",
@@ -77,8 +77,9 @@
     "vite-plugin-static-copy": "^3.3.0",
     "vue": "^3.5.30",
     "vue-eslint-parser": "^10.4.0",
-    "vue-router": "^5.0.3",
+    "vue-router": "^5.0.4",
     "vue-tsc": "^3.2.6",
     "vue-virtual-scroller": "2.0.0-beta.10"
-  }
+  },
+  "packageManager": "pnpm@10.32.1"
 }
