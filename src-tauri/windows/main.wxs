@@ -195,7 +195,12 @@
                 Display="expand"
                 Absent="disallow">
 
+            <ComponentRef Id="Path"/>
             <ComponentRef Id="RegistryEntries"/>
+
+            {{#each binaries as |bin| ~}}
+            <ComponentRef Id="{{ bin.id }}"/>
+            {{/each~}}
 
             {{#each resource_file_ids as |resource_file_id| ~}}
                 <ComponentRef Id="{{ resource_file_id }}"/>
@@ -210,22 +215,9 @@
             <Feature Id="ShortcutsFeature"
                 Title="Shortcuts"
                 Level="1">
-                <ComponentRef Id="Path"/>
                 <ComponentRef Id="CMP_UninstallShortcut" />
                 <ComponentRef Id="ApplicationShortcut" />
                 <ComponentRef Id="ApplicationShortcutDesktop" />
-            </Feature>
-
-            <Feature
-                Id="Environment"
-                Title="PATH Environment Variable"
-                Description="!(loc.PathEnvVarFeature)"
-                Level="1"
-                Absent="allow">
-            <ComponentRef Id="Path"/>
-            {{#each binaries as |bin| ~}}
-            <ComponentRef Id="{{ bin.id }}"/>
-            {{/each~}}
             </Feature>
         </Feature>
 
