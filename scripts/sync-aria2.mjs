@@ -154,7 +154,7 @@ async function main() {
 
     const tmpOutputPath = `${outputPath}.tmp-${process.pid}-${crypto.randomUUID()}`
     fs.writeFileSync(tmpOutputPath, payload)
-    if (!tmpOutputPath.endsWith('.exe')) {
+    if (!outputPath.endsWith('.exe')) {
       fs.chmodSync(tmpOutputPath, 0o755)
     }
     fs.renameSync(tmpOutputPath, outputPath)

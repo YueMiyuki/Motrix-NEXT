@@ -21,7 +21,7 @@
     "pack:renderer": "vite build --config vite.renderer.config.ts --mode production",
     "sync:aria2": "node scripts/sync-aria2.mjs",
     "lint": "eslint \"src/renderer/**/*.{ts,vue}\" \"src/shared/**/*.{ts,vue}\" --fix",
-    "prettier": "prettier -w . && (cd src-tauri && cargo fmt || true)",
+    "prettier": "prettier -w . && (cd src-tauri && cargo fmt)",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
     "knip": "pnpm dlx knip --fix",
     "pre-commit": "pnpm typecheck && pnpm lint && pnpm prettier",

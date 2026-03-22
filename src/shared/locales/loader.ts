@@ -45,7 +45,8 @@ export const loadLocaleResource = async (locale: string) => {
     }
   }
 
-  const lng = locale in localeLoaders ? (locale as LocaleKey) : null
+  const hasLocaleLoader = Object.prototype.hasOwnProperty.call(localeLoaders, locale)
+  const lng = hasLocaleLoader ? (locale as LocaleKey) : null
   const mod = lng ? await localeLoaders[lng]() : { default: appLocaleEnUS }
   return {
     translation: { ...mod.default },
