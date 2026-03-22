@@ -23,6 +23,7 @@ export default {
       isDestroyed: false,
       noSleepDesired: false,
       noSleepApplied: false,
+      noSleepSource: null as null | 'plugin' | 'rust',
       noSleepSyncing: false,
       noSleepResyncNeeded: false,
       startupAutoResumeHandled: false,
@@ -72,7 +73,7 @@ export default {
       return parseBooleanConfig((usePreferenceStore().config as any).traySpeedometer)
     },
     showProgressBar() {
-      return !!(usePreferenceStore().config as any).showProgressBar
+      return parseBooleanConfig((usePreferenceStore().config as any).showProgressBar)
     },
     resumeAllWhenAppLaunched() {
       return parseBooleanConfig((usePreferenceStore().config as any).resumeAllWhenAppLaunched)
@@ -112,7 +113,7 @@ export default {
     showProgressBar(val) {
       invoke('on_progress_change', {
         progress: this.progress,
-        showProgressBar: !!val,
+        showProgressBar: parseBooleanConfig(val),
       }).catch(() => {})
     },
     interval() {
@@ -124,20 +125,38 @@ export default {
   methods: {
     async setNoSleepState(downloading: boolean) {
       if (!downloading) {
-        const results = await Promise.allSettled([
-          unblock(),
-          invoke('on_download_status_change', { downloading: false }),
-        ])
-        return results.some((item) => item.status === 'fulfilled')
+        if (this.noSleepSource === 'plugin') {
+          try {
+            await unblock()
+            this.noSleepSource = null
+            return true
+          } catch {
+            return false
+          }
+        }
+
+        if (this.noSleepSource === 'rust') {
+          try {
+            await invoke('on_download_status_change', { downloading: false })
+            this.noSleepSource = null
+            return true
+          } catch {
+            return false
+          }
+        }
+
+        return true
       }
 
       try {
         await block(NoSleepType.PreventUserIdleSystemSleep)
+        this.noSleepSource = 'plugin'
         return true
       } catch {
         // Keep Rust-side fallback for environments where the plugin command is unavailable.
         try {
           await invoke('on_download_status_change', { downloading })
+          this.noSleepSource = 'rust'
           return true
         } catch {
           return false

@@ -6,7 +6,6 @@ const localeLoaders = {
   ca: () => import('@shared/locales/ca'),
   de: () => import('@shared/locales/de'),
   el: () => import('@shared/locales/el'),
-  'en-US': () => import('@shared/locales/en-US'),
   es: () => import('@shared/locales/es'),
   fa: () => import('@shared/locales/fa'),
   fr: () => import('@shared/locales/fr'),
@@ -40,9 +39,14 @@ export const getInitialLocaleResources = () => {
 }
 
 export const loadLocaleResource = async (locale: string) => {
-  const lng = locale in localeLoaders ? (locale as LocaleKey) : 'en-US'
-  const loader = localeLoaders[lng]
-  const mod = await loader()
+  if (locale === 'en-US') {
+    return {
+      translation: { ...appLocaleEnUS },
+    }
+  }
+
+  const lng = locale in localeLoaders ? (locale as LocaleKey) : null
+  const mod = lng ? await localeLoaders[lng]() : { default: appLocaleEnUS }
   return {
     translation: { ...mod.default },
   }

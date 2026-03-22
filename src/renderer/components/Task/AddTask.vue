@@ -428,7 +428,9 @@ export default {
         return ''
       }
       const normalizedDir = this.normalizePath(dir)
-      return `${normalizedDir}\u0000${normalizedName}`.toLowerCase()
+      const key = `${normalizedDir}\u0000${normalizedName}`
+      const platform = `${(usePreferenceStore().config as any).platform || ''}`.toLowerCase()
+      return platform === 'windows' || platform === 'win32' ? key.toLowerCase() : key
     },
     async hasTaskNameConflict(payload, type) {
       const targetDir = this.normalizePath(payload?.options?.dir || this.form?.dir || '')

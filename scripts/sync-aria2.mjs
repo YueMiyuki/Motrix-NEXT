@@ -13,9 +13,78 @@ const targets = [
   { platform: 'linux', arch: 'x64', output: 'extra/linux/x64/engine/aria2c' },
   { platform: 'linux', arch: 'arm64', output: 'extra/linux/arm64/engine/aria2c' },
   { platform: 'linux', arch: 'armv7l', output: 'extra/linux/armv7l/engine/aria2c' },
-  { platform: 'win', arch: 'x64', output: 'extra/win32/x64/engine/aria2c.exe' },
-  { platform: 'win', arch: 'ia32', output: 'extra/win32/ia32/engine/aria2c.exe' },
+  { platform: 'win32', arch: 'x64', output: 'extra/win32/x64/engine/aria2c.exe' },
+  { platform: 'win32', arch: 'ia32', output: 'extra/win32/ia32/engine/aria2c.exe' },
+  { platform: 'win32', arch: 'arm64', output: 'extra/win32/arm64/engine/aria2c.exe' },
 ]
+
+const platformAliases = {
+  darwin: 'darwin',
+  mac: 'darwin',
+  macos: 'darwin',
+  osx: 'darwin',
+  linux: 'linux',
+  win: 'win32',
+  windows: 'win32',
+  win32: 'win32',
+}
+
+const archAliases = {
+  x64: 'x64',
+  amd64: 'x64',
+  x86_64: 'x64',
+  ia32: 'ia32',
+  i386: 'ia32',
+  i686: 'ia32',
+  x86: 'ia32',
+  arm64: 'arm64',
+  aarch64: 'arm64',
+  armv7l: 'armv7l',
+  armv7: 'armv7l',
+}
+
+function normalizePlatform(platform) {
+  if (!platform) return null
+  return platformAliases[String(platform).toLowerCase()] || null
+}
+
+function normalizeArch(arch) {
+  if (!arch) return null
+  return archAliases[String(arch).toLowerCase()] || null
+}
+
+function makeTargetKey(platform, arch) {
+  const normalizedPlatform = normalizePlatform(platform)
+  const normalizedArch = normalizeArch(arch)
+  if (!normalizedPlatform || !normalizedArch) {
+    return null
+  }
+  return `${normalizedPlatform}/${normalizedArch}`
+}
+
+function ensureConfFile(target) {
+  const outputPath = path.resolve(rootDir, target.output)
+  const engineDir = path.dirname(outputPath)
+  const confPath = path.join(engineDir, 'aria2.conf')
+
+  if (fs.existsSync(confPath)) {
+    return
+  }
+
+  const candidates = [
+    path.resolve(rootDir, `extra/${target.platform}/x64/engine/aria2.conf`),
+    path.resolve(rootDir, `extra/${target.platform}/ia32/engine/aria2.conf`),
+    path.resolve(rootDir, `extra/${target.platform}/arm64/engine/aria2.conf`),
+  ]
+
+  const source = candidates.find((candidate) => fs.existsSync(candidate))
+  if (!source) {
+    throw new Error(`Missing aria2.conf template for ${target.platform}/${target.arch}`)
+  }
+
+  fs.copyFileSync(source, confPath)
+  console.log(`Copied ${path.relative(rootDir, source)} -> ${path.relative(rootDir, confPath)}`)
+}
 
 function sha256Hex(buffer) {
   return crypto.createHash('sha256').update(buffer).digest('hex')
@@ -43,15 +112,28 @@ async function main() {
   const metadata = await fetchJson(metadataUrl)
   const version = metadata?.version || metadata?.name || 'unknown'
   const assets = Array.isArray(metadata?.assets) ? metadata.assets : []
+  const assetMap = new Map()
 
   if (assets.length === 0) {
     throw new Error('latest.json does not contain any assets')
   }
 
+  for (const asset of assets) {
+    const key = makeTargetKey(asset?.platform, asset?.arch)
+    if (!key) {
+      console.warn(
+        `Skipping metadata asset with unknown platform/arch: ${asset?.name || 'unknown'}`,
+      )
+      continue
+    }
+    assetMap.set(key, asset)
+  }
+
+  console.log(`Found ${assets.length} assets in metadata, syncing for version ${version}...`)
+
   for (const target of targets) {
-    const asset = assets.find(
-      (item) => item.platform === target.platform && item.arch === target.arch,
-    )
+    const targetKey = makeTargetKey(target.platform, target.arch)
+    const asset = targetKey ? assetMap.get(targetKey) : null
     if (!asset?.url) {
       throw new Error(`Missing aria2 asset for ${target.platform}/${target.arch}`)
     }
@@ -62,6 +144,7 @@ async function main() {
 
     if (asset.sha256) {
       const digest = sha256Hex(payload)
+      console.log(`Verifying checksum for ${asset.name}: expected ${asset.sha256}, got ${digest}`)
       if (digest !== String(asset.sha256).toLowerCase()) {
         throw new Error(
           `Checksum mismatch for ${asset.name}: expected ${asset.sha256}, got ${digest}`,
@@ -69,10 +152,13 @@ async function main() {
       }
     }
 
-    fs.writeFileSync(outputPath, payload)
-    if (!outputPath.endsWith('.exe')) {
-      fs.chmodSync(outputPath, 0o755)
+    const tmpOutputPath = `${outputPath}.tmp-${process.pid}-${crypto.randomUUID()}`
+    fs.writeFileSync(tmpOutputPath, payload)
+    if (!tmpOutputPath.endsWith('.exe')) {
+      fs.chmodSync(tmpOutputPath, 0o755)
     }
+    fs.renameSync(tmpOutputPath, outputPath)
+    ensureConfFile(target)
     console.log(`Synced ${asset.name} -> ${target.output}`)
   }
 

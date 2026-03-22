@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use std::process::Stdio;
+use tauri::path::BaseDirectory;
 use tauri::AppHandle;
 use tauri::Manager;
 use tokio::io::AsyncReadExt;
@@ -9,44 +10,91 @@ use tokio::sync::Mutex;
 use crate::state::AppState;
 
 pub const SESSION_FILENAME: &str = "download.session";
+pub const LOG_FILENAME: &str = "aria2.log";
 
 static ENGINE_PROCESS: std::sync::LazyLock<Mutex<Option<Child>>> =
     std::sync::LazyLock::new(|| Mutex::new(None));
 
 /// Find a file under `extra/<platform>/<arch>/engine/`.
-/// Search order: resource dir (prod), parent dir (dev), then current dir.
+/// Search order: Tauri resource resolver (prod), then relative dev path fallback.
 fn resolve_engine_file(
     handle: &AppHandle,
     filename: &str,
 ) -> Result<PathBuf, Box<dyn std::error::Error>> {
-    let rel_path = PathBuf::from("extra")
-        .join(get_platform_dir())
-        .join(get_arch_dir())
-        .join("engine")
-        .join(filename);
+    let platform_dir = get_platform_dir();
+    let arch_dirs = get_engine_arch_dirs();
+    let primary_arch = arch_dirs.first().copied().unwrap_or_else(get_arch_dir);
+    let mut attempted = Vec::new();
 
-    let resource_dir = handle
-        .path()
-        .resource_dir()
-        .unwrap_or_else(|_| PathBuf::from("."));
+    for arch_dir in arch_dirs {
+        for rel_path in engine_rel_paths(platform_dir, arch_dir, filename) {
+            // Resolve paths the same way Tauri resource bundling does.
+            if let Ok(candidate) = handle.path().resolve(&rel_path, BaseDirectory::Resource) {
+                attempted.push(candidate.to_string_lossy().to_string());
+                if candidate.exists() {
+                    let resolved = candidate
+                        .canonicalize()
+                        .unwrap_or_else(|_| candidate.clone());
+                    if arch_dir != primary_arch {
+                        log::warn!(
+                            "{} for {}/{} not found; using fallback arch {}/{}",
+                            filename,
+                            platform_dir,
+                            primary_arch,
+                            platform_dir,
+                            arch_dir
+                        );
+                    }
+                    log::info!("{} found at: {:?}", filename, resolved);
+                    return Ok(resolved);
+                }
+            }
 
-    let candidates = [
-        resource_dir.join(&rel_path),
-        PathBuf::from("..").join(&rel_path),
-        rel_path.clone(),
-    ];
-
-    for candidate in &candidates {
-        if candidate.exists() {
-            let resolved = candidate
-                .canonicalize()
-                .unwrap_or_else(|_| candidate.clone());
-            log::info!("{} found at: {:?}", filename, resolved);
-            return Ok(resolved);
+            // Dev fallback when running from repository checkout.
+            let dev_candidate = PathBuf::from(&rel_path);
+            attempted.push(dev_candidate.to_string_lossy().to_string());
+            if dev_candidate.exists() {
+                let resolved = dev_candidate
+                    .canonicalize()
+                    .unwrap_or_else(|_| dev_candidate.clone());
+                if arch_dir != primary_arch {
+                    log::warn!(
+                        "{} for {}/{} not found; using fallback arch {}/{}",
+                        filename,
+                        platform_dir,
+                        primary_arch,
+                        platform_dir,
+                        arch_dir
+                    );
+                }
+                log::info!("{} found at: {:?}", filename, resolved);
+                return Ok(resolved);
+            }
         }
     }
 
-    Err(format!("{} not found in any search path", filename).into())
+    attempted.sort();
+    attempted.dedup();
+    let attempted_preview = attempted
+        .iter()
+        .take(8)
+        .cloned()
+        .collect::<Vec<_>>()
+        .join(", ");
+    Err(format!(
+        "{} not found in any search path (checked {} paths; first attempts: {})",
+        filename,
+        attempted.len(),
+        attempted_preview
+    )
+    .into())
+}
+
+fn engine_rel_paths(platform_dir: &str, arch_dir: &str, filename: &str) -> Vec<String> {
+    vec![
+        format!("../extra/{}/{}/engine/{}", platform_dir, arch_dir, filename),
+        format!("extra/{}/{}/engine/{}", platform_dir, arch_dir, filename),
+    ]
 }
 
 fn is_local_rpc_host(host: &str) -> bool {
@@ -115,11 +163,13 @@ pub async fn start_engine(handle: &AppHandle) -> Result<(), Box<dyn std::error::
     log::info!("Starting aria2c: {:?}", bin_path);
     log::info!("aria2c args: {:?}", args);
 
-    let mut child = Command::new(&bin_path)
+    let mut command = Command::new(&bin_path);
+    command
         .args(&args)
         .stdout(Stdio::null())
-        .stderr(Stdio::piped())
-        .spawn()?;
+        .stderr(Stdio::piped());
+    configure_engine_spawn(&mut command);
+    let mut child = command.spawn()?;
 
     // Grab stderr so we can read startup errors if the process exits early.
     // Keep this handle until after the liveness check; dropping it too early
@@ -232,9 +282,16 @@ fn build_engine_args(
         .path()
         .app_config_dir()
         .unwrap_or_else(|_| PathBuf::from("."));
+    std::fs::create_dir_all(&config_dir)?;
 
     let session_path = config_dir.join(SESSION_FILENAME);
     let session_path_str = session_path.to_string_lossy().to_string();
+    let log_dir = handle
+        .path()
+        .app_log_dir()
+        .unwrap_or_else(|_| config_dir.clone());
+    std::fs::create_dir_all(&log_dir)?;
+    let log_path = log_dir.join(LOG_FILENAME);
 
     // Create the session file if it does not exist.
     if !session_path.exists() {
@@ -245,20 +302,17 @@ fn build_engine_args(
     }
 
     // Find aria2.conf.
-    let conf = resolve_engine_file(handle, "aria2.conf").unwrap_or_else(|_| {
-        log::warn!("aria2.conf not found, using fallback path");
-        PathBuf::from("aria2.conf")
-    });
+    let conf = resolve_engine_file(handle, "aria2.conf")?;
 
     let mut args = vec![
         format!("--conf-path={}", conf.to_string_lossy()),
         format!("--save-session={}", session_path_str),
+        format!("--log={}", log_path.to_string_lossy()),
     ];
 
-    if session_path.exists()
-        && std::fs::metadata(&session_path)
-            .map(|m| m.len() > 0)
-            .unwrap_or(false)
+    if std::fs::metadata(&session_path)
+        .map(|m| m.len() > 0)
+        .unwrap_or(false)
     {
         args.push(format!("--input-file={}", session_path_str));
     }
@@ -272,9 +326,20 @@ fn build_engine_args(
         .and_then(|v| v.as_bool())
         .unwrap_or(true);
 
+    if let Some(dir) = sys.get("dir").and_then(|v| v.as_str()) {
+        if !dir.trim().is_empty() {
+            std::fs::create_dir_all(dir)?;
+        }
+    }
+
     for (k, v) in sys {
         // Skip values that should not be passed to aria2.
-        if k == "rpc-secret" && v.as_str() == Some("") {
+        if (k == "rpc-secret" && v.as_str() == Some(""))
+            || matches!(
+                k.as_str(),
+                "save-session" | "input-file" | "conf-path" | "log"
+            )
+        {
             continue;
         }
 
@@ -341,3 +406,22 @@ fn get_arch_dir() -> &'static str {
         _ => "x64",
     }
 }
+
+fn get_engine_arch_dirs() -> Vec<&'static str> {
+    let primary = get_arch_dir();
+    if cfg!(target_os = "windows") && primary == "arm64" {
+        vec!["arm64", "x64", "ia32"]
+    } else {
+        vec![primary]
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn configure_engine_spawn(command: &mut Command) {
+    // Prevent aria2c from opening a separate console window.
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+    command.creation_flags(CREATE_NO_WINDOW);
+}
+
+#[cfg(not(target_os = "windows"))]
+fn configure_engine_spawn(_command: &mut Command) {}

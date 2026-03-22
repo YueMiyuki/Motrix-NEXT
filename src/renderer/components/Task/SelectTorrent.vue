@@ -91,18 +91,17 @@ export default {
       try {
         const parsedFiles = await this.parseTorrentFiles(file.raw)
         this.files = listTorrentFiles(parsedFiles)
-        this.$nextTick(() => {
-          this.$refs.torrentFileList?.toggleAllSelection()
-        })
         getAsBase64(file.raw, (torrent) => {
           this.name = file.name
           this.currentTorrent = torrent
           this.$emit('change', torrent, SELECTED_ALL_FILES)
+          this.$nextTick(() => {
+            this.$refs.torrentFileList?.toggleAllSelection()
+          })
         })
       } catch (err: any) {
         logger.warn('[Motrix] parse torrent failed:', err?.message || err)
-        this.files = []
-        this.$emit('change', EMPTY_STRING, NONE_SELECTED_FILES)
+        this.reset()
         this.$msg.error(this.$t('task.new-task-torrent-required'))
       }
     },

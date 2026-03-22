@@ -14,7 +14,35 @@ import { startupOnlyKeys } from '@shared/configKeys'
 import { ENGINE_RPC_HOST, ENGINE_RPC_PORT, EMPTY_STRING } from '@shared/constants'
 
 const RPC_CONFIG_KEYS = ['rpc-host', 'rpc-listen-port', 'rpc-secret']
-const TASK_LIST_FETCH_SIZE = 10000
+const DEFAULT_TASK_LIST_FETCH_SIZE = 1000
+const MAX_TASK_LIST_FETCH_SIZE = 2000
+
+const parseConfiguredTaskListFetchSize = () => {
+  const raw = (import.meta as any)?.env?.VITE_TASK_LIST_FETCH_SIZE
+  const parsed = Number(raw)
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return DEFAULT_TASK_LIST_FETCH_SIZE
+  }
+  return Math.min(Math.trunc(parsed), MAX_TASK_LIST_FETCH_SIZE)
+}
+
+const TASK_LIST_FETCH_SIZE = parseConfiguredTaskListFetchSize()
+
+const clampTaskListFetchSize = (value: unknown) => {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return TASK_LIST_FETCH_SIZE
+  }
+
+  const normalized = Math.trunc(parsed)
+  if (normalized > MAX_TASK_LIST_FETCH_SIZE) {
+    logger.warn(
+      `[Motrix] task list fetch size ${normalized} exceeds cap ${MAX_TASK_LIST_FETCH_SIZE}, clamping`,
+    )
+    return MAX_TASK_LIST_FETCH_SIZE
+  }
+  return normalized
+}
 
 export default class Api {
   [key: string]: any
@@ -273,8 +301,9 @@ export default class Api {
 
   fetchDownloadingTaskList(params: any = {}) {
     const { offset = 0, num = TASK_LIST_FETCH_SIZE, keys } = params
+    const safeNum = clampTaskListFetchSize(num)
     const activeArgs = compactUndefined([keys])
-    const waitingArgs = compactUndefined([offset, num, keys])
+    const waitingArgs = compactUndefined([offset, safeNum, keys])
     return new Promise((resolve, reject) => {
       this.ensureReady()
         .then((client) =>
@@ -293,13 +322,15 @@ export default class Api {
 
   fetchWaitingTaskList(params: any = {}) {
     const { offset = 0, num = TASK_LIST_FETCH_SIZE, keys } = params
-    const args = compactUndefined([offset, num, keys])
+    const safeNum = clampTaskListFetchSize(num)
+    const args = compactUndefined([offset, safeNum, keys])
     return this.ensureReady().then((client) => client.call('tellWaiting', ...args))
   }
 
   fetchStoppedTaskList(params: any = {}) {
     const { offset = 0, num = TASK_LIST_FETCH_SIZE, keys } = params
-    const args = compactUndefined([offset, num, keys])
+    const safeNum = clampTaskListFetchSize(num)
+    const args = compactUndefined([offset, safeNum, keys])
     return this.ensureReady().then((client) => client.call('tellStopped', ...args))
   }
 

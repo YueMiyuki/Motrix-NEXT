@@ -3,7 +3,13 @@ use std::process::{Child, Command};
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use std::sync::{Mutex, OnceLock};
 #[cfg(target_os = "windows")]
-use std::{ffi::c_void, os::windows::ffi::OsStrExt, path::Path};
+use std::{
+    ffi::c_void,
+    os::windows::ffi::OsStrExt,
+    path::Path,
+    sync::{mpsc, OnceLock},
+    thread,
+};
 use tauri::{AppHandle, Manager};
 
 #[tauri::command]
@@ -11,7 +17,7 @@ pub fn on_download_status_change(
     downloading: bool,
     _state: tauri::State<'_, crate::state::AppState>,
 ) -> Result<(), String> {
-    apply_download_inhibit(downloading)?;
+    apply_download_inhibit(downloading);
     Ok(())
 }
 
@@ -101,7 +107,7 @@ fn format_speed(bytes: u64) -> String {
     }
 }
 
-fn apply_download_inhibit(downloading: bool) -> Result<(), String> {
+fn apply_download_inhibit(downloading: bool) {
     #[cfg(target_os = "windows")]
     {
         windows_apply_download_inhibit(downloading);
@@ -121,8 +127,6 @@ fn apply_download_inhibit(downloading: bool) -> Result<(), String> {
     {
         let _ = downloading;
     }
-
-    Ok(())
 }
 
 fn add_recent_document(path: &str) -> Result<(), String> {
@@ -159,20 +163,33 @@ fn macos_inhibit_slot() -> &'static Mutex<Option<Child>> {
 }
 
 #[cfg(target_os = "macos")]
+fn clear_macos_inhibit_child(child_guard: &mut Option<Child>) {
+    if let Some(mut child) = child_guard.take() {
+        let _ = child.kill();
+        let _ = child.wait();
+    }
+}
+
+#[cfg(target_os = "macos")]
 fn macos_apply_download_inhibit(downloading: bool) {
     let slot = macos_inhibit_slot();
     let Ok(mut child_guard) = slot.lock() else {
         return;
     };
+
     if downloading {
         if child_guard.is_none() {
-            if let Ok(child) = Command::new("caffeinate").args(["-dimsu"]).spawn() {
-                *child_guard = Some(child);
+            match Command::new("caffeinate").args(["-ims"]).spawn() {
+                Ok(child) => {
+                    *child_guard = Some(child);
+                }
+                Err(err) => {
+                    log::warn!("Failed to spawn caffeinate: {}", err);
+                }
             }
         }
-    } else if let Some(mut child) = child_guard.take() {
-        let _ = child.kill();
-        let _ = child.wait();
+    } else {
+        clear_macos_inhibit_child(&mut child_guard);
     }
 }
 
@@ -199,7 +216,7 @@ fn linux_apply_download_inhibit(downloading: bool) {
 
     if downloading {
         if cookie_guard.is_none() {
-            let Ok(output) = Command::new("dbus-send")
+            match Command::new("dbus-send")
                 .args([
                     "--session",
                     "--dest=org.freedesktop.ScreenSaver",
@@ -211,44 +228,126 @@ fn linux_apply_download_inhibit(downloading: bool) {
                     "string:Downloading active tasks",
                 ])
                 .output()
-            else {
-                return;
-            };
-
-            if output.status.success() {
-                if let Some(cookie) = parse_dbus_uint32(&output.stdout) {
-                    *cookie_guard = Some(cookie);
+            {
+                Ok(output) => {
+                    if output.status.success() {
+                        if let Some(cookie) = parse_dbus_uint32(&output.stdout) {
+                            *cookie_guard = Some(cookie);
+                        } else {
+                            log::warn!("Failed to parse DBus inhibit cookie from response");
+                        }
+                    } else {
+                        log::warn!(
+                            "DBus Inhibit call failed with status {:?}",
+                            output.status.code()
+                        );
+                    }
+                }
+                Err(err) => {
+                    log::warn!("Failed to invoke DBus Inhibit call: {}", err);
                 }
             }
         }
-    } else if let Some(cookie) = cookie_guard.take() {
-        let _ = Command::new("dbus-send")
+    } else if let Some(cookie) = cookie_guard.as_ref().copied() {
+        match Command::new("dbus-send")
             .args([
                 "--session",
                 "--dest=org.freedesktop.ScreenSaver",
                 "--type=method_call",
+                "--print-reply",
                 "/org/freedesktop/ScreenSaver",
                 "org.freedesktop.ScreenSaver.UnInhibit",
                 &format!("uint32:{cookie}"),
             ])
-            .output();
+            .output()
+        {
+            Ok(output) => {
+                if output.status.success() {
+                    *cookie_guard = None;
+                } else {
+                    log::warn!(
+                        "DBus UnInhibit call failed with status {:?}, keeping cookie {} for retry",
+                        output.status.code(),
+                        cookie
+                    );
+                }
+            }
+            Err(err) => {
+                log::warn!(
+                    "Failed to invoke DBus UnInhibit call, keeping cookie {} for retry: {}",
+                    cookie,
+                    err
+                );
+            }
+        }
     }
 }
 
 #[cfg(target_os = "windows")]
-fn windows_apply_download_inhibit(downloading: bool) {
+struct WindowsInhibitWorker {
+    tx: mpsc::Sender<bool>,
+}
+
+#[cfg(target_os = "windows")]
+fn windows_inhibit_worker() -> &'static WindowsInhibitWorker {
     const ES_CONTINUOUS: u32 = 0x8000_0000;
     const ES_SYSTEM_REQUIRED: u32 = 0x0000_0001;
 
-    let flags = if downloading {
-        ES_CONTINUOUS | ES_SYSTEM_REQUIRED
-    } else {
-        ES_CONTINUOUS
-    };
+    static WORKER: OnceLock<WindowsInhibitWorker> = OnceLock::new();
+    WORKER.get_or_init(|| {
+        let (tx, rx) = mpsc::channel::<bool>();
 
-    unsafe {
-        // SAFETY: SetThreadExecutionState is a Win32 API with no Rust-side aliasing requirements.
-        let _ = SetThreadExecutionState(flags);
+        thread::spawn(move || {
+            let mut inhibited = false;
+            while let Ok(downloading) = rx.recv() {
+                if downloading == inhibited {
+                    continue;
+                }
+
+                let flags = if downloading {
+                    ES_CONTINUOUS | ES_SYSTEM_REQUIRED
+                } else {
+                    ES_CONTINUOUS
+                };
+
+                unsafe {
+                    // SAFETY: All SetThreadExecutionState calls happen on this dedicated worker thread.
+                    let _ = SetThreadExecutionState(flags);
+                }
+
+                inhibited = downloading;
+            }
+        });
+
+        WindowsInhibitWorker { tx }
+    })
+}
+
+#[cfg(target_os = "windows")]
+fn windows_apply_download_inhibit(downloading: bool) {
+    let worker = windows_inhibit_worker();
+    if let Err(err) = worker.tx.send(downloading) {
+        log::warn!("Failed to update Windows sleep inhibit state: {}", err);
+    }
+}
+
+pub fn cleanup_download_inhibit() {
+    #[cfg(target_os = "windows")]
+    {
+        windows_apply_download_inhibit(false);
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        let slot = macos_inhibit_slot();
+        if let Ok(mut child_guard) = slot.lock() {
+            clear_macos_inhibit_child(&mut child_guard);
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        linux_apply_download_inhibit(false);
     }
 }
 

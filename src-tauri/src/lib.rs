@@ -10,7 +10,7 @@ use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 pub fn run() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
 
-    tauri::Builder::default()
+    let app = tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
@@ -79,8 +79,17 @@ pub fn run() {
             commands::event_cmds::on_task_download_complete,
             commands::event_cmds::update_tray,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running Motrix");
+        .build(tauri::generate_context!())
+        .expect("error while building Motrix");
+
+    app.run(|_, event| {
+        if matches!(
+            event,
+            tauri::RunEvent::ExitRequested { .. } | tauri::RunEvent::Exit
+        ) {
+            commands::event_cmds::cleanup_download_inhibit();
+        }
+    });
 }
 
 fn sync_open_at_login_setting(app: &tauri::App) {

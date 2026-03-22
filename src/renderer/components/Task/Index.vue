@@ -207,7 +207,10 @@ export default {
         logger.warn('[Motrix] batchForcePauseTask before removeTasks failed:', err)
       }
       if (isRemoveWithFiles) {
-        await this.batchDeleteTaskFiles(taskList)
+        const deleted = await this.batchDeleteTaskFiles(taskList)
+        if (!deleted) {
+          return
+        }
       }
 
       this.removeTaskItems(gids)
@@ -224,7 +227,9 @@ export default {
       })
       if (failed) {
         this.$msg.error(this.$t('task.remove-task-file-fail'))
+        return false
       }
+      return true
     },
     removeTaskItems(gids) {
       useTaskStore()

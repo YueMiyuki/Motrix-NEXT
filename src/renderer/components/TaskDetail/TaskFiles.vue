@@ -26,7 +26,7 @@
             <TableCell>
               <Checkbox
                 :model-value="isSelected(row)"
-                @update:model-value="(val: boolean) => toggleRow(row, val)"
+                @update:model-value="(val) => toggleRow(row, val)"
               />
             </TableCell>
             <TableCell class="truncate max-w-[200px]">{{ row.name }}</TableCell>

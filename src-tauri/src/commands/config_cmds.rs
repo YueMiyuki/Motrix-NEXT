@@ -24,22 +24,33 @@ pub fn save_preference(
     state: State<'_, AppState>,
     config: Value,
 ) -> Result<(), String> {
-    if let Some(enabled) = config
+    let open_at_login = config
         .get("user")
         .and_then(|v| v.get("open-at-login"))
         .and_then(|v| v.as_bool())
-    {
-        apply_open_at_login(&handle, enabled)?;
-    }
+        .or_else(|| config.get("open-at-login").and_then(|v| v.as_bool()));
 
     let mut mgr = state.config.lock().map_err(|e| e.to_string())?;
+    let mut user = config
+        .get("user")
+        .and_then(|v| v.as_object())
+        .cloned()
+        .unwrap_or_default();
+
+    if let Some(enabled) = open_at_login {
+        user.insert("open-at-login".into(), Value::Bool(enabled));
+    }
 
     if let Some(system) = config.get("system").and_then(|v| v.as_object()) {
         mgr.set_system_config_map(system)?;
     }
 
-    if let Some(user) = config.get("user").and_then(|v| v.as_object()) {
-        mgr.set_user_config_map(user)?;
+    if !user.is_empty() {
+        mgr.set_user_config_map(&user)?;
+    }
+
+    if let Some(enabled) = open_at_login {
+        apply_open_at_login(&handle, enabled)?;
     }
 
     Ok(())

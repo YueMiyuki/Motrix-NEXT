@@ -1,0 +1,11 @@
+{
+  "bundle": {
+    "resources": ["../extra/win32/ia32/engine/**/*"],
+    "targets": ["nsis"],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

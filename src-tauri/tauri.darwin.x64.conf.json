@@ -1,0 +1,5 @@
+{
+  "bundle": {
+    "resources": ["../extra/darwin/x64/engine/**/*"]
+  }
+}
