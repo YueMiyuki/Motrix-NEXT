@@ -2453,6 +2453,7 @@ dependencies = [
  "tauri-plugin-store",
  "tokio",
  "trash",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
