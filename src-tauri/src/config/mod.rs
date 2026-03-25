@@ -58,6 +58,11 @@ impl ConfigManager {
         self.save_system()
     }
 
+    pub fn remove_system_config_key(&mut self, key: &str) -> Result<(), String> {
+        self.system_config.remove(key);
+        self.save_system()
+    }
+
     pub fn set_user_config_map(&mut self, map: &Map<String, Value>) -> Result<(), String> {
         for (k, v) in map {
             self.user_config.insert(k.clone(), v.clone());

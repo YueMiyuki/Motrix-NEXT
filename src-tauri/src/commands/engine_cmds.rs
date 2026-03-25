@@ -5,6 +5,7 @@ use std::time::Duration;
 
 use serde_json::{json, Map, Value};
 use tauri::AppHandle;
+use tokio::task::spawn_blocking;
 use tokio::time::sleep;
 
 const TEMP_DOWNLOAD_SUFFIX: &str = ".part";
@@ -199,14 +200,13 @@ pub async fn add_torrent_by_path(
     if bytes.is_empty() {
         return Err("Torrent payload is empty".to_string());
     }
-    let is_multi_file = crate::commands::file_cmds::is_multi_file_torrent(&bytes).unwrap_or(false);
     let fallback_name = fs_path
         .file_stem()
         .and_then(|value| value.to_str())
         .unwrap_or("download");
-    let torrent_root_name =
-        crate::commands::file_cmds::extract_torrent_root_name(&bytes, fallback_name)
-            .unwrap_or_else(|_| fallback_name.to_string());
+    let (is_multi_file, torrent_root_name) =
+        crate::commands::file_cmds::inspect_torrent_metadata(&bytes, fallback_name)
+            .unwrap_or_else(|_| (false, fallback_name.to_string()));
 
     let (host, port, secret) = resolve_rpc_endpoint(&state)?;
     let mut params = Vec::new();
@@ -258,7 +258,13 @@ pub async fn add_torrent_by_path(
 
     let mut retried_after_restart = false;
     loop {
-        match call_aria2_rpc(&host, port, &payload) {
+        let host_for_call = host.clone();
+        let payload_for_call = payload.clone();
+        let rpc_result =
+            spawn_blocking(move || call_aria2_rpc(&host_for_call, port, &payload_for_call))
+                .await
+                .map_err(|e| format!("RPC task failed: {e}"))?;
+        match rpc_result {
             Ok(response) => return parse_add_torrent_response(response),
             Err(err) => {
                 if retried_after_restart || !should_retry_add_torrent_rpc(&err) {

@@ -64,6 +64,7 @@ pub fn save_preference(
             system.remove("enable-upnp");
             mgr.set_system_config_map(&system)?;
         }
+        mgr.remove_system_config_key("enable-upnp")?;
 
         if !user.is_empty() {
             mgr.set_user_config_map(&user)?;

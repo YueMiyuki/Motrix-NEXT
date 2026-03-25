@@ -213,8 +213,7 @@
     height: 24px;
     padding: 0 8px;
     border-radius: calc(var(--radius) - 2px);
-    border-color: var(--mo-task-item-border-color);
-    border-style: none !important;
+    border: 1px solid var(--mo-task-item-border-color);
     color: var(--mo-task-action-color);
     background: transparent;
     font-size: 12px;

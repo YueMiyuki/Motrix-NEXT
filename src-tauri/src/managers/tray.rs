@@ -139,10 +139,7 @@ pub fn setup_tray(app: &App) -> Result<(), Box<dyn std::error::Error>> {
                 "tray-task-list" => show_and_emit(app, "application:task-list"),
                 "tray-preferences" => show_and_emit(app, "application:preferences"),
                 "tray-quit" => {
-                    if let Some(window) = app.get_webview_window("main") {
-                        let _ = window.show();
-                        let _ = window.set_focus();
-                    }
+                    let _ = crate::commands::app_cmds::show_main_window(app);
                     let _ = app.emit("confirm-quit", ());
                 }
                 _ => {}

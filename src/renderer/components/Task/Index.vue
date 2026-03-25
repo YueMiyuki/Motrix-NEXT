@@ -264,8 +264,21 @@ export default {
       })
     },
     async batchDeleteTaskFiles(taskList) {
-      const promises = taskList.map((task) => this.deleteTaskFiles(task))
-      const results = await Promise.allSettled(promises)
+      const results = []
+      for (const task of taskList) {
+        try {
+          const value = await this.deleteTaskFiles(task)
+          results.push({
+            status: 'fulfilled',
+            value,
+          })
+        } catch (reason) {
+          results.push({
+            status: 'rejected',
+            reason,
+          })
+        }
+      }
       logger.log('[Motrix] batch delete task files: ', results)
       const failed = results.some((item) => {
         if (item.status === 'rejected') {

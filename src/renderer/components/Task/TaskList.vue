@@ -89,7 +89,7 @@ export default {
       return useTaskStore().totalPages
     },
     useVirtualList() {
-      return this.paginatedTaskList.length >= VIRTUAL_LIST_THRESHOLD
+      return this.taskList.length >= VIRTUAL_LIST_THRESHOLD
     },
   },
   methods: {

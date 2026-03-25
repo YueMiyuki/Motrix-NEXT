@@ -8,6 +8,7 @@ const MAX_TORRENT_PREVIEW_FILES: usize = 2_000;
 const MAX_TORRENT_PREVIEW_BYTES: usize = 8 * 1024 * 1024;
 const DEFAULT_TORRENT_PREVIEW_PAGE_SIZE: usize = 300;
 const MAX_TORRENT_PREVIEW_PAGE_SIZE: usize = 2_000;
+const TEMP_DOWNLOAD_SUFFIX: &str = ".part";
 
 #[derive(Debug)]
 enum BencodeValue {
@@ -63,6 +64,26 @@ fn canonicalize_path(path: &Path) -> Result<PathBuf, String> {
     }
 
     std::fs::canonicalize(path).map_err(|e| e.to_string())
+}
+
+fn canonicalize_parent_path(path: &Path) -> Result<PathBuf, String> {
+    let parent = path
+        .parent()
+        .ok_or_else(|| "Path has no parent directory".to_string())?;
+    canonicalize_path(parent)
+}
+
+fn strip_temp_download_suffix(name: &str) -> Option<String> {
+    if name.len() <= TEMP_DOWNLOAD_SUFFIX.len() {
+        return None;
+    }
+
+    let lower = name.to_ascii_lowercase();
+    if !lower.ends_with(TEMP_DOWNLOAD_SUFFIX) {
+        return None;
+    }
+
+    Some(name[..name.len() - TEMP_DOWNLOAD_SUFFIX.len()].to_string())
 }
 
 fn ensure_torrent_extension(path: &Path) -> Result<(), String> {
@@ -154,6 +175,9 @@ pub fn rename_path(from_path: String, to_path: String) -> Result<(), String> {
 
     let from = PathBuf::from(from_path);
     let to = PathBuf::from(to_path);
+    if !from.is_absolute() || !to.is_absolute() {
+        return Err("Path must be absolute".to_string());
+    }
 
     if !from.exists() {
         if to.exists() {
@@ -162,10 +186,24 @@ pub fn rename_path(from_path: String, to_path: String) -> Result<(), String> {
         return Err("Source path does not exist".to_string());
     }
 
-    if let Some(parent) = to.parent() {
-        if !parent.exists() {
-            std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
-        }
+    // Limit rename_path to in-place temporary suffix finalization to avoid arbitrary moves.
+    let from_parent = canonicalize_parent_path(&from)?;
+    let to_parent = canonicalize_parent_path(&to)?;
+    if from_parent != to_parent {
+        return Err("Cross-directory rename is not allowed".to_string());
+    }
+    let from_name = from
+        .file_name()
+        .and_then(|value| value.to_str())
+        .ok_or_else(|| "Invalid source path".to_string())?;
+    let to_name = to
+        .file_name()
+        .and_then(|value| value.to_str())
+        .ok_or_else(|| "Invalid target path".to_string())?;
+    let expected_to_name = strip_temp_download_suffix(from_name)
+        .ok_or_else(|| "Only temporary download files can be renamed".to_string())?;
+    if expected_to_name != to_name {
+        return Err("Invalid rename target".to_string());
     }
 
     std::fs::rename(from, to).map_err(|e| e.to_string())
@@ -317,7 +355,10 @@ fn normalize_torrent_path(path: &str) -> String {
     path.replace('\\', "/").trim_start_matches('/').to_string()
 }
 
-pub(crate) fn is_multi_file_torrent(bytes: &[u8]) -> Result<bool, String> {
+pub(crate) fn inspect_torrent_metadata(
+    bytes: &[u8],
+    fallback: &str,
+) -> Result<(bool, String), String> {
     if bytes.is_empty() {
         return Err("Torrent payload is empty".to_string());
     }
@@ -329,29 +370,16 @@ pub(crate) fn is_multi_file_torrent(bytes: &[u8]) -> Result<bool, String> {
         .ok_or_else(|| "Invalid torrent metadata".to_string())?;
     let info = as_dict(info_value).ok_or_else(|| "Invalid torrent metadata".to_string())?;
 
-    Ok(matches!(
+    let is_multi_file = matches!(
         dict_get_first(info, &[b"files"]).and_then(as_list),
         Some(files) if !files.is_empty()
-    ))
-}
-
-pub(crate) fn extract_torrent_root_name(bytes: &[u8], fallback: &str) -> Result<String, String> {
-    if bytes.is_empty() {
-        return Err("Torrent payload is empty".to_string());
-    }
-
-    let mut cursor = 0usize;
-    let root = parse_bencode_value(bytes, &mut cursor)?;
-    let root_dict = as_dict(&root).ok_or_else(|| "Invalid torrent metadata".to_string())?;
-    let info_value = dict_get_first(root_dict, &[b"info"])
-        .ok_or_else(|| "Invalid torrent metadata".to_string())?;
-    let info = as_dict(info_value).ok_or_else(|| "Invalid torrent metadata".to_string())?;
+    );
 
     let name = dict_get_first(info, &[b"name.utf-8", b"name"])
         .map(as_string)
         .filter(|value| !value.is_empty())
         .unwrap_or_else(|| fallback.to_string());
-    Ok(name)
+    Ok((is_multi_file, name))
 }
 
 fn split_torrent_path_segments(path: &str) -> Vec<String> {
@@ -774,9 +802,8 @@ fn matches_generated_torrent_sidecar(file_name: &str, normalized_info_hash: &str
         return true;
     }
 
-    // Accept hex-only hash-like names to ensure generated torrent files are cleaned up.
     let is_hex_stem = stem.chars().all(|c| c.is_ascii_hexdigit());
-    is_hex_stem && (stem.len() == 40 || stem.len() == 64)
+    is_hex_stem && (stem.len() == 40 || stem.len() == 64) && stem == normalized_info_hash
 }
 
 #[tauri::command]

@@ -241,10 +241,17 @@ export const getTaskName = (task, options = {}) => {
     result = ellipsis(bittorrent.info.name, maxLen)
   } else if (files.length === 1) {
     result = getFileNameFromFile(files[0])
+    if (task.status === TASK_STATUS.COMPLETE) {
+      result = stripTempDownloadSuffix(result)
+    }
     result = ellipsis(result, maxLen)
   }
 
-  if (task.status === TASK_STATUS.COMPLETE && !(bittorrent && bittorrent.info)) {
+  if (
+    task.status === TASK_STATUS.COMPLETE &&
+    !(bittorrent && bittorrent.info) &&
+    files.length !== 1
+  ) {
     result = stripTempDownloadSuffix(result)
   }
 

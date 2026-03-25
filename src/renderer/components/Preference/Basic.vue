@@ -790,7 +790,9 @@ export default {
       this.form.maxOverallUploadLimit = limit
     },
     onKeepSeedingChange(enable) {
-      this.form.seedRatio = 0
+      if (!enable) {
+        this.form.seedRatio = 0
+      }
       this.form.seedTime = enable ? 525600 : 0
     },
     onKeepSeedingToggle(enable) {
