@@ -25,5 +25,6 @@ release
 
 # tauri
 src-tauri/target
+src-tauri/gen
 
 TODO
