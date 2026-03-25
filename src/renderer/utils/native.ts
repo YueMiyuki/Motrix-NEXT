@@ -23,10 +23,7 @@ export const stripTempDownloadSuffix = (fullPath = ''): string => {
 
 export const showItemInFolder = async (
   fullPath: string,
-  {
-    errorMsg,
-    fallbackPath,
-  }: { errorMsg?: string; fallbackPath?: string } = {},
+  { errorMsg, fallbackPath }: { errorMsg?: string; fallbackPath?: string } = {},
 ) => {
   const revealPath = `${fullPath || ''}`.trim()
   const fallback = `${fallbackPath || ''}`.trim()
