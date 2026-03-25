@@ -267,11 +267,16 @@ pub async fn start_engine(handle: &AppHandle) -> Result<(), Box<dyn std::error::
 
     #[cfg(target_os = "windows")]
     {
-        let pid = child
-            .id()
-            .ok_or_else(|| "Failed to get aria2c process id after spawn".to_string())?;
-        win_process_guard::bind_pid(pid)
-            .map_err(|e| format!("Failed to bind aria2c into process job: {}", e))?;
+        if let Some(pid) = child.id() {
+            if let Err(e) = win_process_guard::bind_pid(pid) {
+                log::warn!(
+                    "Failed to bind aria2c into process job; continuing without job guard: {}",
+                    e
+                );
+            }
+        } else {
+            log::warn!("Failed to get aria2c process id after spawn; continuing startup");
+        }
     }
 
     // Grab stderr so we can read startup errors if the process exits early.
