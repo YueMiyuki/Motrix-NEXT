@@ -37,6 +37,13 @@ pub fn run() {
                 let _ = window.set_decorations(false);
             }
 
+            let opened_at_login = std::env::args().any(|arg| arg == "--opened-at-login=1");
+            if opened_at_login {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.hide();
+                }
+            }
+
             let handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 if let Err(e) = engine::start_engine(&handle).await {
