@@ -64,6 +64,127 @@
   .mo-task-activity .graphic-box {
     margin-bottom: 1rem;
   }
+  .activity-speed-trend {
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 2px);
+    background-color: var(--card);
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+  .activity-speed-trend-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .activity-speed-trend-title {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+  }
+  .activity-speed-trend-legend {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .activity-speed-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .speed-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .speed-dot-download {
+    background-color: var(--mo-graphic-atom-color-4);
+  }
+  .speed-dot-upload {
+    background-color: var(--primary);
+  }
+  .activity-speed-trend-chart {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    height: 112px;
+  }
+  .activity-speed-chart-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .activity-speed-svg {
+    width: 100%;
+    height: 92px;
+    display: block;
+    border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
+    border-radius: calc(var(--radius) - 4px);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--muted) 40%, transparent) 0%,
+      transparent 100%
+    );
+  }
+  .activity-speed-time-axis {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10px;
+    line-height: 1;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+  .activity-speed-axis-title {
+    color: var(--foreground);
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .activity-speed-grid {
+    stroke: var(--border);
+    stroke-width: 0.6;
+    stroke-dasharray: 2 3;
+    opacity: 0.75;
+  }
+  .activity-speed-grid.axis-x {
+    stroke-dasharray: 1 4;
+    opacity: 0.55;
+  }
+  .activity-speed-line {
+    fill: none;
+    stroke-width: 0.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.95;
+    vector-effect: non-scaling-stroke;
+  }
+  .activity-speed-line.download {
+    stroke: var(--mo-graphic-atom-color-4);
+  }
+  .activity-speed-line.upload {
+    stroke: var(--primary);
+  }
+  .activity-speed-scale {
+    width: 62px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 10px;
+    line-height: 1;
+    color: var(--muted-foreground);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
   .activity-progress {
     margin-bottom: 1.25rem;
   }

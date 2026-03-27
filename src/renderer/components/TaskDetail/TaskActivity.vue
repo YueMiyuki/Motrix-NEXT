@@ -1,5 +1,69 @@
 <template>
   <div class="mo-task-activity" v-if="task">
+    <div class="activity-speed-trend">
+      <div class="activity-speed-trend-header">
+        <span class="activity-speed-trend-title">
+          {{ $t('task.task-download-speed') }}
+          <template v-if="isBT"> / {{ $t('task.task-upload-speed') }}</template>
+        </span>
+        <div class="activity-speed-trend-legend">
+          <span class="activity-speed-legend-item">
+            <i class="speed-dot speed-dot-download"></i>
+            {{ formatBytes(displayDownloadSpeed) }}/s
+          </span>
+          <span class="activity-speed-legend-item" v-if="isBT">
+            <i class="speed-dot speed-dot-upload"></i>
+            {{ formatBytes(displayUploadSpeed) }}/s
+          </span>
+        </div>
+      </div>
+      <div class="activity-speed-trend-chart">
+        <div class="activity-speed-chart-main">
+          <svg
+            class="activity-speed-svg"
+            viewBox="0 0 100 48"
+            preserveAspectRatio="none"
+            role="img"
+            :aria-label="$t('task.task-speed-trend-aria-label')"
+          >
+            <line class="activity-speed-grid" x1="0" y1="4" x2="100" y2="4" />
+            <line class="activity-speed-grid" x1="0" y1="24" x2="100" y2="24" />
+            <line class="activity-speed-grid" x1="0" y1="44" x2="100" y2="44" />
+            <line
+              v-for="x in verticalGridLines"
+              :key="`grid-x-${x}`"
+              class="activity-speed-grid axis-x"
+              :x1="x"
+              y1="4"
+              :x2="x"
+              y2="44"
+            />
+            <path
+              v-if="downloadSpeedPath"
+              class="activity-speed-line download"
+              :d="downloadSpeedPath"
+            />
+            <path
+              v-if="isBT && uploadSpeedPath"
+              class="activity-speed-line upload"
+              :d="uploadSpeedPath"
+            />
+          </svg>
+          <div class="activity-speed-time-axis">
+            <span>{{ timeAxisStartLabel }}</span>
+            <span class="activity-speed-axis-title">{{ $t('task.task-speed-time-axis') }}</span>
+            <span>{{ timeAxisEndLabel }}</span>
+          </div>
+        </div>
+        <div class="activity-speed-scale">
+          <span class="activity-speed-axis-title">{{ $t('task.task-speed-axis') }}</span>
+          <span>{{ formatBytes(speedHistoryMax) }}/s</span>
+          <span>{{ formatBytes(Math.round(speedHistoryMax / 2)) }}/s</span>
+          <span>0 B/s</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Piece graphic -->
     <div class="graphic-box" ref="graphicBox">
       <mo-task-graphic
@@ -91,6 +155,8 @@ import TaskProgress from '@/components/Task/TaskProgress.vue'
 
 const DEFAULT_SPLIT_SEGMENTS = 16
 const MAX_SPLIT_SEGMENTS = 16
+const SPEED_HISTORY_LIMIT = 60
+const SPEED_VERTICAL_GRID_COUNT = 6
 
 export default {
   name: 'mo-task-activity',
@@ -125,6 +191,8 @@ export default {
   data() {
     return {
       graphicWidth: 0,
+      speedHistory: [],
+      speedSampler: null,
     }
   },
   computed: {
@@ -157,6 +225,9 @@ export default {
     },
     isActive() {
       return this.taskStatus === TASK_STATUS.ACTIVE
+    },
+    shouldSampleSpeed() {
+      return this.taskStatus === TASK_STATUS.ACTIVE || this.taskStatus === TASK_STATUS.SEEDING
     },
     percent() {
       const { totalLength, completedLength } = this.task
@@ -251,13 +322,109 @@ export default {
     splitProgressPercents() {
       return this.splitProgressList.map((item) => item.percent)
     },
+    speedHistoryMax() {
+      const maxSpeed = this.speedHistory.reduce((max, sample) => {
+        const downloadSpeed = Number(sample.download || 0)
+        const uploadSpeed = this.isBT ? Number(sample.upload || 0) : 0
+        return Math.max(max, downloadSpeed, uploadSpeed)
+      }, 0)
+      return Math.max(1, maxSpeed)
+    },
+    downloadSpeedPath() {
+      return this.buildSpeedPath('download')
+    },
+    uploadSpeedPath() {
+      return this.buildSpeedPath('upload')
+    },
+    verticalGridLines() {
+      const interval = 100 / SPEED_VERTICAL_GRID_COUNT
+      return new Array(SPEED_VERTICAL_GRID_COUNT + 1)
+        .fill(0)
+        .map((_, index) => Number((index * interval).toFixed(2)))
+    },
+    timeAxisStartLabel() {
+      return this.$t('task.task-speed-time-ago', { seconds: SPEED_HISTORY_LIMIT })
+    },
+    timeAxisEndLabel() {
+      return this.$t('task.task-speed-now')
+    },
   },
   mounted() {
     this.$nextTick(() => {
       this.updateGraphicWidth()
     })
+    this.resetSpeedHistory()
+    this.syncSpeedSampler()
+  },
+  beforeUnmount() {
+    this.stopSpeedSampler()
+  },
+  watch: {
+    'task.gid'() {
+      this.resetSpeedHistory()
+      this.syncSpeedSampler()
+    },
+    shouldSampleSpeed() {
+      this.syncSpeedSampler()
+    },
   },
   methods: {
+    startSpeedSampler() {
+      this.stopSpeedSampler()
+      this.speedSampler = window.setInterval(() => {
+        this.pushSpeedSample()
+      }, 1000)
+    },
+    stopSpeedSampler() {
+      if (this.speedSampler) {
+        window.clearInterval(this.speedSampler)
+        this.speedSampler = null
+      }
+    },
+    resetSpeedHistory() {
+      this.speedHistory = []
+      this.pushSpeedSample()
+    },
+    syncSpeedSampler() {
+      if (this.shouldSampleSpeed) {
+        this.startSpeedSampler()
+      } else {
+        this.stopSpeedSampler()
+      }
+    },
+    pushSpeedSample() {
+      if (!this.task || !this.shouldSampleSpeed) {
+        return
+      }
+      const sample = {
+        download: Math.max(0, this.displayDownloadSpeed),
+        upload: this.isBT ? Math.max(0, this.displayUploadSpeed) : 0,
+      }
+      const nextHistory = [...this.speedHistory, sample]
+      this.speedHistory = nextHistory.slice(-SPEED_HISTORY_LIMIT)
+    },
+    buildSpeedPath(type) {
+      if (!Array.isArray(this.speedHistory) || this.speedHistory.length < 2) {
+        return ''
+      }
+      const maxSpeed = this.speedHistoryMax
+      const historyLength = this.speedHistory.length
+      const limitDenominator = Math.max(SPEED_HISTORY_LIMIT - 1, 1)
+      const startOffset = Math.max(SPEED_HISTORY_LIMIT - historyLength, 0)
+      const minY = 4
+      const maxY = 44
+      const ySpan = maxY - minY
+      return this.speedHistory
+        .map((sample, index) => {
+          const value = Math.max(0, Number(sample[type] || 0))
+          const ratio = Math.min(1, value / maxSpeed)
+          const x = ((startOffset + index) / limitDenominator) * 100
+          const y = maxY - ratio * ySpan
+          const point = `${x.toFixed(2)} ${y.toFixed(2)}`
+          return index === 0 ? `M ${point}` : `L ${point}`
+        })
+        .join(' ')
+    },
     updateGraphicWidth() {
       if (!this.$refs.graphicBox) {
         return
