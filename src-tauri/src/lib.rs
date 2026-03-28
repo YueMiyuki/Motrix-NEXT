@@ -4,7 +4,7 @@ mod engine;
 mod managers;
 mod state;
 
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 
 pub fn run() {
@@ -24,6 +24,19 @@ pub fn run() {
             Some(vec!["--opened-at-login=1"]),
         ))
         .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.show();
+                let _ = window.set_focus();
+
+                if let Some(path) = args.get(1) {
+                    if std::path::Path::new(path).exists() {
+                        log::info!("Single instance received file: {}", path);
+                        let _ = window.emit("open-file", path);
+                    }
+                }
+            }
+        }))
         .plugin(tauri_plugin_deep_link::init())
         .setup(|app| {
             let app_state = state::AppState::new(app.handle())?;

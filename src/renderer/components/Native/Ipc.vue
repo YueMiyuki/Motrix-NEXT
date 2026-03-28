@@ -28,12 +28,23 @@ export default {
         }
       })
 
+      const unlistenFile = await listen('open-file', (event) => {
+        const path = event.payload as string
+        if (path && path.endsWith('.torrent')) {
+          commands.execute('application:new-bt-task-with-file', path)
+        }
+      })
+
       if (!this.alive || token !== this.bindToken) {
         unlisten()
+        unlistenFile()
         return
       }
 
-      this.unlisten = unlisten
+      this.unlisten = () => {
+        unlisten()
+        unlistenFile()
+      }
     },
     unbindIpcEvents() {
       if (this.unlisten) {
