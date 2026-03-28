@@ -114,3 +114,8 @@ pub fn auto_hide_window(enabled: bool) -> Result<(), String> {
     log::info!("auto_hide_window: {}", enabled);
     Ok(())
 }
+
+#[tauri::command]
+pub fn is_opened_at_login() -> bool {
+    std::env::args().any(|arg| arg == "--opened-at-login=1")
+}

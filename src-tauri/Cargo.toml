@@ -33,3 +33,11 @@ open = "5"
 trash = "5"
 tauri-plugin-clipboard-manager = "2.3.2"
 tauri-plugin-nosleep = { git = "https://github.com/pevers/tauri-plugin-nosleep", rev = "6f6ab76ec171d075476b585282290fcf2e1c40b5" }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "^0.61.2", features = [
+	"Win32_Foundation",
+	"Win32_Security",
+	"Win32_System_Threading",
+	"Win32_System_JobObjects",
+] }

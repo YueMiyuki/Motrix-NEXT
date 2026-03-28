@@ -6,7 +6,7 @@ import { EMPTY_STRING, TASK_STATUS } from '@shared/constants'
 import { checkTaskIsBT, intersection } from '@shared/utils'
 
 const DEFAULT_TASKS_PER_PAGE = 20
-const MAX_TASKS_PER_PAGE = 50
+const TASKS_PER_PAGE_OPTIONS = [10, 20, 30, 40, 50]
 const TASKS_PER_PAGE_STORAGE_KEY = 'motrix.tasks-per-page'
 
 const clampTasksPerPage = (value: number) => {
@@ -14,7 +14,13 @@ const clampTasksPerPage = (value: number) => {
   if (!Number.isFinite(normalized)) {
     return DEFAULT_TASKS_PER_PAGE
   }
-  return Math.min(Math.max(Math.floor(normalized), 1), MAX_TASKS_PER_PAGE)
+
+  const intValue = Math.floor(normalized)
+  if (TASKS_PER_PAGE_OPTIONS.includes(intValue)) {
+    return intValue
+  }
+
+  return DEFAULT_TASKS_PER_PAGE
 }
 
 const loadTasksPerPage = () => {

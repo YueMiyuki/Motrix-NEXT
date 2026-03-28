@@ -9,6 +9,99 @@ use tokio::sync::Mutex;
 
 use crate::state::AppState;
 
+#[cfg(target_os = "windows")]
+mod win_process_guard {
+    use std::io;
+    use std::mem::{size_of, zeroed};
+    use std::ptr;
+    use std::sync::LazyLock;
+    use windows_sys::Win32::Foundation::CloseHandle;
+    use windows_sys::Win32::Foundation::HANDLE;
+    use windows_sys::Win32::System::JobObjects::AssignProcessToJobObject;
+    use windows_sys::Win32::System::JobObjects::CreateJobObjectW;
+    use windows_sys::Win32::System::JobObjects::JobObjectExtendedLimitInformation;
+    use windows_sys::Win32::System::JobObjects::SetInformationJobObject;
+    use windows_sys::Win32::System::JobObjects::JOBOBJECT_EXTENDED_LIMIT_INFORMATION;
+    use windows_sys::Win32::System::JobObjects::JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+    use windows_sys::Win32::System::Threading::OpenProcess;
+    use windows_sys::Win32::System::Threading::PROCESS_QUERY_LIMITED_INFORMATION;
+    use windows_sys::Win32::System::Threading::PROCESS_SET_QUOTA;
+    use windows_sys::Win32::System::Threading::PROCESS_TERMINATE;
+
+    struct JobHandle(HANDLE);
+
+    unsafe impl Send for JobHandle {}
+    unsafe impl Sync for JobHandle {}
+
+    impl Drop for JobHandle {
+        fn drop(&mut self) {
+            if !self.0.is_null() {
+                unsafe {
+                    let _ = CloseHandle(self.0);
+                }
+            }
+        }
+    }
+
+    static ENGINE_JOB: LazyLock<Result<JobHandle, String>> = LazyLock::new(|| unsafe {
+        let job = CreateJobObjectW(ptr::null(), ptr::null());
+        if job.is_null() {
+            return Err(format!(
+                "CreateJobObjectW failed: {}",
+                io::Error::last_os_error()
+            ));
+        }
+
+        let mut info: JOBOBJECT_EXTENDED_LIMIT_INFORMATION = zeroed();
+        info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+
+        let ok = SetInformationJobObject(
+            job,
+            JobObjectExtendedLimitInformation,
+            &info as *const _ as *const _,
+            size_of::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() as u32,
+        );
+        if ok == 0 {
+            let err = io::Error::last_os_error();
+            let _ = CloseHandle(job);
+            return Err(format!("SetInformationJobObject failed: {}", err));
+        }
+
+        Ok(JobHandle(job))
+    });
+
+    pub fn bind_pid(pid: u32) -> Result<(), String> {
+        let job = ENGINE_JOB
+            .as_ref()
+            .map_err(|e| format!("Engine job unavailable: {}", e))?;
+
+        unsafe {
+            let process = OpenProcess(
+                PROCESS_SET_QUOTA | PROCESS_TERMINATE | PROCESS_QUERY_LIMITED_INFORMATION,
+                0,
+                pid,
+            );
+            if process.is_null() {
+                return Err(format!(
+                    "OpenProcess({pid}) failed: {}",
+                    io::Error::last_os_error()
+                ));
+            }
+
+            let ok = AssignProcessToJobObject(job.0, process);
+            let _ = CloseHandle(process);
+            if ok == 0 {
+                return Err(format!(
+                    "AssignProcessToJobObject({pid}) failed: {}",
+                    io::Error::last_os_error()
+                ));
+            }
+        }
+
+        Ok(())
+    }
+}
+
 pub const SESSION_FILENAME: &str = "download.session";
 pub const LOG_FILENAME: &str = "aria2.log";
 
@@ -168,8 +261,45 @@ pub async fn start_engine(handle: &AppHandle) -> Result<(), Box<dyn std::error::
         .args(&args)
         .stdout(Stdio::null())
         .stderr(Stdio::piped());
+    command.kill_on_drop(true);
     configure_engine_spawn(&mut command);
     let mut child = command.spawn()?;
+
+    #[cfg(target_os = "windows")]
+    {
+        if let Some(pid) = child.id() {
+            if let Err(e) = win_process_guard::bind_pid(pid) {
+                let kill_err = child.kill().await.err();
+                let msg = if let Some(kill_err) = kill_err {
+                    format!(
+                        "Failed to bind aria2c into process job: {}; also failed to kill child: {}",
+                        e, kill_err
+                    )
+                } else {
+                    format!(
+                        "Failed to bind aria2c into process job: {}; startup aborted to avoid orphan process",
+                        e
+                    )
+                };
+                log::error!("{}", msg);
+                *state.engine_running.lock().unwrap() = false;
+                return Err(msg.into());
+            }
+        } else {
+            let kill_err = child.kill().await.err();
+            let msg = if let Some(kill_err) = kill_err {
+                format!(
+                    "Failed to get aria2c process id after spawn; startup aborted and kill failed: {}",
+                    kill_err
+                )
+            } else {
+                "Failed to get aria2c process id after spawn; startup aborted".to_string()
+            };
+            log::error!("{}", msg);
+            *state.engine_running.lock().unwrap() = false;
+            return Err(msg.into());
+        }
+    }
 
     // Grab stderr so we can read startup errors if the process exits early.
     // Keep this handle until after the liveness check; dropping it too early

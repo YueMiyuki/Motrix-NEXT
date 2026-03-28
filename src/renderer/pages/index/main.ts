@@ -140,15 +140,19 @@ async function init(config: any) {
   app.config.globalProperties.$http = axios
   app.config.globalProperties.$t = (key: string, value?: any) => i18n.t(key, value)
 
-  router.isReady().then(() => {
+  router.isReady().then(async () => {
     ;(window as any).__app = app.mount('#app') as any
     ;(window as any).__app.commands = commands
     ;(window as any).__app.trayWorker = initTrayWorker()
 
     // Show the window after mount to avoid a white flash.
-    getCurrentWebviewWindow()
-      .show()
-      .catch(() => {})
+    // Skip showing if launched at login (auto-start).
+    const isOpenedAtLogin = await invoke('is_opened_at_login').catch(() => false)
+    if (!isOpenedAtLogin) {
+      getCurrentWebviewWindow()
+        .show()
+        .catch(() => {})
+    }
   })
 }
 

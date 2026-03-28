@@ -1,36 +1,37 @@
 <template>
-  <ul :key="task.gid" class="task-item-actions" v-on:dblclick.stop="() => null">
+  <ul :key="task.gid" class="task-item-actions" @click.stop v-on:dblclick.stop="() => null">
     <li
       v-for="(action, index) in taskActions"
       :key="action"
       class="task-item-action"
       :style="{ '--stagger-index': index }"
+      @click.stop="onActionClick(action, $event)"
     >
-      <i v-if="action === 'PAUSE'" @click.stop="onPauseClick">
+      <i v-if="action === 'PAUSE'">
         <Pause :size="14" />
       </i>
-      <i v-if="action === 'STOP'" @click.stop="onStopClick">
+      <i v-if="action === 'STOP'">
         <Square :size="14" />
       </i>
-      <i v-if="action === 'RESUME'" @click.stop="onResumeClick">
+      <i v-if="action === 'RESUME'">
         <Play :size="14" />
       </i>
-      <i v-if="action === 'RESTART'" @click.stop="onRestartClick">
+      <i v-if="action === 'RESTART'">
         <RotateCcw :size="14" />
       </i>
-      <i v-if="action === 'DELETE'" @click.stop="onDeleteClick">
+      <i v-if="action === 'DELETE'">
         <Trash2 :size="14" />
       </i>
-      <i v-if="action === 'TRASH'" @click.stop="onTrashClick">
+      <i v-if="action === 'TRASH'">
         <Trash :size="14" />
       </i>
-      <i v-if="action === 'FOLDER'" @click.stop="onFolderClick">
+      <i v-if="action === 'FOLDER'">
         <Folder :size="14" />
       </i>
-      <i v-if="action === 'LINK'" @click.stop="onLinkClick">
+      <i v-if="action === 'LINK'">
         <Link :size="14" />
       </i>
-      <i v-if="action === 'INFO'" @click.stop="onInfoClick">
+      <i v-if="action === 'INFO'">
         <Info :size="14" />
       </i>
     </li>
@@ -44,7 +45,7 @@ import { useTaskStore } from '@/store/task'
 import { commands } from '@/components/CommandManager/instance'
 import { TASK_STATUS } from '@shared/constants'
 import { checkTaskIsSeeder, getTaskName } from '@shared/utils'
-import { getTaskFullPath } from '@/utils/native'
+import { getTaskFullPath, getTaskRevealPath } from '@/utils/native'
 import { Play, Pause, Square, RotateCcw, Trash2, Trash, Folder, Link, Info } from 'lucide-vue-next'
 
 const taskActionsMap = {
@@ -88,7 +89,11 @@ export default {
       return getTaskName(this.task)
     },
     path() {
-      return getTaskFullPath(this.task)
+      return getTaskRevealPath(this.task)
+    },
+    fallbackPath() {
+      const dir = `${this.task?.dir || ''}`.trim()
+      return dir || getTaskFullPath(this.task)
     },
     isSeeder() {
       return checkTaskIsSeeder(this.task)
@@ -124,6 +129,37 @@ export default {
     },
   },
   methods: {
+    onActionClick(action, event) {
+      switch (action) {
+        case 'PAUSE':
+          this.onPauseClick()
+          break
+        case 'STOP':
+          this.onStopClick()
+          break
+        case 'RESUME':
+          this.onResumeClick()
+          break
+        case 'RESTART':
+          this.onRestartClick(event)
+          break
+        case 'DELETE':
+          this.onDeleteClick(event)
+          break
+        case 'TRASH':
+          this.onTrashClick(event)
+          break
+        case 'FOLDER':
+          this.onFolderClick()
+          break
+        case 'LINK':
+          this.onLinkClick()
+          break
+        case 'INFO':
+          this.onInfoClick()
+          break
+      }
+    },
     onResumeClick() {
       const { task, taskName } = this
       commands.emit('resume-task', {
@@ -175,8 +211,8 @@ export default {
       })
     },
     onFolderClick() {
-      const { path } = this
-      commands.emit('reveal-in-folder', { path })
+      const { path, fallbackPath } = this
+      commands.emit('reveal-in-folder', { path, fallbackPath })
     },
     onLinkClick() {
       const { task } = this
