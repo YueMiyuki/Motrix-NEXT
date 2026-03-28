@@ -491,6 +491,19 @@
                   </Select>
                 </div>
               </div>
+              <div class="dev-path-card dev-path-card--wide">
+                <div class="dev-path-card-header">
+                  <Code :size="13" class="dev-path-card-icon" />
+                  <span class="dev-path-card-label">{{ $t('preferences.aria2-extra-args') }}</span>
+                </div>
+                <div class="dev-path-card-body">
+                  <Input
+                    v-model="form.aria2ExtraArgs"
+                    class="dev-path-input"
+                    :placeholder="$t('preferences.aria2-extra-args-placeholder')"
+                  />
+                </div>
+              </div>
             </div>
 
             <!-- Danger Zone -->
@@ -606,6 +619,7 @@ const initForm = (config) => {
   const {
     autoCheckUpdate,
     autoSyncTracker,
+    aria2ExtraArgs,
     btTracker,
     dhtListenPort,
     hideAppMenu,
@@ -625,6 +639,7 @@ const initForm = (config) => {
   const result = {
     autoCheckUpdate: parseBooleanConfig(autoCheckUpdate),
     autoSyncTracker: parseBooleanConfig(autoSyncTracker),
+    aria2ExtraArgs: typeof aria2ExtraArgs === 'string' ? aria2ExtraArgs : '',
     btTracker: convertCommaToLine(btTracker),
     dhtListenPort,
     hideAppMenu,
@@ -974,6 +989,10 @@ export default {
 
       if (rpcListenPort === EMPTY_STRING) {
         data.rpcListenPort = this.rpcDefaultPort
+      }
+
+      if (typeof data.aria2ExtraArgs === 'string') {
+        data.aria2ExtraArgs = data.aria2ExtraArgs.trim()
       }
 
       logger.log('[Motrix] preference changed data:', data)

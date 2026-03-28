@@ -20,7 +20,7 @@ import {
 } from '@shared/constants'
 
 const RPC_CONFIG_KEYS = ['rpc-host', 'rpc-listen-port', 'rpc-secret']
-const ENGINE_RESTART_USER_KEYS = ['idle-bt-network-guard', 'rpc-host']
+const ENGINE_RESTART_USER_KEYS = ['idle-bt-network-guard', 'rpc-host', 'aria2-extra-args']
 const DEFAULT_TASK_LIST_FETCH_SIZE = 1000
 const MAX_TASK_LIST_FETCH_SIZE = 2000
 

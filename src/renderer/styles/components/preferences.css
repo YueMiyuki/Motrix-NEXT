@@ -253,6 +253,9 @@
     padding: 12px 14px;
     min-width: 0;
   }
+  .dev-path-card--wide {
+    grid-column: 1 / -1;
+  }
   .dev-path-card-header {
     display: flex;
     align-items: center;

@@ -6,6 +6,7 @@ const userKeys = [
   'auto-retry-interval',
   'auto-retry-strategy',
   'auto-sync-tracker',
+  'aria2-extra-args',
   'cookie',
   'engine-bin-path',
   'engine-max-connection-per-server',

@@ -1,6 +1,10 @@
 <template>
   <div class="title-bar">
-    <div class="title-bar-dragger"></div>
+    <div
+      class="title-bar-dragger"
+      data-tauri-drag-region
+      @mousedown.left.prevent="handleStartDragging"
+    ></div>
     <ul v-if="showActions" class="window-actions">
       <li @click="handleMinimize">
         <Minus :size="12" />
@@ -34,6 +38,9 @@ export default {
     },
   },
   methods: {
+    handleStartDragging() {
+      appWindow.startDragging().catch(() => {})
+    },
     handleMinimize() {
       appWindow.minimize()
     },

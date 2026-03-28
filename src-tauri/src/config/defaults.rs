@@ -59,6 +59,7 @@ pub fn user_defaults() -> Map<String, Value> {
     m.insert("auto-retry-interval".into(), json!(5));
     m.insert("auto-retry-strategy".into(), json!("static"));
     m.insert("auto-sync-tracker".into(), json!(true));
+    m.insert("aria2-extra-args".into(), json!(""));
     m.insert("idle-bt-network-guard".into(), json!(true));
     m.insert("engine-max-connection-per-server".into(), json!(16));
     m.insert("favorite-directories".into(), json!([]));

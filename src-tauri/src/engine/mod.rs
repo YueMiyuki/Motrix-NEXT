@@ -104,6 +104,14 @@ mod win_process_guard {
 
 pub const SESSION_FILENAME: &str = "download.session";
 pub const LOG_FILENAME: &str = "aria2.log";
+const PROTECTED_EXTRA_ARG_KEYS: &[&str] = &[
+    "conf-path",
+    "save-session",
+    "input-file",
+    "log",
+    "rpc-listen-port",
+    "rpc-secret",
+];
 
 static ENGINE_PROCESS: std::sync::LazyLock<Mutex<Option<Child>>> =
     std::sync::LazyLock::new(|| Mutex::new(None));
@@ -508,22 +516,166 @@ fn build_engine_args(
         args.push("--rpc-max-request-size=128M".to_string());
     }
 
-    // aria2c caps max-connection-per-server at 16.
-    if let Some(pos) = args
-        .iter()
-        .position(|a| a.starts_with("--max-connection-per-server="))
-    {
-        let val: u32 = args[pos]
-            .trim_start_matches("--max-connection-per-server=")
-            .parse()
-            .unwrap_or(16);
-        if val > 16 {
-            args[pos] = format!("--max-connection-per-server={}", 16);
-            log::warn!("Clamped max-connection-per-server from {} to 16", val);
+    if let Some(extra_args) = user.get("aria2-extra-args").and_then(|v| v.as_str()) {
+        merge_custom_args(&mut args, extra_args);
+    }
+    clamp_max_connection_per_server(&mut args);
+
+    Ok(args)
+}
+
+fn merge_custom_args(base_args: &mut Vec<String>, extra_args: &str) {
+    let tokens = split_command_line_args(extra_args);
+    if tokens.is_empty() {
+        return;
+    }
+
+    let mut merged_extra = Vec::new();
+    let mut i = 0usize;
+
+    while i < tokens.len() {
+        let token = &tokens[i];
+        if token.trim().is_empty() {
+            i += 1;
+            continue;
+        }
+
+        let key = parse_long_option_key(token).map(str::to_string);
+        let has_separate_value = key.is_some()
+            && !token.contains('=')
+            && i + 1 < tokens.len()
+            && !tokens[i + 1].starts_with('-');
+        let span = if has_separate_value { 2 } else { 1 };
+
+        if let Some(ref key) = key {
+            if PROTECTED_EXTRA_ARG_KEYS.contains(&key.as_str()) {
+                log::warn!("Ignoring protected aria2-extra-args option: --{}", key);
+                i += span;
+                continue;
+            }
+
+            base_args.retain(|arg| !arg_matches_option_key(arg, key));
+        }
+
+        merged_extra.push(token.clone());
+        if span == 2 {
+            merged_extra.push(tokens[i + 1].clone());
+        }
+        i += span;
+    }
+
+    base_args.extend(merged_extra);
+}
+
+fn parse_long_option_key(token: &str) -> Option<&str> {
+    if !token.starts_with("--") || token == "--" {
+        return None;
+    }
+
+    let body = &token[2..];
+    if body.is_empty() {
+        return None;
+    }
+
+    Some(body.split('=').next().unwrap_or(body))
+}
+
+fn arg_matches_option_key(arg: &str, key: &str) -> bool {
+    arg == format!("--{}", key) || arg.starts_with(&format!("--{}=", key))
+}
+
+fn clamp_max_connection_per_server(args: &mut [String]) {
+    let mut i = 0usize;
+    while i < args.len() {
+        if let Some(raw) = args[i].strip_prefix("--max-connection-per-server=") {
+            let val = raw.parse::<u32>().unwrap_or(16);
+            if val > 16 {
+                args[i] = "--max-connection-per-server=16".to_string();
+                log::warn!("Clamped max-connection-per-server from {} to 16", val);
+            }
+        } else if args[i] == "--max-connection-per-server" && i + 1 < args.len() {
+            let val = args[i + 1].parse::<u32>().unwrap_or(16);
+            if val > 16 {
+                args[i + 1] = "16".to_string();
+                log::warn!("Clamped max-connection-per-server from {} to 16", val);
+            }
+            i += 1;
+        }
+
+        i += 1;
+    }
+}
+
+fn split_command_line_args(input: &str) -> Vec<String> {
+    #[derive(Copy, Clone, Eq, PartialEq)]
+    enum QuoteMode {
+        None,
+        Single,
+        Double,
+    }
+
+    let mut result = Vec::new();
+    let mut current = String::new();
+    let mut quote_mode = QuoteMode::None;
+    let mut escaping = false;
+
+    for ch in input.chars() {
+        match quote_mode {
+            QuoteMode::None => {
+                if escaping {
+                    current.push(ch);
+                    escaping = false;
+                    continue;
+                }
+
+                match ch {
+                    '\\' => escaping = true,
+                    '\'' => quote_mode = QuoteMode::Single,
+                    '"' => quote_mode = QuoteMode::Double,
+                    c if c.is_whitespace() => {
+                        if !current.is_empty() {
+                            result.push(std::mem::take(&mut current));
+                        }
+                    }
+                    _ => current.push(ch),
+                }
+            }
+            QuoteMode::Single => {
+                if ch == '\'' {
+                    quote_mode = QuoteMode::None;
+                } else {
+                    current.push(ch);
+                }
+            }
+            QuoteMode::Double => {
+                if escaping {
+                    current.push(ch);
+                    escaping = false;
+                    continue;
+                }
+
+                match ch {
+                    '\\' => escaping = true,
+                    '"' => quote_mode = QuoteMode::None,
+                    _ => current.push(ch),
+                }
+            }
         }
     }
 
-    Ok(args)
+    if escaping {
+        current.push('\\');
+    }
+    if !current.is_empty() {
+        result.push(current);
+    }
+    if quote_mode != QuoteMode::None {
+        log::warn!(
+            "aria2-extra-args contains an unmatched quote; parsed arguments may be incomplete"
+        );
+    }
+
+    result
 }
 
 fn get_platform_dir() -> &'static str {
@@ -564,3 +716,82 @@ fn configure_engine_spawn(command: &mut Command) {
 
 #[cfg(not(target_os = "windows"))]
 fn configure_engine_spawn(_command: &mut Command) {}
+
+#[cfg(test)]
+mod tests {
+    use super::{clamp_max_connection_per_server, merge_custom_args, split_command_line_args};
+
+    #[test]
+    fn split_command_line_args_splits_flags() {
+        let args = split_command_line_args("--summary-interval=0 --disk-cache=64M");
+        assert_eq!(args, vec!["--summary-interval=0", "--disk-cache=64M"]);
+    }
+
+    #[test]
+    fn split_command_line_args_supports_quoted_values() {
+        let args = split_command_line_args("--header=\"User-Agent: Test UA\" '--out=hello world'");
+        assert_eq!(
+            args,
+            vec!["--header=User-Agent: Test UA", "--out=hello world"]
+        );
+    }
+
+    #[test]
+    fn split_command_line_args_supports_escaped_spaces() {
+        let args = split_command_line_args("--out=hello\\ world --check-integrity=true");
+        assert_eq!(args, vec!["--out=hello world", "--check-integrity=true"]);
+    }
+
+    #[test]
+    fn merge_custom_args_overrides_same_key_from_base() {
+        let mut base = vec!["--dir=/downloads".to_string(), "--split=5".to_string()];
+        merge_custom_args(&mut base, "--split=16 --disk-cache=64M");
+        assert_eq!(
+            base,
+            vec![
+                "--dir=/downloads".to_string(),
+                "--split=16".to_string(),
+                "--disk-cache=64M".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn merge_custom_args_keeps_protected_keys_from_base() {
+        let mut base = vec![
+            "--rpc-listen-port=16800".to_string(),
+            "--rpc-secret=abc".to_string(),
+            "--dir=/downloads".to_string(),
+        ];
+        merge_custom_args(
+            &mut base,
+            "--rpc-listen-port=17000 --rpc-secret=override --dir=/tmp",
+        );
+        assert_eq!(
+            base,
+            vec![
+                "--rpc-listen-port=16800".to_string(),
+                "--rpc-secret=abc".to_string(),
+                "--dir=/tmp".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn clamp_max_connection_per_server_handles_custom_override() {
+        let mut args = vec![
+            "--max-connection-per-server=20".to_string(),
+            "--max-connection-per-server".to_string(),
+            "99".to_string(),
+        ];
+        clamp_max_connection_per_server(&mut args);
+        assert_eq!(
+            args,
+            vec![
+                "--max-connection-per-server=16".to_string(),
+                "--max-connection-per-server".to_string(),
+                "16".to_string(),
+            ]
+        );
+    }
+}

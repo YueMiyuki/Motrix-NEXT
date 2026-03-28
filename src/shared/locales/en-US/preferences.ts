@@ -90,6 +90,8 @@ export default {
   developer: 'Developer',
   'user-agent': 'User-Agent',
   'mock-user-agent': 'Mock User-Agent',
+  'aria2-extra-args': 'aria2c CLI flags',
+  'aria2-extra-args-placeholder': '--summary-interval=0 --disk-cache=64M',
   'aria2-conf-path': 'Built-in aria2.conf path',
   'app-log-path': 'App log path',
   'download-session-path': 'Download session path',

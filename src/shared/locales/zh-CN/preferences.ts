@@ -84,6 +84,8 @@ export default {
   developer: '开发者',
   'user-agent': 'User-Agent',
   'mock-user-agent': '模拟用户代理（UA）',
+  'aria2-extra-args': 'aria2c CLI 参数',
+  'aria2-extra-args-placeholder': '--summary-interval=0 --disk-cache=64M',
   'aria2-conf-path': '内置的 aria2.conf 路径',
   'app-log-path': '应用日志路径',
   'download-session-path': '下载会话路径',
