@@ -109,6 +109,10 @@ const PROTECTED_EXTRA_ARG_KEYS: &[&str] = &[
     "save-session",
     "input-file",
     "log",
+    "no-conf",
+    "enable-rpc",
+    "rpc-listen-all",
+    "rpc-allow-origin-all",
     "rpc-listen-port",
     "rpc-secret",
 ];
@@ -129,35 +133,33 @@ fn resolve_engine_file(
 
     for arch_dir in arch_dirs {
         for rel_path in engine_rel_paths(platform_dir, arch_dir, filename) {
-            // Resolve paths the same way Tauri resource bundling does.
-            if let Ok(candidate) = handle.path().resolve(&rel_path, BaseDirectory::Resource) {
-                attempted.push(candidate.to_string_lossy().to_string());
-                if candidate.exists() {
-                    let resolved = candidate
-                        .canonicalize()
-                        .unwrap_or_else(|_| candidate.clone());
-                    if arch_dir != primary_arch {
-                        log::warn!(
-                            "{} for {}/{} not found; using fallback arch {}/{}",
-                            filename,
-                            platform_dir,
-                            primary_arch,
-                            platform_dir,
-                            arch_dir
-                        );
-                    }
-                    log::info!("{} found at: {:?}", filename, resolved);
-                    return Ok(resolved);
-                }
+            let dev_candidate = PathBuf::from(&rel_path);
+            let resource_candidate = handle
+                .path()
+                .resolve(&rel_path, BaseDirectory::Resource)
+                .ok();
+
+            let prefer_dev = cfg!(debug_assertions);
+            let mut candidates = Vec::new();
+            if prefer_dev {
+                candidates.push(dev_candidate.clone());
+            }
+            if let Some(ref candidate) = resource_candidate {
+                candidates.push(candidate.clone());
+            }
+            if !prefer_dev {
+                candidates.push(dev_candidate.clone());
             }
 
-            // Dev fallback when running from repository checkout.
-            let dev_candidate = PathBuf::from(&rel_path);
-            attempted.push(dev_candidate.to_string_lossy().to_string());
-            if dev_candidate.exists() {
-                let resolved = dev_candidate
+            for candidate in candidates {
+                attempted.push(candidate.to_string_lossy().to_string());
+                if !candidate.exists() {
+                    continue;
+                }
+
+                let resolved = candidate
                     .canonicalize()
-                    .unwrap_or_else(|_| dev_candidate.clone());
+                    .unwrap_or_else(|_| candidate.clone());
                 if arch_dir != primary_arch {
                     log::warn!(
                         "{} for {}/{} not found; using fallback arch {}/{}",
@@ -772,6 +774,37 @@ mod tests {
             vec![
                 "--rpc-listen-port=16800".to_string(),
                 "--rpc-secret=abc".to_string(),
+                "--dir=/tmp".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn merge_custom_args_blocks_rpc_disabling_flags() {
+        let mut base = vec![
+            "--conf-path=/tmp/aria2.conf".to_string(),
+            "--rpc-listen-port=16800".to_string(),
+            "--rpc-secret=abc".to_string(),
+            "--enable-rpc=true".to_string(),
+            "--rpc-listen-all=true".to_string(),
+            "--rpc-allow-origin-all=true".to_string(),
+            "--dir=/downloads".to_string(),
+        ];
+
+        merge_custom_args(
+            &mut base,
+            "--no-conf --enable-rpc=false --rpc-listen-all=false --rpc-allow-origin-all=false --dir=/tmp",
+        );
+
+        assert_eq!(
+            base,
+            vec![
+                "--conf-path=/tmp/aria2.conf".to_string(),
+                "--rpc-listen-port=16800".to_string(),
+                "--rpc-secret=abc".to_string(),
+                "--enable-rpc=true".to_string(),
+                "--rpc-listen-all=true".to_string(),
+                "--rpc-allow-origin-all=true".to_string(),
                 "--dir=/tmp".to_string(),
             ]
         );

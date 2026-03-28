@@ -4,6 +4,8 @@ mod engine;
 mod managers;
 mod state;
 
+use std::sync::atomic::Ordering;
+
 use tauri::{Emitter, Manager};
 use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 
@@ -71,6 +73,14 @@ pub fn run() {
         })
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                let quitting = window
+                    .app_handle()
+                    .state::<state::AppState>()
+                    .is_quitting
+                    .load(Ordering::SeqCst);
+                if quitting {
+                    return;
+                }
                 api.prevent_close();
                 let _ = commands::app_cmds::hide_main_window(&window.app_handle());
             }

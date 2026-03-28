@@ -1,3 +1,4 @@
+use std::sync::atomic::Ordering;
 use tauri::{AppHandle, Manager};
 
 const RUN_MODE_STANDARD: i64 = 1;
@@ -53,6 +54,10 @@ pub fn hide_main_window(handle: &AppHandle) -> Result<(), String> {
 
 #[tauri::command]
 pub async fn relaunch_app(handle: AppHandle) -> Result<(), String> {
+    handle
+        .state::<crate::state::AppState>()
+        .is_quitting
+        .store(true, Ordering::SeqCst);
     crate::engine::stop_engine(&handle)
         .await
         .map_err(|e| e.to_string())?;
@@ -61,6 +66,10 @@ pub async fn relaunch_app(handle: AppHandle) -> Result<(), String> {
 
 #[tauri::command]
 pub async fn quit_app(handle: AppHandle) -> Result<(), String> {
+    handle
+        .state::<crate::state::AppState>()
+        .is_quitting
+        .store(true, Ordering::SeqCst);
     crate::engine::stop_engine(&handle)
         .await
         .map_err(|e| e.to_string())?;
