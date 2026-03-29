@@ -131,8 +131,9 @@ pub fn reveal_in_folder(path: String) -> Result<(), String> {
                 .spawn()
                 .map_err(|e| e.to_string())?;
         } else {
+            let normalized_path = path.replace('/', "\\");
             std::process::Command::new("explorer")
-                .args(["/select,", &path])
+                .arg(format!("/select,{}", normalized_path))
                 .spawn()
                 .map_err(|e| e.to_string())?;
         }

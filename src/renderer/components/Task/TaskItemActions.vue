@@ -212,6 +212,11 @@ export default {
     },
     onFolderClick() {
       const { path, fallbackPath } = this
+      console.log('[TaskItemActions] onFolderClick:', {
+        path,
+        fallbackPath,
+        taskDir: this.task?.dir,
+      })
       commands.emit('reveal-in-folder', { path, fallbackPath })
     },
     onLinkClick() {

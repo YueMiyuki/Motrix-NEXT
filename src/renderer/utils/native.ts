@@ -29,6 +29,8 @@ export const showItemInFolder = async (
   const fallback = `${fallbackPath || ''}`.trim()
   if (!revealPath && !fallback) return
 
+  logger.info(`[Motrix] showItemInFolder: path="${revealPath}", fallback="${fallback}"`)
+
   try {
     await invoke('reveal_in_folder', { path: revealPath || fallback })
   } catch (err) {
@@ -96,20 +98,23 @@ export const getTaskRevealPath = (task: any): string => {
   }
 
   if (isMagnetTask(task)) {
-    return `${task?.dir || ''}`.trim()
+    const result = `${task?.dir || ''}`.trim()
+    logger.info(`[Motrix] getTaskRevealPath (magnet): "${result}"`)
+    return result
   }
 
   const files = Array.isArray(task?.files) ? task.files : []
   const candidate = `${files.find((file: any) => `${file?.path || ''}`.trim())?.path || ''}`.trim()
   if (!candidate) {
-    return getTaskFullPath(task)
+    const fallback = getTaskFullPath(task)
+    logger.info(`[Motrix] getTaskRevealPath (no file.path, using getTaskFullPath): "${fallback}"`)
+    return fallback
   }
 
-  if (task?.status === TASK_STATUS.COMPLETE) {
-    return stripTempDownloadSuffix(candidate)
-  }
-
-  return candidate
+  const result =
+    task?.status === TASK_STATUS.COMPLETE ? stripTempDownloadSuffix(candidate) : candidate
+  logger.info(`[Motrix] getTaskRevealPath (from file.path): "${result}"`)
+  return result
 }
 
 export const finalizeCompletedDownloadPath = async (task: any): Promise<string> => {

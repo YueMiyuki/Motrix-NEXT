@@ -73,7 +73,7 @@ import {
 } from '@shared/utils'
 import { APP_THEME, TASK_STATUS } from '@shared/constants'
 import { writeText } from '@tauri-apps/plugin-clipboard-manager'
-import { getTaskFullPath } from '@/utils/native'
+import { getTaskRevealPath } from '@/utils/native'
 import ShowInFolder from '@/components/Native/ShowInFolder.vue'
 import TaskStatus from '@/components/Task/TaskStatus.vue'
 
@@ -114,7 +114,7 @@ export default {
       return this.isSeeder ? TASK_STATUS.SEEDING : this.task.status
     },
     path() {
-      return getTaskFullPath(this.task)
+      return getTaskRevealPath(this.task)
     },
     isBT() {
       return checkTaskIsBT(this.task)
