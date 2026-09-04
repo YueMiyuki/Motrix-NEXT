@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { createRequire } from "node:module";
 import cfonts from "cfonts";
 import chalk from "chalk";
 
@@ -46,8 +47,9 @@ function greeting() {
 greeting();
 
 const args = process.argv.slice(2);
-const tauriArgs = ["tauri", "build", ...args];
-const pnpmBin = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+const require = createRequire(import.meta.url);
+const tauriBin = require.resolve("@tauri-apps/cli/tauri.js");
+const tauriArgs = [tauriBin, "build", ...args];
 
 function findOptionValue(rawArgs, flags) {
 	for (const flag of flags) {
@@ -144,7 +146,7 @@ if (!userProvidedConfig && resourceConfig) {
 	);
 }
 
-const child = spawn(pnpmBin, tauriArgs, {
+const child = spawn(process.execPath, tauriArgs, {
 	stdio: "inherit",
 	shell: false,
 	env: { ...process.env },

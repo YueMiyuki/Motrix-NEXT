@@ -47,6 +47,7 @@ export default {
 	"seed-time-unit": "分钟",
 	"task-manage": "任务管理",
 	"max-concurrent-downloads": "同时下载的最大任务数",
+	"connections-per-task": "单任务连接数",
 	"max-connection-per-server": "每个服务器最大连接数",
 	"auto-retry": "失败任务自动重试",
 	"auto-retry-strategy": "重试间隔模式",

@@ -278,6 +278,7 @@ const BASIC_KEYS = [
 	"preferences.seed-ratio",
 	"preferences.seed-time",
 	"preferences.max-concurrent-downloads",
+	"preferences.connections-per-task",
 	"preferences.auto-retry",
 	"preferences.auto-retry-strategy",
 	"preferences.auto-retry-strategy-exponential",

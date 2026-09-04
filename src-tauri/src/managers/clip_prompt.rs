@@ -17,7 +17,7 @@ pub fn setup_clip_prompt(app: &tauri::App) -> Result<(), Box<dyn std::error::Err
         return Ok(());
     }
 
-    let mut builder = WebviewWindowBuilder::new(
+    let builder = WebviewWindowBuilder::new(
         app,
         CLIP_PROMPT_LABEL,
         WebviewUrl::App("clip-prompt.html".into()),
@@ -35,9 +35,7 @@ pub fn setup_clip_prompt(app: &tauri::App) -> Result<(), Box<dyn std::error::Err
     .accept_first_mouse(true);
 
     #[cfg(target_os = "macos")]
-    {
-        builder = builder.visible_on_all_workspaces(true);
-    }
+    let builder = builder.visible_on_all_workspaces(true);
 
     builder.build()?;
     Ok(())

@@ -23,24 +23,21 @@ pub fn setup_flyout(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> 
         return Ok(());
     }
 
-    let mut builder =
-        WebviewWindowBuilder::new(app, FLYOUT_LABEL, WebviewUrl::App("tray.html".into()))
-            .title("Risuko Quick Panel")
-            .inner_size(FLYOUT_WIDTH, FLYOUT_HEIGHT)
-            .decorations(false)
-            .always_on_top(true)
-            .skip_taskbar(true)
-            .resizable(false)
-            .visible(false)
-            .focused(false)
-            .transparent(true)
-            .shadow(false)
-            .accept_first_mouse(true);
+    let builder = WebviewWindowBuilder::new(app, FLYOUT_LABEL, WebviewUrl::App("tray.html".into()))
+        .title("Risuko Quick Panel")
+        .inner_size(FLYOUT_WIDTH, FLYOUT_HEIGHT)
+        .decorations(false)
+        .always_on_top(true)
+        .skip_taskbar(true)
+        .resizable(false)
+        .visible(false)
+        .focused(false)
+        .transparent(true)
+        .shadow(false)
+        .accept_first_mouse(true);
 
     #[cfg(target_os = "macos")]
-    {
-        builder = builder.visible_on_all_workspaces(true);
-    }
+    let builder = builder.visible_on_all_workspaces(true);
 
     builder.build()?;
     Ok(())

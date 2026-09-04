@@ -169,6 +169,7 @@ export default {
 	"seed-time-unit": "minutes",
 	"task-manage": "Task Management",
 	"max-concurrent-downloads": "Maximum active tasks",
+	"connections-per-task": "Connections per task",
 	"max-connection-per-server": "Maximum connections per server",
 	"auto-retry": "Auto-retry failed tasks",
 	"auto-retry-strategy": "Retry interval mode",

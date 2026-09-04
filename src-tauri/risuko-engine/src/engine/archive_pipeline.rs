@@ -272,17 +272,18 @@ where
                     .map_err(ArchivePipelineError::Io)?;
                 file.sync_all().map_err(ArchivePipelineError::Io)?;
                 // Never preserve executable bits from archive metadata
-                let mut perms = file
-                    .metadata()
-                    .map_err(ArchivePipelineError::Io)?
-                    .permissions();
                 #[cfg(unix)]
                 {
                     use std::os::unix::fs::PermissionsExt;
+
+                    let mut perms = file
+                        .metadata()
+                        .map_err(ArchivePipelineError::Io)?
+                        .permissions();
                     perms.set_mode(perms.mode() & 0o666);
+                    file.set_permissions(perms)
+                        .map_err(ArchivePipelineError::Io)?;
                 }
-                file.set_permissions(perms)
-                    .map_err(ArchivePipelineError::Io)?;
                 files_written += 1;
             }
             _ => unreachable!(),

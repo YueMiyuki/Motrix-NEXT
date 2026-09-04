@@ -380,7 +380,10 @@
           </div>
           <div class="settings-section-content">
             <div class="settings-select-group">
-              <div class="settings-select-item">
+              <div
+                class="settings-select-item"
+                data-preference-search-target="preferences.max-concurrent-downloads"
+              >
                 <label class="settings-select-item-label">{{
                   $t('preferences.max-concurrent-downloads')
                 }}</label>
@@ -389,6 +392,15 @@
                   :min="1"
                   :max="maxConcurrentDownloads"
                 />
+              </div>
+              <div
+                class="settings-select-item"
+                data-preference-search-target="preferences.connections-per-task"
+              >
+                <label class="settings-select-item-label">{{
+                  $t('preferences.connections-per-task')
+                }}</label>
+                <NumberInput v-model="form.split" :min="1" :max="128" />
               </div>
             </div>
             <div
@@ -759,6 +771,19 @@ const normalizeBasicConfig = (data) => {
 		);
 	}
 
+	if ("split" in data) {
+		data.split = normalizePositiveInt(data.split, 16, 1, 128);
+	}
+
+	if ("maxConcurrentDownloads" in data) {
+		data.maxConcurrentDownloads = normalizePositiveInt(
+			data.maxConcurrentDownloads,
+			5,
+			1,
+			ENGINE_MAX_CONCURRENT_DOWNLOADS,
+		);
+	}
+
 	if ("lowSpeedThreshold" in data) {
 		data.lowSpeedThreshold = normalizePositiveInt(
 			data.lowSpeedThreshold,
@@ -818,6 +843,7 @@ const initForm = (config) => {
 		seedRatio,
 		seedTime,
 		taskNotification,
+		split,
 		useRemoteFileTime,
 		lowSpeedThreshold,
 	} = config;
@@ -858,7 +884,13 @@ const initForm = (config) => {
 		keepWindowState: parseBooleanConfig(keepWindowState),
 		locale,
 		lowSpeedThreshold: normalizePositiveInt(lowSpeedThreshold, 20, 1, 10240),
-		maxConcurrentDownloads,
+		maxConcurrentDownloads: normalizePositiveInt(
+			maxConcurrentDownloads,
+			5,
+			1,
+			ENGINE_MAX_CONCURRENT_DOWNLOADS,
+		),
+		split: normalizePositiveInt(split, 16, 1, 128),
 		maxOverallDownloadLimit,
 		maxOverallUploadLimit,
 		newTaskShowDownloading: parseBooleanConfig(newTaskShowDownloading),
