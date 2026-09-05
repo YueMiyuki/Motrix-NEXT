@@ -16,9 +16,11 @@ permissions:
   id-token: write
 
 env:
-  CARGO_INCREMENTAL: 0
   CARGO_NET_RETRY: 10
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # Self-hosted disks persist cargo; skip GitHub Actions cache restore/upload.
+  CARGO_HOME: ${{ github.workspace }}/../../.cargo
+  RUSTUP_HOME: ${{ github.workspace }}/../../.rustup
 
 jobs:
   build-cli:
@@ -55,15 +57,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          clean: false
 
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri -> target
-          key: cli-${{ matrix.target }}
 
       - name: Install Linux build deps
         if: contains(matrix.target, 'linux')
@@ -118,15 +117,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          clean: false
 
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri -> target
-          key: napi-${{ matrix.target }}
 
       - name: Install Linux build deps
         if: contains(matrix.target, 'linux')
@@ -166,6 +162,8 @@ jobs:
     runs-on: [self-hosted, linux-x64]
     steps:
       - uses: actions/checkout@v4
+        with:
+          clean: false
 
       - uses: pnpm/action-setup@v4
         with:
