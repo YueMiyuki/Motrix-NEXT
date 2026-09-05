@@ -7,6 +7,7 @@ import test from "node:test";
 import {
 	canonicalAssetName,
 	packageReleaseAssets,
+	resolveCargoTargetDir,
 	resolvePlatform,
 	writeGithubEnvironment,
 } from "./package-release-assets.mjs";
@@ -155,6 +156,37 @@ test("packages Windows signed setup and portable executables", () => {
 			readFileSync(join(outputDir, result.portableAsset), "utf8"),
 			"windows-portable",
 		);
+	});
+});
+
+test("reads Windows portable exe from CARGO_TARGET_DIR when set", () => {
+	withFixture((root) => {
+		const previous = process.env.CARGO_TARGET_DIR;
+		const cargoTarget = join(root, "persistent-target");
+		process.env.CARGO_TARGET_DIR = cargoTarget;
+		try {
+			assert.equal(resolveCargoTargetDir(root), cargoTarget);
+			const bundleDir = join(root, "bundle");
+			const outputDir = join(root, "out");
+			write(join(bundleDir, "nsis", "Risuko-setup.exe"), "windows-setup");
+			write(join(cargoTarget, "x86_64-pc-windows-msvc", "release", "Risuko.exe"), "from-env");
+
+			const result = packageReleaseAssets({
+				root,
+				bundleDir,
+				outputDir,
+				platform: "win32/x64",
+				target: "x86_64-pc-windows-msvc",
+				tagged: false,
+				version: "0.6.0",
+			});
+
+			assert.equal(result.portableAsset, "Risuko_0.6.0_win32_x64.portable.exe");
+			assert.equal(readFileSync(join(outputDir, result.portableAsset), "utf8"), "from-env");
+		} finally {
+			if (previous === undefined) delete process.env.CARGO_TARGET_DIR;
+			else process.env.CARGO_TARGET_DIR = previous;
+		}
 	});
 });
 

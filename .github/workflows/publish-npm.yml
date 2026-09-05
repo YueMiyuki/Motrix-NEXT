@@ -19,7 +19,9 @@ env:
   CARGO_NET_RETRY: 10
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   # Self-hosted disks persist cargo; skip GitHub Actions cache restore/upload.
+  # Compile cache lives beside CARGO_HOME, not inside `_work/<repo>/<repo>`.
   CARGO_HOME: ${{ github.workspace }}/../../.cargo
+  CARGO_TARGET_DIR: ${{ github.workspace }}/../../.cargo-target
   RUSTUP_HOME: ${{ github.workspace }}/../../.rustup
 
 jobs:
@@ -64,11 +66,17 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: MSVC environment
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+
       - name: Install Linux build deps
         if: contains(matrix.target, 'linux')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libssl-dev pkg-config
+          sudo apt-get install -y libssl-dev pkg-config file
 
       - name: Install aarch64 Linux cross toolchain
         if: matrix.target == 'aarch64-unknown-linux-gnu'
@@ -82,7 +90,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cli-${{ matrix.npm_dir }}
-          path: src-tauri/target/${{ matrix.target }}/release/${{ matrix.binary }}
+          path: ${{ github.workspace }}/../../.cargo-target/${{ matrix.target }}/release/${{ matrix.binary }}
 
   # ───────────────────────────────────────────────────────
   # Build risuko-napi native modules for all platforms
@@ -128,11 +136,17 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: MSVC environment
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+
       - name: Install Linux build deps
         if: contains(matrix.target, 'linux')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libssl-dev pkg-config
+          sudo apt-get install -y libssl-dev pkg-config file
 
       - name: Install aarch64 Linux cross toolchain
         if: matrix.target == 'aarch64-unknown-linux-gnu'
@@ -147,11 +161,11 @@ jobs:
         run: |
           # cdylib output varies by platform
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            src="src-tauri/target/${{ matrix.target }}/release/risuko_napi.dll"
+            src="${CARGO_TARGET_DIR}/${{ matrix.target }}/release/risuko_napi.dll"
           elif [[ "${{ runner.os }}" == "macOS" ]]; then
-            src="src-tauri/target/${{ matrix.target }}/release/librisuko_napi.dylib"
+            src="${CARGO_TARGET_DIR}/${{ matrix.target }}/release/librisuko_napi.dylib"
           else
-            src="src-tauri/target/${{ matrix.target }}/release/librisuko_napi.so"
+            src="${CARGO_TARGET_DIR}/${{ matrix.target }}/release/librisuko_napi.so"
           fi
           cp "$src" "${{ matrix.node_file }}"
 

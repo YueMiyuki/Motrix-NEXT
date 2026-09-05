@@ -16,6 +16,12 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "..");
 
+export function resolveCargoTargetDir(root = ROOT) {
+	const fromEnv = process.env.CARGO_TARGET_DIR?.trim();
+	if (fromEnv) return resolve(fromEnv);
+	return join(root, "src-tauri", "target");
+}
+
 const PLATFORM_INFO = {
 	"darwin/arm64": { os: "darwin", arch: "arm64" },
 	"darwin/x64": { os: "darwin", arch: "x64" },
@@ -176,8 +182,9 @@ export function packageReleaseAssets(options = {}) {
 	});
 	if (!target) throw new Error("MATRIX_TARGET is required for release packaging");
 
+	const cargoTargetDir = resolveCargoTargetDir(root);
 	const bundleDir = resolve(
-		options.bundleDir ?? join(root, "src-tauri", "target", target, "release", "bundle"),
+		options.bundleDir ?? join(cargoTargetDir, target, "release", "bundle"),
 	);
 	const outputDir = resolve(options.outputDir ?? root);
 	mkdirSync(outputDir, { recursive: true });
@@ -297,7 +304,7 @@ export function packageReleaseAssets(options = {}) {
 		result.appAsset = appAsset;
 
 		const portable = assertFile(
-			join(root, "src-tauri", "target", target, "release", "Risuko.exe"),
+			join(cargoTargetDir, target, "release", "Risuko.exe"),
 			"Windows portable executable",
 		);
 		result.portableAsset = canonicalAssetName(version, os, arch, "portable.exe");
