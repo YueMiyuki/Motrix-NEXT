@@ -246,6 +246,11 @@ jobs:
             patchelf \
             xdg-utils
 
+      - name: Install aarch64 Linux cross toolchain
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        shell: bash
+        run: bash scripts/setup-linux-aarch64-cross.sh --gtk
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
