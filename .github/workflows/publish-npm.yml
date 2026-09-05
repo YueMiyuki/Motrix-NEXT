@@ -29,23 +29,23 @@ jobs:
       matrix:
         include:
           - target: aarch64-apple-darwin
-            os: macos-latest
+            os: [self-hosted, darwin-x64]
             binary: risuko
             npm_dir: darwin-arm64
           - target: x86_64-apple-darwin
-            os: macos-latest
+            os: [self-hosted, darwin-x64]
             binary: risuko
             npm_dir: darwin-x64
           - target: x86_64-unknown-linux-gnu
-            os: ubuntu-22.04
+            os: [self-hosted, linux-x64]
             binary: risuko
             npm_dir: linux-x64-gnu
           - target: aarch64-unknown-linux-gnu
-            os: ubuntu-22.04-arm
+            os: [self-hosted, linux-arm64]
             binary: risuko
             npm_dir: linux-arm64-gnu
           - target: x86_64-pc-windows-msvc
-            os: windows-latest
+            os: [self-hosted, win32-x64]
             binary: risuko.exe
             npm_dir: win32-x64-msvc
           - target: aarch64-pc-windows-msvc
@@ -66,7 +66,7 @@ jobs:
           key: cli-${{ matrix.target }}
 
       - name: Install Linux build deps
-        if: startsWith(matrix.os, 'ubuntu')
+        if: contains(matrix.target, 'linux')
         run: |
           sudo apt-get update
           sudo apt-get install -y libssl-dev pkg-config
@@ -92,23 +92,23 @@ jobs:
       matrix:
         include:
           - target: aarch64-apple-darwin
-            os: macos-latest
+            os: [self-hosted, darwin-x64]
             node_file: risuko.darwin-arm64.node
             npm_dir: darwin-arm64
           - target: x86_64-apple-darwin
-            os: macos-latest
+            os: [self-hosted, darwin-x64]
             node_file: risuko.darwin-x64.node
             npm_dir: darwin-x64
           - target: x86_64-unknown-linux-gnu
-            os: ubuntu-22.04
+            os: [self-hosted, linux-x64]
             node_file: risuko.linux-x64-gnu.node
             npm_dir: linux-x64-gnu
           - target: aarch64-unknown-linux-gnu
-            os: ubuntu-22.04-arm
+            os: [self-hosted, linux-arm64]
             node_file: risuko.linux-arm64-gnu.node
             npm_dir: linux-arm64-gnu
           - target: x86_64-pc-windows-msvc
-            os: windows-latest
+            os: [self-hosted, win32-x64]
             node_file: risuko.win32-x64-msvc.node
             npm_dir: win32-x64-msvc
           - target: aarch64-pc-windows-msvc
@@ -129,7 +129,7 @@ jobs:
           key: napi-${{ matrix.target }}
 
       - name: Install Linux build deps
-        if: startsWith(matrix.os, 'ubuntu')
+        if: contains(matrix.target, 'linux')
         run: |
           sudo apt-get update
           sudo apt-get install -y libssl-dev pkg-config
@@ -163,7 +163,7 @@ jobs:
   publish:
     name: Publish to npm
     needs: [build-cli, build-napi]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux-x64]
     steps:
       - uses: actions/checkout@v4
 
