@@ -20,6 +20,10 @@ env:
   GRADLE_USER_HOME: ${{ github.workspace }}/../../.gradle
   ANDROID_HOME: ${{ github.workspace }}/../../.android-sdk
   ANDROID_SDK_ROOT: ${{ github.workspace }}/../../.android-sdk
+  # Fat LTO + codegen-units=1 for tagged releases
+  # Manual/PR builds use parallelize to speed up
+  CARGO_PROFILE_RELEASE_LTO: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && 'true' || 'thin' }}
+  CARGO_PROFILE_RELEASE_CODEGEN_UNITS: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && '1' || '16' }}
 
 concurrency:
   group: release-${{ github.repository }}-${{ github.ref }}
