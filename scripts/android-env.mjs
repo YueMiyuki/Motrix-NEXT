@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { delimiter, join } from "node:path";
+import { delimiter, dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { canonicalizeCargoTargetDir, cleanAndroidJniLibs } from "./android-jni-libs.mjs";
 import { patchAndroidGradle } from "./patch-android-gradle.mjs";
+
+const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 function findSccache() {
 	if (process.env.RUSTC_WRAPPER) {
@@ -73,6 +77,9 @@ if (!existsSync(llvmBin)) {
 }
 
 patchAndroidGradle();
+cleanAndroidJniLibs(
+	join(projectRoot, "src-tauri/gen/android/app/src/main/jniLibs"),
+);
 
 const sccache = findSccache();
 if (sccache) {
@@ -83,7 +90,7 @@ if (sccache) {
 	);
 }
 
-const env = {
+const env = canonicalizeCargoTargetDir({
 	...process.env,
 	...(sccache ? { RUSTC_WRAPPER: sccache } : {}),
 	ANDROID_HOME: sdkRoot,
@@ -124,7 +131,7 @@ const env = {
 		llvmBin,
 		`x86_64-linux-android${api}-clang`,
 	),
-};
+});
 
 const args = process.argv.slice(2);
 if (args.length === 0) {

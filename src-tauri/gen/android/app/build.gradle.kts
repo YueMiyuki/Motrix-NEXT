@@ -57,6 +57,27 @@ rust {
     rootDirRel = "../../../"
 }
 
+tasks.matching { it.name.startsWith("merge") && it.name.endsWith("JniLibFolders") }.configureEach {
+    doFirst {
+        val jniLibs = file("src/main/jniLibs")
+        if (!jniLibs.isDirectory) {
+            return@doFirst
+        }
+        jniLibs.walkTopDown().forEach { candidate ->
+            val path = candidate.toPath()
+            if (java.nio.file.Files.isSymbolicLink(path)) {
+                try {
+                    val target = path.toRealPath()
+                    java.nio.file.Files.delete(path)
+                    java.nio.file.Files.copy(target, path)
+                } catch (_: Exception) {
+                    java.nio.file.Files.deleteIfExists(path)
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     implementation("androidx.webkit:webkit:1.14.0")
     implementation("androidx.appcompat:appcompat:1.7.1")

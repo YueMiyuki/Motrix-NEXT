@@ -76,6 +76,8 @@ jobs:
     needs: create-release
     if: ${{ always() && !cancelled() && (github.event_name != 'push' || needs.create-release.result == 'success') }}
     runs-on: [self-hosted, android]
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/src-tauri/target
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4

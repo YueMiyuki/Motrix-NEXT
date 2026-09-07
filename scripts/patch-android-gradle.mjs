@@ -11,6 +11,7 @@ const tuningPath = join(scriptDir, "android-gradle.properties");
 const marker = "# Risuko Gradle tuning (scripts/patch-android-gradle.mjs)";
 const staleTuningKeys = [
 	"org.gradle.jvmargs=-Xmx4g",
+	"org.gradle.jvmargs=-Xmx2048m",
 	"org.gradle.parallel=true",
 	"org.gradle.configuration-cache=true",
 	"org.gradle.caching=true",
